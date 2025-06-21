@@ -11,6 +11,13 @@ import '../features/auth/domain/usecases/login_usecase.dart';
 import '../features/auth/domain/usecases/register_usecase.dart';
 import '../features/auth/domain/usecases/forgot_password_usecase.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
+// Intro feature imports
+import '../features/intro/data/datasources/intro_local_data_source.dart';
+import '../features/intro/data/repositories/intro_repository_impl.dart';
+import '../features/intro/domain/repositories/intro_repository.dart';
+import '../features/intro/domain/usecases/check_network_usecase.dart';
+import '../features/intro/domain/usecases/complete_intro_usecase.dart';
+import '../features/intro/presentation/bloc/intro_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -33,11 +40,24 @@ Future<void> initServiceLocator() async {
     () => AuthRemoteDataSourceImpl(supabaseClient: sl<SupabaseAuthClient>()),
   );
 
+  // Intro data sources
+  sl.registerLazySingleton<IntroLocalDataSource>(
+    () => IntroLocalDataSourceImpl(),
+  );
+
   //! Repositories
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       remoteDataSource: sl<AuthRemoteDataSource>(),
       networkInfo: sl<NetworkInfo>(),
+    ),
+  );
+
+  // Intro repository
+  sl.registerLazySingleton<IntroRepository>(
+    () => IntroRepositoryImpl(
+      networkInfo: sl<NetworkInfo>(),
+      localDataSource: sl<IntroLocalDataSource>(),
     ),
   );
 
@@ -52,12 +72,28 @@ Future<void> initServiceLocator() async {
     () => ForgotPasswordUseCase(repository: sl<AuthRepository>()),
   );
 
+  // Intro use cases
+  sl.registerLazySingleton(
+    () => CheckNetworkUseCase(repository: sl<IntroRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => CompleteIntroUseCase(repository: sl<IntroRepository>()),
+  );
+
   //! BLoCs
   sl.registerFactory(
     () => AuthBloc(
       loginUseCase: sl<LoginUseCase>(),
       registerUseCase: sl<RegisterUseCase>(),
       forgotPasswordUseCase: sl<ForgotPasswordUseCase>(),
+    ),
+  );
+
+  // Intro BLoC
+  sl.registerFactory(
+    () => IntroBloc(
+      checkNetworkUseCase: sl<CheckNetworkUseCase>(),
+      completeIntroUseCase: sl<CompleteIntroUseCase>(),
     ),
   );
 }

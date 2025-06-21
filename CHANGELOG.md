@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2024-12-20
+
+### Added
+- Intro feature with animated splash screen
+- Network connectivity checking on app startup
+- Beautiful brand introduction with logo animation
+- Smooth background color transition from light to dark theme
+- Auto-navigation to authentication after intro completion
+- PNG logo asset support in intro animation
+- Error handling for offline scenarios with retry functionality
+
+### Updated
+- App theme colors updated to use #F9F9F9 (light) and #4D217B (dark purple) backgrounds
+- Color scheme modernized with new brand colors
+- Removed deprecated `background` property from ColorScheme
+- Fixed meta import issues by using Flutter foundation library
+- Improved BuildContext handling across async gaps
+- Replaced deprecated type literal patterns with modern Dart syntax
+
+### Technical Improvements
+- Enhanced BLoC pattern implementation for intro flow
+- Clean architecture maintained with domain, data, and presentation layers
+- Proper animation controller management and disposal
+- Sequential animation timing with logo fade-in followed by background transition
+- 2-second pause on final state before navigation
+
 ## [1.0.0] - 2024-12-20
 
 ### Added

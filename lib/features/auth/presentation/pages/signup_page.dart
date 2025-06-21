@@ -107,10 +107,11 @@ class _SignupPageState extends State<SignupPage> {
                 margin: const EdgeInsets.all(8),
               ),
             );
-            // Navigate back to login after a short delay
+            // Store navigator reference before async gap
+            final navigator = Navigator.of(context);
             Future.delayed(const Duration(seconds: 1), () {
               if (mounted) {
-                Navigator.pop(context);
+                navigator.pop();
               }
             });
           }
