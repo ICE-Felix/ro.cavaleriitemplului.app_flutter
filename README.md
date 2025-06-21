@@ -6,9 +6,11 @@ An AI-powered parenting companion app built with Flutter, featuring clean archit
 
 ### 🎬 Intro Experience
 - **Animated Splash Screen** - Beautiful brand introduction with logo animation
-- **Network Connectivity Check** - Ensures app connectivity before proceeding
+- **Robust Network Connectivity Check** - Dual-layer internet validation with DNS lookup verification
+- **Real Internet Connection Testing** - Goes beyond device connectivity to ensure actual internet access
 - **Smooth Transitions** - Light to dark background animation with logo fade-in
-- **Error Handling** - Graceful offline experience with retry functionality
+- **Smart Error Handling** - Graceful offline experience with detailed error messaging and retry functionality
+- **Comprehensive Debug Logging** - Detailed network connectivity debugging for troubleshooting
 
 ### 🔐 Authentication System
 - **User Registration** - Create new accounts with email validation

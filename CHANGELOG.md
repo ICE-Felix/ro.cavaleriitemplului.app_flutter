@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2024-12-20
+
+### Fixed
+- **Robust Network Connectivity Checking** - Enhanced network detection to perform actual internet connectivity tests
+- **Real Internet Connection Validation** - Added DNS lookup verification to ensure genuine internet access
+- **Improved Network Error Handling** - Better detection of offline scenarios with comprehensive logging
+- **Fixed Animated Background Widget** - Resolved Positioned widget placement issue inside Stack container
+- **Enhanced Debug Logging** - Added detailed network connectivity debugging for better troubleshooting
+
+### Technical Improvements
+- Implemented dual-layer network checking: device connectivity + actual internet access
+- Added DNS lookup to google.com for reliable internet connection verification
+- Fixed Flutter widget tree structure for proper rendering
+- Enhanced error reporting with specific network failure reasons
+- Improved user experience with accurate offline detection
+
 ## [1.1.0] - 2024-12-20
 
 ### Added

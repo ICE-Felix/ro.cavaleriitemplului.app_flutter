@@ -95,33 +95,35 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
     return AnimatedBuilder(
       animation: Listenable.merge([_logoController, _backgroundController]),
       builder: (context, child) {
-        return Container(
-          decoration: BoxDecoration(
-            color: _backgroundAnimation.value ?? AppColors.lightBackground,
-          ),
-          child: Positioned(
-            left: 0,
-            right: 0,
-            top: MediaQuery.of(context).size.height * 0.15,
-            child: Opacity(
-              opacity: _logoOpacityAnimation.value,
-              child: Center(child: _buildLogo()),
+        return Stack(
+          children: [
+            // Background container
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                color: _backgroundAnimation.value ?? AppColors.lightBackground,
+              ),
             ),
-          ),
+            // Logo positioned in upper area
+            Center(
+              child: Opacity(
+                opacity: _logoOpacityAnimation.value,
+                child: Center(child: _buildLogo()),
+              ),
+            ),
+          ],
         );
       },
     );
   }
 
   Widget _buildLogo() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Image.asset(
-        'assets/images/logo/logo.png',
-        width: 450,
-        height: 200,
-        fit: BoxFit.contain,
-      ),
+    return Image.asset(
+      'assets/images/logo/logo.png',
+      width: 450,
+      height: 200,
+      fit: BoxFit.contain,
     );
   }
 }

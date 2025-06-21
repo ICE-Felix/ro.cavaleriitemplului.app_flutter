@@ -30,6 +30,10 @@ class IntroBloc extends Bloc<IntroEvent, IntroState> {
   ) async {
     emit(IntroLoading());
 
+    if (kDebugMode) {
+      print('🚀 Intro started - checking network connection...');
+    }
+
     // Add a small delay to show loading state
     await Future.delayed(const Duration(milliseconds: 500));
 
@@ -42,21 +46,46 @@ class IntroBloc extends Bloc<IntroEvent, IntroState> {
     Emitter<IntroState> emit,
   ) async {
     try {
+      if (kDebugMode) {
+        print('🌐 Checking network connection...');
+      }
+
       final intro = await checkNetworkUseCase(NoParams());
 
+      if (kDebugMode) {
+        print('🌐 Network check result: ${intro.isNetworkConnected}');
+      }
+
       if (!intro.isNetworkConnected) {
-        emit(IntroNetworkError(intro.errorMessage ?? 'Network error'));
+        if (kDebugMode) {
+          print('❌ No network connection detected');
+        }
+        emit(
+          IntroNetworkError(
+            intro.errorMessage ??
+                'No internet connection. Please check your network settings and try again.',
+          ),
+        );
         return;
+      }
+
+      if (kDebugMode) {
+        print('✅ Network connected - starting animation');
       }
 
       // If network is connected, start the animation
       emit(IntroAnimating(isNetworkConnected: intro.isNetworkConnected));
 
-      // Auto-complete animation after 3 seconds
-      await Future.delayed(const Duration(seconds: 5));
-      add(IntroAnimationCompleted());
+      // Remove the automatic completion - let the animation widget handle it
     } catch (e) {
-      emit(IntroNetworkError('Failed to check network: ${e.toString()}'));
+      if (kDebugMode) {
+        print('❌ Network check failed: $e');
+      }
+      emit(
+        IntroNetworkError(
+          'Failed to check network connection. Please try again.',
+        ),
+      );
     }
   }
 
@@ -65,9 +94,21 @@ class IntroBloc extends Bloc<IntroEvent, IntroState> {
     Emitter<IntroState> emit,
   ) async {
     try {
+      if (kDebugMode) {
+        print('🎬 Animation completed - completing intro...');
+      }
+
       await completeIntroUseCase(NoParams());
+
+      if (kDebugMode) {
+        print('✅ Intro completed - navigating to auth');
+      }
+
       emit(IntroNavigateToAuth());
     } catch (e) {
+      if (kDebugMode) {
+        print('❌ Failed to complete intro: $e');
+      }
       emit(IntroNetworkError('Failed to complete intro: ${e.toString()}'));
     }
   }
