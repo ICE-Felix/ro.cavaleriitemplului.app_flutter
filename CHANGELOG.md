@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2024-12-20
+
+### Added
+- **News Feature** - Complete news reading functionality with article browsing and search
+- **Article Bookmarking** - Save and manage favorite articles with persistent storage
+- **News Categories** - Browse news by different categories and topics
+- **Article Search** - Search through news articles with keyword filtering
+- **Saved Articles Page** - Dedicated page to view and manage bookmarked articles
+- **Database Integration** - SQLite database helper for local data persistence
+- **Custom Top Bar Widget** - Reusable top navigation bar component
+- **App Initializer** - Centralized app initialization and routing logic
+- **Authentication Persistence** - Check and maintain user authentication state
+- **Logo Assets** - Added brand logo assets including line variant
+
+### Enhanced
+- **Authentication System** - Improved auth flow with persistent login state
+- **Local Data Storage** - Added local data sources for offline functionality
+- **Service Locator** - Enhanced dependency injection with new services
+- **BLoC Architecture** - Extended state management for news and bookmarks
+- **Repository Pattern** - Implemented repositories for news and bookmark data
+- **Use Cases** - Added comprehensive use cases for all new features
+
+### Technical Improvements
+- Clean architecture maintained across all new features
+- Mock data sources for development and testing
+- Comprehensive error handling for network and database operations
+- Proper separation of concerns with data, domain, and presentation layers
+- Enhanced type safety and null handling throughout the codebase
+
+### Dependencies Added
+- SQLite support for local database operations
+- Enhanced network connectivity handling
+- Improved state management patterns
+
 ## [1.1.1] - 2024-12-20
 
 ### Fixed

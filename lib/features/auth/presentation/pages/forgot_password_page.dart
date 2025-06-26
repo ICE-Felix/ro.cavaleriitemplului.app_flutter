@@ -27,7 +27,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   void _resetPassword() {
     if (_formKey.currentState!.validate()) {
-      // Send forgot password request to the AuthBloc
       context.read<AuthBloc>().add(
         ForgotPasswordRequested(email: _emailController.text.trim()),
       );
@@ -40,11 +39,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       appBar: AppBar(title: const Text('Reset Password')),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          // Clear any existing snackbars
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
           if (state is AuthError) {
-            // Show error message
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(
@@ -76,12 +73,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
             );
           } else if (state is AuthPasswordResetSent) {
-            // Update UI to show success
             setState(() {
               _emailSent = true;
             });
 
-            // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(
@@ -131,7 +126,40 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   List<Widget> _buildFormContent(BuildContext context) {
     return [
-      const Icon(FontAwesomeIcons.key, color: AppColors.primary, size: 64),
+      Container(
+        height: 100,
+        width: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.asset(
+            'assets/images/logo/logo.png',
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  FontAwesomeIcons.key,
+                  color: AppColors.primary,
+                  size: 48,
+                ),
+              );
+            },
+          ),
+        ),
+      ),
       const SizedBox(height: 32),
       Text(
         'Forgot Password?',

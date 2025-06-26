@@ -4,6 +4,14 @@ An AI-powered parenting companion app built with Flutter, featuring clean archit
 
 ## 🚀 Features
 
+### 📰 News & Content
+- **News Feed** - Browse latest parenting and family-related articles
+- **Article Bookmarking** - Save favorite articles for later reading
+- **Category Browsing** - Filter news by different topics and categories
+- **Article Search** - Find specific articles with keyword search functionality
+- **Saved Articles** - Dedicated page to manage bookmarked content
+- **Offline Reading** - Access saved articles even without internet connection
+
 ### 🎬 Intro Experience
 - **Animated Splash Screen** - Beautiful brand introduction with logo animation
 - **Robust Network Connectivity Check** - Dual-layer internet validation with DNS lookup verification
@@ -16,13 +24,21 @@ An AI-powered parenting companion app built with Flutter, featuring clean archit
 - **User Registration** - Create new accounts with email validation
 - **Secure Login** - User authentication with Supabase backend
 - **Password Recovery** - Forgot password functionality
+- **Persistent Sessions** - Automatic login state management
 - **Form Validation** - Comprehensive input validation and error handling
+
+### 💾 Data Management
+- **Local Database** - SQLite integration for offline data storage
+- **Data Synchronization** - Seamless sync between local and remote data
+- **Bookmark Management** - Persistent storage of user preferences
+- **Offline Functionality** - Core features available without internet
 
 ### 🎨 Design & Theme
 - **Modern UI** - Clean, professional interface design
 - **Brand Colors** - Light (#F9F9F9) and dark (#4D217B) theme support
 - **Custom Components** - Reusable buttons, text fields, and widgets
 - **Responsive Design** - Optimized for iOS and Android devices
+- **Custom Top Bar** - Consistent navigation across the app
 
 ## 🏗️ Architecture
 
@@ -32,19 +48,26 @@ This app follows **Clean Architecture** principles with clear separation of conc
 lib/
 ├── core/                 # Shared utilities and constants
 │   ├── constants/        # App constants
+│   ├── database/         # Database helper and utilities
 │   ├── error/           # Error handling
-│   ├── network/         # Network utilities
+│   ├── network/         # Network utilities (Dio, Supabase)
 │   ├── style/           # App themes and colors
-│   └── usecases/        # Base use case classes
+│   ├── usecases/        # Base use case classes
+│   └── widgets/         # Shared UI components
 ├── features/            # Feature modules
 │   ├── intro/           # Intro/splash feature
 │   │   ├── data/        # Data sources and repositories
 │   │   ├── domain/      # Entities, repositories, use cases
 │   │   └── presentation/ # BLoC, pages, widgets
-│   └── auth/            # Authentication feature
+│   ├── auth/            # Authentication feature
+│   │   ├── data/        # Data sources and repositories
+│   │   ├── domain/      # Entities, repositories, use cases
+│   │   └── presentation/ # BLoC, pages, widgets
+│   └── news/            # News and content feature
 │       ├── data/        # Data sources and repositories
 │       ├── domain/      # Entities, repositories, use cases
 │       └── presentation/ # BLoC, pages, widgets
+├── app_initializer.dart # App initialization and routing
 └── main.dart            # App entry point
 ```
 
@@ -101,9 +124,11 @@ dependencies:
 
 ## 🎯 App Flow
 
-1. **Intro Screen** - Animated logo with network check
-2. **Authentication** - Login or create account
-3. **Main App** - (Coming soon)
+1. **Intro Screen** - Animated logo with network connectivity check
+2. **Authentication** - Login or create account with persistent sessions
+3. **News Feed** - Browse articles, search content, and manage bookmarks
+4. **Article Details** - Read full articles with bookmark functionality
+5. **Saved Articles** - Access bookmarked content offline
 
 ## 🔧 Development
 

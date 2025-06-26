@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
+import 'package:supabase_flutter/supabase_flutter.dart'
+    as supabase_flutter
+    hide AuthException;
 
 import '../error/exceptions.dart';
 
@@ -106,4 +109,14 @@ class SupabaseAuthClient {
       throw AuthException(message: e.toString());
     }
   }
+}
+
+/// General Supabase client for database operations
+class SupabaseClient {
+  static final SupabaseClient _instance = SupabaseClient._internal();
+  factory SupabaseClient() => _instance;
+  SupabaseClient._internal();
+
+  /// Access to the underlying Supabase client
+  supabase_flutter.SupabaseClient get client => Supabase.instance.client;
 }

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'app_initializer.dart';
 import 'core/service_locator.dart';
 import 'core/style/app_theme.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/intro/presentation/bloc/intro_bloc.dart';
-import 'features/intro/presentation/pages/intro_page.dart';
+import 'features/news/presentation/bloc/news_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +15,7 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   // Initialize dependency injection
   await initServiceLocator();
+
   runApp(const MyApp());
 }
 
@@ -26,13 +28,14 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => sl<AuthBloc>()),
         BlocProvider(create: (context) => sl<IntroBloc>()),
+        BlocProvider(create: (context) => sl<NewsBloc>()),
       ],
       child: MaterialApp(
         title: 'Mommy HAI',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
-        home: const IntroPage(),
+        home: const AppInitializer(),
       ),
     );
   }
