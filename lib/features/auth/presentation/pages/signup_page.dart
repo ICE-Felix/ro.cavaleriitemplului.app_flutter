@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../core/style/app_colors.dart';
+import '../../../news/presentation/pages/news_page.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
@@ -107,11 +108,14 @@ class _SignupPageState extends State<SignupPage> {
                 margin: const EdgeInsets.all(8),
               ),
             );
-            // Store navigator reference before async gap
-            final navigator = Navigator.of(context);
+
+            // Navigate to news page after successful signup
             Future.delayed(const Duration(seconds: 1), () {
               if (mounted) {
-                navigator.pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NewsPage()),
+                );
               }
             });
           }
@@ -126,10 +130,41 @@ class _SignupPageState extends State<SignupPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(
-                      FontAwesomeIcons.userPlus,
-                      color: AppColors.primary,
-                      size: 64,
+                    // Logo instead of user icon
+                    Container(
+                      height: 100,
+                      width: 100,
+                      margin: const EdgeInsets.only(top: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.2),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.asset(
+                          'assets/images/logo/logo.png',
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Icon(
+                                FontAwesomeIcons.userPlus,
+                                color: AppColors.primary,
+                                size: 48,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 32),
                     Text(

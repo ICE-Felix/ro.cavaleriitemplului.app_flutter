@@ -7,4 +7,9 @@ abstract class AuthRepository {
   Future<UserEntity> getProfile();
   Future<bool> isAuthenticated();
   Future<void> resetPassword(String email);
+
+  // Persistence methods
+  Future<UserEntity?> getCachedUser();
+  Future<void> cacheUser(UserEntity user);
+  Future<void> clearCachedUser();
 }

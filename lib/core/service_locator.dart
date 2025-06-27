@@ -1,15 +1,19 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'database/database_helper.dart';
 import 'network/dio_client.dart';
 import 'network/network_info.dart';
 import 'network/supabase_client.dart';
 import '../features/auth/data/datasources/auth_remote_data_source.dart';
+import '../features/auth/data/datasources/auth_local_data_source.dart';
 import '../features/auth/data/repositories/auth_repository_impl.dart';
 import '../features/auth/domain/repositories/auth_repository.dart';
 import '../features/auth/domain/usecases/login_usecase.dart';
 import '../features/auth/domain/usecases/register_usecase.dart';
 import '../features/auth/domain/usecases/forgot_password_usecase.dart';
+import '../features/auth/domain/usecases/check_auth_status_usecase.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
 // Intro feature imports
 import '../features/intro/data/datasources/intro_local_data_source.dart';
@@ -18,6 +22,20 @@ import '../features/intro/domain/repositories/intro_repository.dart';
 import '../features/intro/domain/usecases/check_network_usecase.dart';
 import '../features/intro/domain/usecases/complete_intro_usecase.dart';
 import '../features/intro/presentation/bloc/intro_bloc.dart';
+// News feature imports
+import '../features/news/data/datasources/news_remote_data_source.dart';
+import '../features/news/data/repositories/news_repository_impl.dart';
+import '../features/news/domain/repositories/news_repository.dart';
+import '../features/news/domain/usecases/get_news_usecase.dart';
+import '../features/news/domain/usecases/search_news_usecase.dart';
+import '../features/news/domain/usecases/get_categories_usecase.dart';
+import '../features/news/presentation/bloc/news_bloc.dart';
+// Bookmark feature imports
+import '../features/news/data/datasources/bookmark_local_data_source.dart';
+import '../features/news/data/repositories/bookmark_repository_impl.dart';
+import '../features/news/domain/repositories/bookmark_repository.dart';
+import '../features/news/domain/usecases/toggle_bookmark_usecase.dart';
+import '../features/news/domain/usecases/check_bookmark_usecase.dart';
 
 final sl = GetIt.instance;
 
@@ -25,9 +43,14 @@ Future<void> initServiceLocator() async {
   //! External dependencies (register first)
   sl.registerLazySingleton(() => Connectivity());
 
+  // SharedPreferences
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
+
   //! Core
   sl.registerLazySingleton(() => DioClient());
   sl.registerLazySingleton(() => SupabaseAuthClient());
+  sl.registerLazySingleton(() => DatabaseHelper.instance);
   sl.registerLazySingleton<NetworkInfo>(
     () => NetworkInfoImpl(sl<Connectivity>()),
   );
@@ -40,15 +63,31 @@ Future<void> initServiceLocator() async {
     () => AuthRemoteDataSourceImpl(supabaseClient: sl<SupabaseAuthClient>()),
   );
 
+  // Auth local data source
+  sl.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(sharedPreferences: sl<SharedPreferences>()),
+  );
+
   // Intro data sources
   sl.registerLazySingleton<IntroLocalDataSource>(
     () => IntroLocalDataSourceImpl(),
+  );
+
+  // News data sources
+  sl.registerLazySingleton<NewsRemoteDataSource>(
+    () => NewsRemoteDataSourceImpl(),
+  );
+
+  // Bookmark data sources
+  sl.registerLazySingleton<BookmarkLocalDataSource>(
+    () => BookmarkLocalDataSourceImpl(databaseHelper: sl<DatabaseHelper>()),
   );
 
   //! Repositories
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       remoteDataSource: sl<AuthRemoteDataSource>(),
+      localDataSource: sl<AuthLocalDataSource>(),
       networkInfo: sl<NetworkInfo>(),
     ),
   );
@@ -61,6 +100,20 @@ Future<void> initServiceLocator() async {
     ),
   );
 
+  // News repository
+  sl.registerLazySingleton<NewsRepository>(
+    () => NewsRepositoryImpl(
+      remoteDataSource: sl<NewsRemoteDataSource>(),
+      networkInfo: sl<NetworkInfo>(),
+    ),
+  );
+
+  // Bookmark repository
+  sl.registerLazySingleton<BookmarkRepository>(
+    () =>
+        BookmarkRepositoryImpl(localDataSource: sl<BookmarkLocalDataSource>()),
+  );
+
   //! Use cases
   sl.registerLazySingleton(
     () => LoginUseCase(repository: sl<AuthRepository>()),
@@ -71,6 +124,12 @@ Future<void> initServiceLocator() async {
   sl.registerLazySingleton(
     () => ForgotPasswordUseCase(repository: sl<AuthRepository>()),
   );
+  sl.registerLazySingleton(
+    () => CheckAuthStatusUseCase(repository: sl<AuthRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => LogoutUseCase(repository: sl<AuthRepository>()),
+  );
 
   // Intro use cases
   sl.registerLazySingleton(
@@ -80,12 +139,33 @@ Future<void> initServiceLocator() async {
     () => CompleteIntroUseCase(repository: sl<IntroRepository>()),
   );
 
+  // News use cases
+  sl.registerLazySingleton(
+    () => GetNewsUseCase(repository: sl<NewsRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => SearchNewsUseCase(repository: sl<NewsRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => GetCategoriesUseCase(repository: sl<NewsRepository>()),
+  );
+
+  // Bookmark use cases
+  sl.registerLazySingleton(
+    () => ToggleBookmarkUseCase(sl<BookmarkRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => CheckBookmarkUseCase(sl<BookmarkRepository>()),
+  );
+
   //! BLoCs
   sl.registerFactory(
     () => AuthBloc(
       loginUseCase: sl<LoginUseCase>(),
       registerUseCase: sl<RegisterUseCase>(),
       forgotPasswordUseCase: sl<ForgotPasswordUseCase>(),
+      checkAuthStatusUseCase: sl<CheckAuthStatusUseCase>(),
+      logoutUseCase: sl<LogoutUseCase>(),
     ),
   );
 
@@ -94,6 +174,15 @@ Future<void> initServiceLocator() async {
     () => IntroBloc(
       checkNetworkUseCase: sl<CheckNetworkUseCase>(),
       completeIntroUseCase: sl<CompleteIntroUseCase>(),
+    ),
+  );
+
+  // News BLoC
+  sl.registerFactory(
+    () => NewsBloc(
+      getNewsUseCase: sl<GetNewsUseCase>(),
+      searchNewsUseCase: sl<SearchNewsUseCase>(),
+      getCategoriesUseCase: sl<GetCategoriesUseCase>(),
     ),
   );
 }

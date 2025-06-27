@@ -2,10 +2,12 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
 import '../../domain/usecases/forgot_password_usecase.dart';
+import '../../domain/usecases/check_auth_status_usecase.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -14,16 +16,39 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
   final RegisterUseCase registerUseCase;
   final ForgotPasswordUseCase forgotPasswordUseCase;
+  final CheckAuthStatusUseCase checkAuthStatusUseCase;
+  final LogoutUseCase logoutUseCase;
 
   AuthBloc({
     required this.loginUseCase,
     required this.registerUseCase,
     required this.forgotPasswordUseCase,
+    required this.checkAuthStatusUseCase,
+    required this.logoutUseCase,
   }) : super(AuthInitial()) {
+    on<CheckAuthStatusRequested>(_onCheckAuthStatusRequested);
     on<LoginRequested>(_onLoginRequested);
     on<LogoutRequested>(_onLogoutRequested);
     on<RegisterRequested>(_onRegisterRequested);
     on<ForgotPasswordRequested>(_onForgotPasswordRequested);
+  }
+
+  Future<void> _onCheckAuthStatusRequested(
+    CheckAuthStatusRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      final user = await checkAuthStatusUseCase(NoParams());
+      if (user != null) {
+        emit(AuthAuthenticated(user));
+      } else {
+        emit(AuthUnauthenticated());
+      }
+    } catch (e) {
+      emit(AuthUnauthenticated());
+    }
   }
 
   Future<void> _onLoginRequested(
@@ -50,8 +75,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
 
-    // Implement logout logic when we have the use case
-    emit(AuthInitial());
+    try {
+      await logoutUseCase(NoParams());
+      emit(AuthUnauthenticated());
+    } catch (e) {
+      // Even if logout fails, we should consider the user logged out locally
+      emit(AuthUnauthenticated());
+    }
   }
 
   Future<void> _onRegisterRequested(
