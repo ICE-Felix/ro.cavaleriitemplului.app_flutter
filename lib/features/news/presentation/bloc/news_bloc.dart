@@ -7,6 +7,7 @@ import '../../domain/usecases/get_news_usecase.dart';
 import '../../domain/usecases/search_news_usecase.dart';
 import '../../domain/usecases/get_categories_usecase.dart';
 import '../../data/models/category_model.dart';
+import '../../data/models/pagination_model.dart';
 
 part 'news_event.dart';
 part 'news_state.dart';
@@ -45,14 +46,14 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     try {
       _currentCategoryId = event.category;
 
-      final news = await getNewsUseCase(
+      final response = await getNewsUseCase(
         GetNewsParams(page: event.page, category: event.category),
       );
 
       if (event.refresh || event.page == 1) {
-        _currentNews = news;
+        _currentNews = response.news.cast<NewsEntity>();
       } else {
-        _currentNews.addAll(news);
+        _currentNews.addAll(response.news.cast<NewsEntity>());
       }
 
       _currentPage = event.page;
@@ -61,7 +62,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         NewsLoaded(
           news: List.from(_currentNews),
           categories: _categories,
-          hasMore: news.length >= 20, // Assume no more if less than limit
+          hasMore: response.pagination.hasNext,
           currentCategoryId: _currentCategoryId,
         ),
       );
@@ -78,15 +79,15 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     emit(NewsLoading());
 
     try {
-      final results = await searchNewsUseCase(
+      final response = await searchNewsUseCase(
         SearchNewsParams(query: event.query, page: event.page),
       );
 
       emit(
         NewsSearchResults(
-          results: results,
+          results: response.news.cast<NewsEntity>(),
           query: event.query,
-          hasMore: results.length >= 20,
+          hasMore: response.pagination.hasNext,
         ),
       );
     } catch (e) {

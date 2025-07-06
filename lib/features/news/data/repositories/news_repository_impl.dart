@@ -4,6 +4,7 @@ import '../../domain/entities/news_entity.dart';
 import '../../domain/repositories/news_repository.dart';
 import '../datasources/news_remote_data_source.dart';
 import '../models/category_model.dart';
+import '../models/news_response_model.dart';
 
 class NewsRepositoryImpl implements NewsRepository {
   final NewsRemoteDataSource remoteDataSource;
@@ -15,7 +16,7 @@ class NewsRepositoryImpl implements NewsRepository {
   });
 
   @override
-  Future<List<NewsEntity>> getNews({int page = 1, int limit = 20}) async {
+  Future<NewsResponseModel> getNews({int page = 1, int limit = 5}) async {
     if (await networkInfo.isConnected) {
       try {
         return await remoteDataSource.getNews(page: page, limit: limit);
@@ -28,10 +29,10 @@ class NewsRepositoryImpl implements NewsRepository {
   }
 
   @override
-  Future<List<NewsEntity>> getNewsByCategory(
+  Future<NewsResponseModel> getNewsByCategory(
     String category, {
     int page = 1,
-    int limit = 20,
+    int limit = 5,
   }) async {
     if (await networkInfo.isConnected) {
       try {
@@ -49,10 +50,10 @@ class NewsRepositoryImpl implements NewsRepository {
   }
 
   @override
-  Future<List<NewsEntity>> searchNews(
+  Future<NewsResponseModel> searchNews(
     String query, {
     int page = 1,
-    int limit = 20,
+    int limit = 5,
   }) async {
     if (await networkInfo.isConnected) {
       try {

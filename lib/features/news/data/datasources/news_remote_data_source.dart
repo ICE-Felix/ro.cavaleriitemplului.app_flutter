@@ -2,6 +2,7 @@ import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/supabase_client.dart';
 import '../models/news_model.dart';
 import '../models/category_model.dart';
+import '../models/news_response_model.dart';
 import 'news_mock_data_source.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'
     as supabase_flutter
@@ -11,16 +12,16 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 abstract class NewsRemoteDataSource {
-  Future<List<NewsModel>> getNews({int page = 1, int limit = 20});
-  Future<List<NewsModel>> getNewsByCategory(
+  Future<NewsResponseModel> getNews({int page = 1, int limit = 5});
+  Future<NewsResponseModel> getNewsByCategory(
     String category, {
     int page = 1,
-    int limit = 20,
+    int limit = 5,
   });
-  Future<List<NewsModel>> searchNews(
+  Future<NewsResponseModel> searchNews(
     String query, {
     int page = 1,
-    int limit = 20,
+    int limit = 5,
   });
   Future<NewsModel> getNewsById(String id);
   Future<List<CategoryModel>> getCategories();
@@ -35,7 +36,7 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
       _authClient = SupabaseAuthClient();
 
   @override
-  Future<List<NewsModel>> getNews({int page = 1, int limit = 20}) async {
+  Future<NewsResponseModel> getNews({int page = 1, int limit = 5}) async {
     try {
       // Check if user is authenticated
       if (!_authClient.isAuthenticated) {
@@ -82,14 +83,8 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
         );
       }
 
-      final Map<String, dynamic> data = responseData['data'];
-      final List<dynamic> newsData = data['data'] ?? [];
-
-      // Convert to NewsModel objects
-      final news =
-          newsData.map((newsJson) => NewsModel.fromJson(newsJson)).toList();
-
-      return news;
+      // Parse the complete response with pagination
+      return NewsResponseModel.fromJson(responseData);
     } catch (e) {
       if (e is AuthException || e is ServerException) rethrow;
       throw ServerException(message: e.toString());
@@ -97,10 +92,10 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
   }
 
   @override
-  Future<List<NewsModel>> getNewsByCategory(
+  Future<NewsResponseModel> getNewsByCategory(
     String category, {
     int page = 1,
-    int limit = 20,
+    int limit = 5,
   }) async {
     try {
       // Check if user is authenticated
@@ -152,14 +147,8 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
         );
       }
 
-      final Map<String, dynamic> data = responseData['data'];
-      final List<dynamic> newsData = data['data'] ?? [];
-
-      // Convert to NewsModel objects
-      final news =
-          newsData.map((newsJson) => NewsModel.fromJson(newsJson)).toList();
-
-      return news;
+      // Parse the complete response with pagination
+      return NewsResponseModel.fromJson(responseData);
     } catch (e) {
       if (e is AuthException || e is ServerException) rethrow;
       throw ServerException(message: e.toString());
@@ -167,10 +156,10 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
   }
 
   @override
-  Future<List<NewsModel>> searchNews(
+  Future<NewsResponseModel> searchNews(
     String query, {
     int page = 1,
-    int limit = 20,
+    int limit = 5,
   }) async {
     try {
       // Check if user is authenticated
@@ -222,14 +211,8 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
         );
       }
 
-      final Map<String, dynamic> data = responseData['data'];
-      final List<dynamic> newsData = data['data'] ?? [];
-
-      // Convert to NewsModel objects
-      final news =
-          newsData.map((newsJson) => NewsModel.fromJson(newsJson)).toList();
-
-      return news;
+      // Parse the complete response with pagination
+      return NewsResponseModel.fromJson(responseData);
     } catch (e) {
       if (e is AuthException || e is ServerException) rethrow;
       throw ServerException(message: e.toString());

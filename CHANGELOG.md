@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] - 2025-01-06
+
+### Fixed
+- **API Response Structure** - Updated NewsResponseModel to handle new API response format where data is directly in the 'data' array and pagination is under 'meta.pagination'
+- **Pagination Parsing** - Fixed pagination parsing to correctly extract hasNext and other pagination metadata from the new API structure
+
+### Enhanced
+- **News Pagination** - Increased default limit from 1 to 5 items per page for better user experience
+- **API Compatibility** - Ensured full compatibility with the updated news API endpoint structure
+
+### Technical Improvements
+- Updated NewsResponseModel.fromJson() to parse the new response structure
+- Modified toJson() method to match the new API format
+- Updated all default limit parameters across data sources, repositories, and use cases
+
 ## [1.3.0] - 2025-01-06
 
 ### Added

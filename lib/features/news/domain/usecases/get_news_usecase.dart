@@ -3,14 +3,15 @@ import 'package:equatable/equatable.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/news_entity.dart';
 import '../repositories/news_repository.dart';
+import '../../data/models/news_response_model.dart';
 
-class GetNewsUseCase extends UseCase<List<NewsEntity>, GetNewsParams> {
+class GetNewsUseCase extends UseCase<NewsResponseModel, GetNewsParams> {
   final NewsRepository repository;
 
   GetNewsUseCase({required this.repository});
 
   @override
-  Future<List<NewsEntity>> call(GetNewsParams params) async {
+  Future<NewsResponseModel> call(GetNewsParams params) async {
     if (params.category != null) {
       return await repository.getNewsByCategory(
         params.category!,
@@ -27,7 +28,7 @@ class GetNewsParams extends Equatable {
   final int limit;
   final String? category;
 
-  const GetNewsParams({this.page = 1, this.limit = 20, this.category});
+  const GetNewsParams({this.page = 1, this.limit = 5, this.category});
 
   @override
   List<Object?> get props => [page, limit, category];
