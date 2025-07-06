@@ -1,3 +1,12 @@
+import java.io.File
+import java.util.*
+
+val keystoreProperties =
+    Properties().apply {
+        var file = File("key.properties")
+        if (file.exists()) load(file.reader())
+    }
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -19,23 +28,24 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    val appVersionCode = (System.getenv()["NEW_BUILD_NUMBER"] ?: "1")?.toInt()
+
     signingConfigs {
         getByName("debug") {
             // Debug signing config (default)
         }
         
         create("release") {
-            if (System.getenv("CM_KEYSTORE_PATH") != null) {
-                storeFile = file(System.getenv("CM_KEYSTORE_PATH"))
-                storePassword = System.getenv("CM_KEYSTORE_PASSWORD")
-                keyAlias = System.getenv("CM_KEY_ALIAS")
-                keyPassword = System.getenv("CM_KEY_PASSWORD")
+            if (System.getenv()["CI"].toBoolean()) { // CI=true is exported by Codemagic
+                storeFile = file(System.getenv()["CM_KEYSTORE_PATH"])
+                storePassword = System.getenv()["CM_KEYSTORE_PASSWORD"]
+                keyAlias = System.getenv()["CM_KEY_ALIAS"]
+                keyPassword = System.getenv()["CM_KEY_PASSWORD"]
             } else {
-                // Fallback to debug signing for local development
-                storeFile = signingConfigs.getByName("debug").storeFile
-                storePassword = signingConfigs.getByName("debug").storePassword
-                keyAlias = signingConfigs.getByName("debug").keyAlias
-                keyPassword = signingConfigs.getByName("debug").keyPassword
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
             }
         }
     }
@@ -47,12 +57,12 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
+        versionCode = appVersionCode
         versionName = flutter.versionName
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             // Use proper release signing config
             signingConfig = signingConfigs.getByName("release")
             
@@ -67,7 +77,7 @@ android {
             )
         }
         
-        debug {
+        getByName("debug") {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
