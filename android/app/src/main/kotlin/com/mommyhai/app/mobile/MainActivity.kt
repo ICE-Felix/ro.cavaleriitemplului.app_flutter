@@ -1,4 +1,4 @@
-package com.mommyhai.app.new
+package com.mommyhai.app.mobile
 
 import io.flutter.embedding.android.FlutterActivity
 
