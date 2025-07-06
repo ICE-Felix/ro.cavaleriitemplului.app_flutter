@@ -29,7 +29,7 @@ class ToggleBookmarkUseCase implements UseCase<bool, ToggleBookmarkParams> {
 }
 
 class ToggleBookmarkParams {
-  final int newsId;
+  final String newsId;
   final String title;
   final String summary;
   final String imageUrl;

@@ -6,6 +6,7 @@ import '../../domain/entities/news_entity.dart';
 import '../../domain/usecases/get_news_usecase.dart';
 import '../../domain/usecases/search_news_usecase.dart';
 import '../../domain/usecases/get_categories_usecase.dart';
+import '../../data/models/category_model.dart';
 
 part 'news_event.dart';
 part 'news_state.dart';
@@ -17,8 +18,8 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
 
   List<NewsEntity> _currentNews = [];
   int _currentPage = 1;
-  String? _currentCategory;
-  List<String> _categories = [];
+  String? _currentCategoryId;
+  List<CategoryModel> _categories = [];
 
   NewsBloc({
     required this.getNewsUseCase,
@@ -42,7 +43,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     }
 
     try {
-      _currentCategory = event.category;
+      _currentCategoryId = event.category;
 
       final news = await getNewsUseCase(
         GetNewsParams(page: event.page, category: event.category),
@@ -61,7 +62,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
           news: List.from(_currentNews),
           categories: _categories,
           hasMore: news.length >= 20, // Assume no more if less than limit
-          currentCategory: _currentCategory,
+          currentCategoryId: _currentCategoryId,
         ),
       );
     } catch (e) {
@@ -120,7 +121,10 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       final currentState = state as NewsLoaded;
       if (currentState.hasMore) {
         add(
-          LoadNewsRequested(category: _currentCategory, page: _currentPage + 1),
+          LoadNewsRequested(
+            category: _currentCategoryId,
+            page: _currentPage + 1,
+          ),
         );
       }
     }

@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2025-01-06
+
+### Added
+- **Real API Integration** - Switched from mock data to actual Supabase API endpoints for news and categories
+- **Category API Support** - Fetch news categories dynamically from `/functions/v1/news_categories` endpoint
+- **News API Integration** - Implemented news fetching from `/functions/v1/news` endpoint with pagination, search, and category filtering
+- **Category Model** - New data model to handle category API response structure with ID, name, and timestamps
+- **UUID Support** - Updated news and bookmark systems to use string IDs instead of integers for API compatibility
+- **Category Filtering by ID** - News filtering now uses category UUIDs (`category_id` parameter) instead of names
+- **Dynamic Category Display** - Category chips now display real category names fetched from the API
+- **Enhanced Error Handling** - Improved error messages and fallback mechanisms for API failures
+
+### Enhanced
+- **Authentication Headers** - All API calls now properly include authentication tokens and required headers
+- **Network Request Structure** - Standardized HTTP GET requests with proper query parameters for pagination and filtering
+- **Category Management** - Categories are now fetched dynamically and stored as objects with full metadata
+- **Search Functionality** - Search now uses the real API with proper query parameter handling
+- **Database Schema** - Updated bookmark storage to use string IDs matching the API response format
+
+### Technical Improvements
+- **Type Safety** - Updated all ID references from `int` to `String` for UUID compatibility
+- **API Response Handling** - Proper parsing of nested API responses with success/error checking
+- **State Management** - Updated BLoC states to handle CategoryModel objects instead of strings
+- **Repository Pattern** - Enhanced repositories to work with real API endpoints
+- **Use Case Updates** - All use cases now work with the new API data structures
+- **Mock Data Fallback** - Graceful fallback to mock data when API calls fail
+
+### Fixed
+- **Category Filtering** - Fixed category filtering to use proper `category_id` parameter with UUID values
+- **Authentication Flow** - Ensured all API calls include proper authentication headers
+- **Data Consistency** - Resolved type mismatches between mock data and real API response formats
+- **Database Migration** - Updated local database schema to handle string-based news IDs
+
 ## [1.2.0] - 2024-12-20
 
 ### Added

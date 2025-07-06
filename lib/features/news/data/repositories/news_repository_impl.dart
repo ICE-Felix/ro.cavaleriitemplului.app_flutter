@@ -3,6 +3,7 @@ import '../../../../core/network/network_info.dart';
 import '../../domain/entities/news_entity.dart';
 import '../../domain/repositories/news_repository.dart';
 import '../datasources/news_remote_data_source.dart';
+import '../models/category_model.dart';
 
 class NewsRepositoryImpl implements NewsRepository {
   final NewsRemoteDataSource remoteDataSource;
@@ -69,7 +70,7 @@ class NewsRepositoryImpl implements NewsRepository {
   }
 
   @override
-  Future<NewsEntity> getNewsById(int id) async {
+  Future<NewsEntity> getNewsById(String id) async {
     if (await networkInfo.isConnected) {
       try {
         return await remoteDataSource.getNewsById(id);
@@ -82,7 +83,7 @@ class NewsRepositoryImpl implements NewsRepository {
   }
 
   @override
-  Future<List<String>> getCategories() async {
+  Future<List<CategoryModel>> getCategories() async {
     if (await networkInfo.isConnected) {
       try {
         return await remoteDataSource.getCategories();

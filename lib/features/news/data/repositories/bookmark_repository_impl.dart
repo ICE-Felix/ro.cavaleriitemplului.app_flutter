@@ -10,7 +10,7 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
 
   @override
   Future<void> addBookmark({
-    required int newsId,
+    required String newsId,
     required String title,
     required String summary,
     required String imageUrl,
@@ -31,12 +31,12 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
   }
 
   @override
-  Future<void> removeBookmark(int newsId) async {
+  Future<void> removeBookmark(String newsId) async {
     await localDataSource.removeBookmark(newsId);
   }
 
   @override
-  Future<bool> isBookmarked(int newsId) async {
+  Future<bool> isBookmarked(String newsId) async {
     return await localDataSource.isBookmarked(newsId);
   }
 
@@ -47,7 +47,7 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
   }
 
   @override
-  Future<BookmarkEntity?> getBookmark(int newsId) async {
+  Future<BookmarkEntity?> getBookmark(String newsId) async {
     return await localDataSource.getBookmark(newsId);
   }
 }

@@ -14,7 +14,7 @@ class BookmarkModel extends BookmarkEntity {
 
   factory BookmarkModel.fromMap(Map<String, dynamic> map) {
     return BookmarkModel(
-      newsId: map['news_id'] as int,
+      newsId: map['news_id'] as String,
       title: map['title'] as String,
       summary: map['summary'] as String,
       imageUrl: map['image_url'] as String,
@@ -41,7 +41,7 @@ class BookmarkModel extends BookmarkEntity {
   }
 
   factory BookmarkModel.fromNewsEntity({
-    required int newsId,
+    required String newsId,
     required String title,
     required String summary,
     required String imageUrl,

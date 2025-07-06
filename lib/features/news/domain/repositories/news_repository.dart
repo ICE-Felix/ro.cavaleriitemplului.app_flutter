@@ -1,4 +1,5 @@
 import '../entities/news_entity.dart';
+import '../../data/models/category_model.dart';
 
 abstract class NewsRepository {
   Future<List<NewsEntity>> getNews({int page = 1, int limit = 20});
@@ -12,6 +13,6 @@ abstract class NewsRepository {
     int page = 1,
     int limit = 20,
   });
-  Future<NewsEntity> getNewsById(int id);
-  Future<List<String>> getCategories();
+  Future<NewsEntity> getNewsById(String id);
+  Future<List<CategoryModel>> getCategories();
 }

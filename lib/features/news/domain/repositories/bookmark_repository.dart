@@ -2,7 +2,7 @@ import '../entities/bookmark_entity.dart';
 
 abstract class BookmarkRepository {
   Future<void> addBookmark({
-    required int newsId,
+    required String newsId,
     required String title,
     required String summary,
     required String imageUrl,
@@ -11,8 +11,8 @@ abstract class BookmarkRepository {
     required String source,
   });
 
-  Future<void> removeBookmark(int newsId);
-  Future<bool> isBookmarked(int newsId);
+  Future<void> removeBookmark(String newsId);
+  Future<bool> isBookmarked(String newsId);
   Future<List<BookmarkEntity>> getAllBookmarks();
-  Future<BookmarkEntity?> getBookmark(int newsId);
+  Future<BookmarkEntity?> getBookmark(String newsId);
 }

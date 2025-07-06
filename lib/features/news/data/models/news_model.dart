@@ -16,20 +16,54 @@ class NewsModel extends NewsEntity {
   });
 
   factory NewsModel.fromJson(Map<String, dynamic> json) {
+    // Handle both old format (mock data) and new API format
+    final content = json['body'] ?? json['content'] ?? '';
+    final summary = json['summary'] ?? _createSummary(content);
+    final tags = _parseTags(json['keywords'] ?? json['tags'] ?? '');
+
     return NewsModel(
-      id: json['id'] ?? 0,
+      id: json['id']?.toString() ?? '',
       title: json['title'] ?? '',
-      content: json['content'] ?? '',
-      summary: json['summary'] ?? '',
-      imageUrl: json['image_url'] ?? '',
-      author: json['author'] ?? '',
+      content: content,
+      summary: summary,
+      imageUrl: json['image_url'] ?? json['imageUrl'] ?? '',
+      author: json['partner_company_name'] ?? json['author'] ?? '',
       publishedAt:
-          DateTime.tryParse(json['published_at'] ?? '') ?? DateTime.now(),
-      category: json['category'] ?? '',
-      source: json['source'] ?? '',
-      views: json['views'] ?? 0,
-      tags: List<String>.from(json['tags'] ?? []),
+          DateTime.tryParse(json['created_at'] ?? json['published_at'] ?? '') ??
+          DateTime.now(),
+      category: json['news_category_title'] ?? json['category'] ?? '',
+      source: json['partner_company_name'] ?? json['source'] ?? '',
+      views: json['read_count'] ?? json['views'] ?? 0,
+      tags: tags,
     );
+  }
+
+  // Helper method to create summary from content
+  static String _createSummary(String content) {
+    if (content.isEmpty) return '';
+    // Take first 100 characters or until first sentence
+    final sentences = content.split(RegExp(r'[.!?]'));
+    if (sentences.isNotEmpty && sentences[0].length <= 100) {
+      return sentences[0].trim() + (sentences.length > 1 ? '.' : '');
+    }
+    return content.length <= 100
+        ? content
+        : content.substring(0, 100).trim() + '...';
+  }
+
+  // Helper method to parse keywords string into tags array
+  static List<String> _parseTags(dynamic tagsInput) {
+    if (tagsInput is List) {
+      return List<String>.from(tagsInput);
+    } else if (tagsInput is String) {
+      if (tagsInput.isEmpty) return [];
+      return tagsInput
+          .split(',')
+          .map((tag) => tag.trim())
+          .where((tag) => tag.isNotEmpty)
+          .toList();
+    }
+    return [];
   }
 
   Map<String, dynamic> toJson() {
