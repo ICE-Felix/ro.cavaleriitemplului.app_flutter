@@ -28,7 +28,7 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    val appVersionCode = (System.getenv()["NEW_BUILD_NUMBER"] ?: "1")?.toInt()
+    val appVersionCode = (System.getenv()["NEW_BUILD_NUMBER"] ?: flutter.versionCode.toString())?.toInt()
 
     signingConfigs {
         getByName("debug") {
