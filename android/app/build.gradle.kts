@@ -3,7 +3,7 @@ import java.util.*
 
 val keystoreProperties =
     Properties().apply {
-        var file = File("key.properties")
+        val file = File(rootProject.projectDir, "key.properties")
         if (file.exists()) load(file.reader())
     }
 
@@ -42,10 +42,11 @@ android {
                 keyAlias = System.getenv()["CM_KEY_ALIAS"]
                 keyPassword = System.getenv()["CM_KEY_PASSWORD"]
             } else {
-                storeFile = file(keystoreProperties.getProperty("storeFile"))
-                storePassword = keystoreProperties.getProperty("storePassword")
-                keyAlias = keystoreProperties.getProperty("keyAlias")
-                keyPassword = keystoreProperties.getProperty("keyPassword")
+                // Use debug keystore for initial upload - Google Play App Signing will handle production
+                storeFile = signingConfigs.getByName("debug").storeFile
+                storePassword = signingConfigs.getByName("debug").storePassword
+                keyAlias = signingConfigs.getByName("debug").keyAlias
+                keyPassword = signingConfigs.getByName("debug").keyPassword
             }
         }
     }
