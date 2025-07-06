@@ -37,16 +37,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     CheckAuthStatusRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
-
     try {
+      if (kDebugMode) {
+        print('🔍 AuthBloc: Checking auth status...');
+      }
+
+      emit(AuthLoading());
+
       final user = await checkAuthStatusUseCase(NoParams());
+
+      if (kDebugMode) {
+        print(
+          '🔍 AuthBloc: Auth check result - user: ${user != null ? 'authenticated' : 'not authenticated'}',
+        );
+      }
+
       if (user != null) {
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
       }
     } catch (e) {
+      if (kDebugMode) {
+        print('❌ AuthBloc: Auth check failed: $e');
+      }
       emit(AuthUnauthenticated());
     }
   }
@@ -55,15 +69,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LoginRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
-
     try {
+      if (kDebugMode) {
+        print('🔐 AuthBloc: Login requested for ${event.email}');
+      }
+
+      emit(AuthLoading());
+
       final user = await loginUseCase(
         LoginParams(email: event.email, password: event.password),
       );
 
+      if (kDebugMode) {
+        print('✅ AuthBloc: Login successful');
+      }
+
       emit(AuthAuthenticated(user));
     } catch (e) {
+      if (kDebugMode) {
+        print('❌ AuthBloc: Login failed: $e');
+      }
       final friendlyMessage = _getFriendlyErrorMessage(e.toString());
       emit(AuthError(friendlyMessage));
     }
@@ -73,12 +98,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
-
     try {
+      if (kDebugMode) {
+        print('🚪 AuthBloc: Logout requested');
+      }
+
+      emit(AuthLoading());
+
       await logoutUseCase(NoParams());
+
+      if (kDebugMode) {
+        print('✅ AuthBloc: Logout successful');
+      }
+
       emit(AuthUnauthenticated());
     } catch (e) {
+      if (kDebugMode) {
+        print('❌ AuthBloc: Logout failed: $e');
+      }
       // Even if logout fails, we should consider the user logged out locally
       emit(AuthUnauthenticated());
     }
@@ -88,9 +125,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     RegisterRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
-
     try {
+      if (kDebugMode) {
+        print('📝 AuthBloc: Register requested for ${event.email}');
+      }
+
+      emit(AuthLoading());
+
       // Use the register use case to create a user in Supabase
       final user = await registerUseCase(
         RegisterParams(
@@ -100,9 +141,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
 
+      if (kDebugMode) {
+        print('✅ AuthBloc: Registration successful');
+      }
+
       // Emit authenticated state with the user
       emit(AuthAuthenticated(user));
     } catch (e) {
+      if (kDebugMode) {
+        print('❌ AuthBloc: Registration failed: $e');
+      }
       final friendlyMessage = _getFriendlyErrorMessage(e.toString());
       emit(AuthError(friendlyMessage));
     }
@@ -112,18 +160,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     ForgotPasswordRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
-
     try {
+      if (kDebugMode) {
+        print('🔑 AuthBloc: Forgot password requested for ${event.email}');
+      }
+
+      emit(AuthLoading());
+
       await forgotPasswordUseCase(ForgotPasswordParams(email: event.email));
 
       // Add a slight delay to show loading state
       await Future.delayed(const Duration(milliseconds: 500));
 
+      if (kDebugMode) {
+        print('✅ AuthBloc: Password reset email sent');
+      }
+
       // We don't emit the authenticated state since the user is not authenticated yet,
       // they've just requested a password reset
       emit(AuthPasswordResetSent());
     } catch (e) {
+      if (kDebugMode) {
+        print('❌ AuthBloc: Forgot password failed: $e');
+      }
       final friendlyMessage = _getFriendlyErrorMessage(e.toString());
       emit(AuthError(friendlyMessage));
     }
@@ -131,6 +190,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   /// Converts technical error messages to user-friendly messages
   String _getFriendlyErrorMessage(String errorMsg) {
+    if (kDebugMode) {
+      print('🔍 AuthBloc: Processing error: $errorMsg');
+    }
+
     // Check for specific error patterns
     if (errorMsg.contains('invalid_credentials')) {
       return 'Invalid email or password. Please try again.';

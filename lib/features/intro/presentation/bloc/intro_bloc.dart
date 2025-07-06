@@ -28,17 +28,24 @@ class IntroBloc extends Bloc<IntroEvent, IntroState> {
     IntroStarted event,
     Emitter<IntroState> emit,
   ) async {
-    emit(IntroLoading());
+    try {
+      if (kDebugMode) {
+        print('🚀 Intro started - checking network connection...');
+      }
 
-    if (kDebugMode) {
-      print('🚀 Intro started - checking network connection...');
+      emit(IntroLoading());
+
+      // Add a small delay to show loading state
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Check network connection
+      add(IntroNetworkCheckRequested());
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ Intro start failed: $e');
+      }
+      emit(IntroNetworkError('Failed to start intro: ${e.toString()}'));
     }
-
-    // Add a small delay to show loading state
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    // Check network connection
-    add(IntroNetworkCheckRequested());
   }
 
   Future<void> _onIntroNetworkCheckRequested(
@@ -117,6 +124,16 @@ class IntroBloc extends Bloc<IntroEvent, IntroState> {
     IntroCompleted event,
     Emitter<IntroState> emit,
   ) async {
-    emit(IntroNavigateToAuth());
+    try {
+      if (kDebugMode) {
+        print('✅ Intro completed manually');
+      }
+      emit(IntroNavigateToAuth());
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ Manual intro completion failed: $e');
+      }
+      emit(IntroNetworkError('Failed to complete intro: ${e.toString()}'));
+    }
   }
 }
