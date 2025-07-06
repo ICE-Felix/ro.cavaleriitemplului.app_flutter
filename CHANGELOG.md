@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.2] - 2025-01-06
+
+### Fixed
+- **Intro Animation Flow** - Fixed intro sequence to always show logo fade-in animation with purple background transition on app startup
+- **App Navigation** - Corrected app flow to display intro animation before checking authentication status
+- **User Experience** - Restored beautiful intro sequence for all users, regardless of authentication status
+
+### Enhanced
+- **Intro Sequence** - Logo fade-in animation (1.5s) followed by background transition (2s) and 2-second pause
+- **Authentication Check** - Moved authentication check to occur after intro animation completes
+- **Navigation Logic** - Improved navigation flow: Intro → Auth Check → News/Login based on auth status
+
+### Technical Improvements
+- Updated AppInitializer to always show IntroPage first
+- Enhanced IntroPage with MultiBlocListener for proper auth state management
+- Fixed import statements and dependencies in intro feature
+
 ## [1.3.1] - 2025-01-06
 
 ### Fixed
