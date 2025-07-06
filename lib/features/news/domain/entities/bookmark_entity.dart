@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class BookmarkEntity extends Equatable {
-  final int newsId;
+  final String newsId;
   final String title;
   final String summary;
   final String imageUrl;

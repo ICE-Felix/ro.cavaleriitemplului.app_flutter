@@ -10,6 +10,7 @@ import '../bloc/news_bloc.dart';
 import '../widgets/news_item_widget.dart';
 import 'news_detail_page.dart';
 import 'saved_articles_page.dart';
+import '../../data/models/category_model.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -22,9 +23,6 @@ class _NewsPageState extends State<NewsPage> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   String? _selectedCategory;
-
-  // Define the categories as shown in the image
-  final List<String> _predefinedCategories = ['General', 'Oferte Speciale'];
 
   @override
   void initState() {
@@ -133,29 +131,45 @@ class _NewsPageState extends State<NewsPage> {
         body: Column(
           children: [
             // Categories section
-            Container(
-              height: 56,
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _predefinedCategories.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return _buildCategoryChip(
-                      context,
-                      'All',
-                      _selectedCategory == null,
-                    );
-                  }
-                  final category = _predefinedCategories[index - 1];
-                  return _buildCategoryChip(
-                    context,
-                    category,
-                    _selectedCategory == category,
-                  );
-                },
-              ),
+            BlocBuilder<NewsBloc, NewsState>(
+              buildWhen:
+                  (previous, current) =>
+                      current is NewsLoaded &&
+                      (previous is! NewsLoaded ||
+                          previous.categories != current.categories),
+              builder: (context, state) {
+                List<CategoryModel> categories = [];
+                if (state is NewsLoaded) {
+                  categories = state.categories;
+                }
+
+                return Container(
+                  height: 56,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: categories.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return _buildCategoryChip(
+                          context,
+                          'All',
+                          null,
+                          _selectedCategory == null,
+                        );
+                      }
+                      final category = categories[index - 1];
+                      return _buildCategoryChip(
+                        context,
+                        category.name,
+                        category.id,
+                        _selectedCategory == category.id,
+                      );
+                    },
+                  ),
+                );
+              },
             ),
 
             // News content
@@ -367,13 +381,15 @@ class _NewsPageState extends State<NewsPage> {
 
   Widget _buildCategoryChip(
     BuildContext context,
-    String category,
+    String categoryName,
+    String? categoryId,
     bool isSelected,
   ) {
     final theme = Theme.of(context);
 
     return GestureDetector(
-      onTap: () => _onCategorySelected(category == 'All' ? null : category),
+      onTap:
+          () => _onCategorySelected(categoryName == 'All' ? null : categoryId),
       child: Container(
         margin: const EdgeInsets.only(right: 12),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -394,7 +410,7 @@ class _NewsPageState extends State<NewsPage> {
           ],
         ),
         child: Text(
-          category,
+          categoryName,
           style: theme.textTheme.labelMedium?.copyWith(
             color: isSelected ? Colors.white : Colors.grey[700],
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,

@@ -12,31 +12,31 @@ class NewsLoading extends NewsState {}
 
 class NewsLoaded extends NewsState {
   final List<NewsEntity> news;
-  final List<String> categories;
+  final List<CategoryModel> categories;
   final bool hasMore;
-  final String? currentCategory;
+  final String? currentCategoryId;
 
   NewsLoaded({
     required this.news,
     this.categories = const [],
     this.hasMore = true,
-    this.currentCategory,
+    this.currentCategoryId,
   });
 
   @override
-  List<Object?> get props => [news, categories, hasMore, currentCategory];
+  List<Object?> get props => [news, categories, hasMore, currentCategoryId];
 
   NewsLoaded copyWith({
     List<NewsEntity>? news,
-    List<String>? categories,
+    List<CategoryModel>? categories,
     bool? hasMore,
-    String? currentCategory,
+    String? currentCategoryId,
   }) {
     return NewsLoaded(
       news: news ?? this.news,
       categories: categories ?? this.categories,
       hasMore: hasMore ?? this.hasMore,
-      currentCategory: currentCategory ?? this.currentCategory,
+      currentCategoryId: currentCategoryId ?? this.currentCategoryId,
     );
   }
 }

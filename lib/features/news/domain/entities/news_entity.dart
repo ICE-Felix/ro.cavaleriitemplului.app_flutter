@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class NewsEntity extends Equatable {
-  final int id;
+  final String id; // Changed from int to String for UUID support
   final String title;
   final String content;
   final String summary;

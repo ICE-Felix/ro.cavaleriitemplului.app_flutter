@@ -2,6 +2,78 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.2] - 2025-01-06
+
+### Fixed
+- **Intro Animation Flow** - Fixed intro sequence to always show logo fade-in animation with purple background transition on app startup
+- **App Navigation** - Corrected app flow to display intro animation before checking authentication status
+- **User Experience** - Restored beautiful intro sequence for all users, regardless of authentication status
+
+### Enhanced
+- **Intro Sequence** - Logo fade-in animation (1.5s) followed by background transition (2s) and 2-second pause
+- **Authentication Check** - Moved authentication check to occur after intro animation completes
+- **Navigation Logic** - Improved navigation flow: Intro → Auth Check → News/Login based on auth status
+
+### Technical Improvements
+- Updated AppInitializer to always show IntroPage first
+- Enhanced IntroPage with MultiBlocListener for proper auth state management
+- Fixed import statements and dependencies in intro feature
+
+## [1.3.1] - 2025-01-06
+
+### Fixed
+- **API Response Structure** - Updated NewsResponseModel to handle new API response format where data is directly in the 'data' array and pagination is under 'meta.pagination'
+- **Pagination Parsing** - Fixed pagination parsing to correctly extract hasNext and other pagination metadata from the new API structure
+
+### Enhanced
+- **News Pagination** - Increased default limit from 1 to 5 items per page for better user experience
+- **API Compatibility** - Ensured full compatibility with the updated news API endpoint structure
+- **Search Functionality** - Confirmed search feature is fully functional with real API integration using '/functions/v1/news?search=' endpoint
+
+### Verified Features
+- **Real-time Search** - Search input triggers immediate API calls with search parameter
+- **Search Results Display** - Proper UI state management for search results with pagination support
+- **Search API Integration** - Confirmed compatibility with search endpoint returning filtered results with metadata
+
+### Technical Improvements
+- Updated NewsResponseModel.fromJson() to parse the new response structure
+- Modified toJson() method to match the new API format
+- Updated all default limit parameters across data sources, repositories, and use cases
+- Verified search functionality works correctly with existing implementation
+
+## [1.3.0] - 2025-01-06
+
+### Added
+- **Real API Integration** - Switched from mock data to actual Supabase API endpoints for news and categories
+- **Category API Support** - Fetch news categories dynamically from `/functions/v1/news_categories` endpoint
+- **News API Integration** - Implemented news fetching from `/functions/v1/news` endpoint with pagination, search, and category filtering
+- **Category Model** - New data model to handle category API response structure with ID, name, and timestamps
+- **UUID Support** - Updated news and bookmark systems to use string IDs instead of integers for API compatibility
+- **Category Filtering by ID** - News filtering now uses category UUIDs (`category_id` parameter) instead of names
+- **Dynamic Category Display** - Category chips now display real category names fetched from the API
+- **Enhanced Error Handling** - Improved error messages and fallback mechanisms for API failures
+
+### Enhanced
+- **Authentication Headers** - All API calls now properly include authentication tokens and required headers
+- **Network Request Structure** - Standardized HTTP GET requests with proper query parameters for pagination and filtering
+- **Category Management** - Categories are now fetched dynamically and stored as objects with full metadata
+- **Search Functionality** - Search now uses the real API with proper query parameter handling
+- **Database Schema** - Updated bookmark storage to use string IDs matching the API response format
+
+### Technical Improvements
+- **Type Safety** - Updated all ID references from `int` to `String` for UUID compatibility
+- **API Response Handling** - Proper parsing of nested API responses with success/error checking
+- **State Management** - Updated BLoC states to handle CategoryModel objects instead of strings
+- **Repository Pattern** - Enhanced repositories to work with real API endpoints
+- **Use Case Updates** - All use cases now work with the new API data structures
+- **Mock Data Fallback** - Graceful fallback to mock data when API calls fail
+
+### Fixed
+- **Category Filtering** - Fixed category filtering to use proper `category_id` parameter with UUID values
+- **Authentication Flow** - Ensured all API calls include proper authentication headers
+- **Data Consistency** - Resolved type mismatches between mock data and real API response formats
+- **Database Migration** - Updated local database schema to handle string-based news IDs
+
 ## [1.2.0] - 2024-12-20
 
 ### Added

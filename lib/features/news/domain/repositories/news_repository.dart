@@ -1,17 +1,19 @@
 import '../entities/news_entity.dart';
+import '../../data/models/category_model.dart';
+import '../../data/models/news_response_model.dart';
 
 abstract class NewsRepository {
-  Future<List<NewsEntity>> getNews({int page = 1, int limit = 20});
-  Future<List<NewsEntity>> getNewsByCategory(
+  Future<NewsResponseModel> getNews({int page = 1, int limit = 5});
+  Future<NewsResponseModel> getNewsByCategory(
     String category, {
     int page = 1,
-    int limit = 20,
+    int limit = 5,
   });
-  Future<List<NewsEntity>> searchNews(
+  Future<NewsResponseModel> searchNews(
     String query, {
     int page = 1,
-    int limit = 20,
+    int limit = 5,
   });
-  Future<NewsEntity> getNewsById(int id);
-  Future<List<String>> getCategories();
+  Future<NewsEntity> getNewsById(String id);
+  Future<List<CategoryModel>> getCategories();
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../auth/presentation/pages/login_page.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../news/presentation/pages/news_page.dart';
 import '../bloc/intro_bloc.dart';
 import '../widgets/animated_background.dart';
 import '../widgets/network_error_widget.dart';
@@ -23,20 +25,40 @@ class IntroView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<IntroBloc, IntroState>(
-        listener: (context, state) {
-          if (state is IntroNavigateToAuth) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const LoginPage()),
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<IntroBloc, IntroState>(
+            listener: (context, state) {
+              if (state is IntroNavigateToAuth) {
+                // Check authentication status after intro completes
+                context.read<AuthBloc>().add(CheckAuthStatusRequested());
+              }
+            },
+          ),
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is AuthAuthenticated) {
+                // User is authenticated, navigate to news page
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const NewsPage()),
+                );
+              } else if (state is AuthUnauthenticated) {
+                // User is not authenticated, navigate to login page
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<IntroBloc, IntroState>(
+          builder: (context, state) {
+            return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: _buildContent(context, state),
             );
-          }
-        },
-        builder: (context, state) {
-          return AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: _buildContent(context, state),
-          );
-        },
+          },
+        ),
       ),
     );
   }

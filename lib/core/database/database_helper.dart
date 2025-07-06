@@ -29,7 +29,7 @@ class DatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $bookmarksTable (
-        news_id INTEGER PRIMARY KEY,
+        news_id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
         summary TEXT NOT NULL,
         image_url TEXT NOT NULL,
@@ -55,7 +55,7 @@ class DatabaseHelper {
     return await db.query(bookmarksTable, orderBy: 'bookmarked_at DESC');
   }
 
-  Future<Map<String, dynamic>?> getBookmark(int newsId) async {
+  Future<Map<String, dynamic>?> getBookmark(String newsId) async {
     Database db = await database;
     List<Map<String, dynamic>> results = await db.query(
       bookmarksTable,
@@ -66,7 +66,7 @@ class DatabaseHelper {
     return results.isNotEmpty ? results.first : null;
   }
 
-  Future<bool> isBookmarked(int newsId) async {
+  Future<bool> isBookmarked(String newsId) async {
     Database db = await database;
     List<Map<String, dynamic>> results = await db.query(
       bookmarksTable,
@@ -77,7 +77,7 @@ class DatabaseHelper {
     return results.isNotEmpty;
   }
 
-  Future<int> deleteBookmark(int newsId) async {
+  Future<int> deleteBookmark(String newsId) async {
     Database db = await database;
     return await db.delete(
       bookmarksTable,

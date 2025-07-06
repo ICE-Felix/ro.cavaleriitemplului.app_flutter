@@ -1,10 +1,11 @@
 import '../models/news_model.dart';
+import '../models/category_model.dart';
 
 class NewsMockDataSource {
   static List<NewsModel> getMockNews() {
     return [
       NewsModel(
-        id: 1,
+        id: '1',
         title: 'Săptămâna Jocurilor cu MindHub la Artar',
         content:
             'MindHub Bucuresti Unirii organizează o săptămână dedicată jocurilor educative pentru copii. Evenimentul va avea loc în perioada 16-22 iunie și va include activități interactive pentru dezvoltarea creativității și gândirii logice.',
@@ -14,13 +15,13 @@ class NewsMockDataSource {
             'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&auto=format&fit=crop',
         author: 'Ana Popescu',
         publishedAt: DateTime.now().subtract(const Duration(hours: 2)),
-        category: 'General',
+        category: 'Technology',
         source: 'MindHub București Unirii',
         views: 245,
         tags: ['educație', 'copii', 'jocuri', 'MindHub'],
       ),
       NewsModel(
-        id: 2,
+        id: '2',
         title: 'Copiii mănâncă gratuit la Buongiorno Italian Victoriei',
         content:
             'Restaurantul Buongiorno Italian din Calea Victoriei oferă mese gratuite pentru copii în fiecare weekend. Inițiativa face parte din programul de responsabilitate socială al companiei.',
@@ -36,7 +37,7 @@ class NewsMockDataSource {
         tags: ['familie', 'copii', 'restaurant', 'gratuit'],
       ),
       NewsModel(
-        id: 3,
+        id: '3',
         title: 'Reducere peste reducere? Da, de la Funlandia!',
         content:
             'Funlandia anunță o nouă campanie de reduceri cu discount-uri de până la 50% pentru toate activitățile din parcul de distracții. Oferta este valabilă până la sfârșitul lunii.',
@@ -52,7 +53,7 @@ class NewsMockDataSource {
         tags: ['divertisment', 'reduceri', 'parc', 'copii'],
       ),
       NewsModel(
-        id: 4,
+        id: '4',
         title:
             'Fișă GRATUITĂ 12 întrebări de adresat copiilor la final de an școlar',
         content:
@@ -69,7 +70,7 @@ class NewsMockDataSource {
         tags: ['educație', 'părinți', 'copii', 'școală'],
       ),
       NewsModel(
-        id: 5,
+        id: '5',
         title:
             'Grupa Montessori la Heidi by ETOS Academy Brașov – Ultimele locuri pentru 2025!',
         content:
@@ -86,7 +87,7 @@ class NewsMockDataSource {
         tags: ['Montessori', 'educație', 'Brașov', 'înscrieri'],
       ),
       NewsModel(
-        id: 6,
+        id: '6',
         title: 'Ateliere de dezvoltare personală pentru mame',
         content:
             'Un nou program de ateliere dedicate mamelor care doresc să își dezvolte abilitățile parentale și să găsească un echilibru între viața profesională și cea de familie.',
@@ -95,13 +96,13 @@ class NewsMockDataSource {
             'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800',
         author: 'Laura Petrescu',
         publishedAt: DateTime.now().subtract(const Duration(days: 2)),
-        category: 'General',
+        category: 'Technology',
         source: 'Centrul de Dezvoltare Parentală',
         views: 278,
         tags: ['parenting', 'mame', 'dezvoltare', 'ateliere'],
       ),
       NewsModel(
-        id: 7,
+        id: '7',
         title: 'Tabăra de vară pentru copii 2024 - Înscrieri deschise',
         content:
             'Începând cu luna iulie, sunt deschise înscrierile pentru tabăra de vară destinată copiilor cu vârste între 6 și 14 ani. Programul include activități sportive, creative și educaționale.',
@@ -110,13 +111,13 @@ class NewsMockDataSource {
             'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
         author: 'Mihai Georgescu',
         publishedAt: DateTime.now().subtract(const Duration(days: 3)),
-        category: 'Oferte Speciale',
+        category: 'Tech & Innovation',
         source: 'Tabăra Aventura',
         views: 445,
         tags: ['tabără', 'vară', 'copii', 'activități'],
       ),
       NewsModel(
-        id: 8,
+        id: '8',
         title: 'Concurs de desen pentru cei mici',
         content:
             'Primăria Sectorului 1 organizează un concurs de desen cu tema "Orașul meu de vis" pentru copiii cu vârste între 4 și 12 ani. Premiile includ materiale de artă și excursii.',
@@ -126,13 +127,13 @@ class NewsMockDataSource {
             'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800',
         author: 'Ioana Radu',
         publishedAt: DateTime.now().subtract(const Duration(days: 4)),
-        category: 'General',
+        category: 'Technology',
         source: 'Primăria Sectorului 1',
         views: 523,
         tags: ['concurs', 'desen', 'copii', 'artă'],
       ),
       NewsModel(
-        id: 9,
+        id: '9',
         title: 'Nouă locație de joacă interactivă în Bucuresti',
         content:
             'În zona Pipera s-a deschis o nouă locație de joacă interactivă pentru copii, cu tehnologie de ultimă generație și activități educaționale inovatoare.',
@@ -142,13 +143,13 @@ class NewsMockDataSource {
             'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800',
         author: 'Bogdan Stancu',
         publishedAt: DateTime.now().subtract(const Duration(days: 5)),
-        category: 'General',
+        category: 'Technology',
         source: 'PlayTech Kids',
         views: 367,
         tags: ['joacă', 'interactiv', 'tehnologie', 'Pipera'],
       ),
       NewsModel(
-        id: 10,
+        id: '10',
         title: 'Workshop gratuit: Cum să comunici eficient cu copilul tău',
         content:
             'Psihologii specializați în dezvoltarea copilului oferă un workshop gratuit pentru părinți despre tehnicile de comunicare eficientă cu copiii de toate vârstele.',
@@ -158,13 +159,13 @@ class NewsMockDataSource {
             'https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=800',
         author: 'Dr. Alina Popescu',
         publishedAt: DateTime.now().subtract(const Duration(days: 6)),
-        category: 'Oferte Speciale',
+        category: 'Tech & Innovation',
         source: 'Centrul de Psihologie Infantilă',
         views: 289,
         tags: ['workshop', 'comunicare', 'părinți', 'psihologie'],
       ),
       NewsModel(
-        id: 11,
+        id: '11',
         title: 'Consiliere psihologică gratuită pentru părinți',
         content:
             'Centrul de Dezvoltare Parentală oferă sesiuni gratuite de consiliere psihologică pentru părinții care doresc să își îmbunătățească relația cu copiii și să gestioneze mai bine provocările parentale.',
@@ -172,13 +173,13 @@ class NewsMockDataSource {
         imageUrl: '', // Empty image to show placeholder
         author: 'Dr. Mihai Stoica',
         publishedAt: DateTime.now().subtract(const Duration(days: 7)),
-        category: 'General',
+        category: 'Technology',
         source: 'Centrul de Dezvoltare Parentală',
         views: 156,
         tags: ['consiliere', 'psihologie', 'părinți', 'gratuit'],
       ),
       NewsModel(
-        id: 12,
+        id: '12',
         title: 'Cursuri de yoga pentru mamici și bebeluși',
         content:
             'Studio Zen din centrul Bucureștiului introduce un nou program de yoga dedicat mamicilor cu bebeluși. Cursurile sunt adaptate pentru toate nivelurile și ajută la relaxare și întărirea legăturii mama-copil.',
@@ -186,13 +187,13 @@ class NewsMockDataSource {
         imageUrl: '', // Empty image to show placeholder
         author: 'Elena Yoga',
         publishedAt: DateTime.now().subtract(const Duration(days: 8)),
-        category: 'General',
+        category: 'Technology',
         source: 'Studio Zen',
         views: 234,
         tags: ['yoga', 'mamici', 'bebeluși', 'relaxare'],
       ),
       NewsModel(
-        id: 13,
+        id: '13',
         title: 'Program special de reduceri pentru cărți pentru copii',
         content:
             'Librăria Cărturești lansează o campanie specială cu reduceri de până la 40% pentru toate cărțile destinate copiilor. Campania durează până la sfârșitul lunii.',
@@ -201,13 +202,13 @@ class NewsMockDataSource {
         imageUrl: '', // Empty image to show placeholder
         author: 'Librăria Cărturești',
         publishedAt: DateTime.now().subtract(const Duration(days: 9)),
-        category: 'Oferte Speciale',
+        category: 'Tech & Innovation',
         source: 'Cărturești',
         views: 378,
         tags: ['cărți', 'copii', 'reduceri', 'lectură'],
       ),
       NewsModel(
-        id: 14,
+        id: '14',
         title: 'Atelier creativitate și artă pentru copii',
         content:
             'Casa de Cultură organizează un atelier de creativitate și artă pentru copiii cu vârste între 5 și 12 ani. Copiii vor învăța tehnici de pictură, desenat și lucru manual.',
@@ -216,13 +217,13 @@ class NewsMockDataSource {
             'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&auto=format&fit=crop',
         author: 'Casa de Cultură',
         publishedAt: DateTime.now().subtract(const Duration(days: 10)),
-        category: 'General',
+        category: 'Technology',
         source: 'Casa de Cultură Sector 2',
         views: 445,
         tags: ['artă', 'creativitate', 'copii', 'atelier'],
       ),
       NewsModel(
-        id: 15,
+        id: '15',
         title: 'Seară de povești pentru cei mici',
         content:
             'Biblioteca Centrală organizează în fiecare vineri seara o sesiune de povești pentru copii. Evenimentul este gratuit și încurajează dragostea pentru lectură de la o vârstă frageda.',
@@ -230,7 +231,7 @@ class NewsMockDataSource {
         imageUrl: '', // Empty image to show placeholder
         author: 'Biblioteca Centrală',
         publishedAt: DateTime.now().subtract(const Duration(days: 11)),
-        category: 'General',
+        category: 'Technology',
         source: 'Biblioteca Centrală',
         views: 167,
         tags: ['povești', 'copii', 'lectură', 'gratuit'],
@@ -238,8 +239,21 @@ class NewsMockDataSource {
     ];
   }
 
-  static List<String> getMockCategories() {
-    return ['General', 'Oferte Speciale'];
+  static List<CategoryModel> getMockCategories() {
+    return [
+      CategoryModel(
+        id: '5008665e-eb3e-4ad7-90cb-04b3c534a843',
+        name: 'Technology',
+        createdAt: DateTime.now().subtract(const Duration(days: 30)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 30)),
+      ),
+      CategoryModel(
+        id: 'bb90f975-46c7-425d-9ce4-d9afeb37097f',
+        name: 'Tech & Innovation',
+        createdAt: DateTime.now().subtract(const Duration(days: 30)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 30)),
+      ),
+    ];
   }
 
   static List<NewsModel> searchMockNews(String query) {
@@ -255,5 +269,13 @@ class NewsMockDataSource {
   static List<NewsModel> getMockNewsByCategory(String category) {
     final allNews = getMockNews();
     return allNews.where((news) => news.category == category).toList();
+  }
+
+  static NewsModel getMockNewsById(String id) {
+    final allNews = getMockNews();
+    return allNews.firstWhere(
+      (news) => news.id == id,
+      orElse: () => throw Exception('News not found'),
+    );
   }
 }

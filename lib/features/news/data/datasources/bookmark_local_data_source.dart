@@ -3,10 +3,10 @@ import '../models/bookmark_model.dart';
 
 abstract class BookmarkLocalDataSource {
   Future<void> addBookmark(BookmarkModel bookmark);
-  Future<void> removeBookmark(int newsId);
-  Future<bool> isBookmarked(int newsId);
+  Future<void> removeBookmark(String newsId);
+  Future<bool> isBookmarked(String newsId);
   Future<List<BookmarkModel>> getAllBookmarks();
-  Future<BookmarkModel?> getBookmark(int newsId);
+  Future<BookmarkModel?> getBookmark(String newsId);
 }
 
 class BookmarkLocalDataSourceImpl implements BookmarkLocalDataSource {
@@ -20,12 +20,12 @@ class BookmarkLocalDataSourceImpl implements BookmarkLocalDataSource {
   }
 
   @override
-  Future<void> removeBookmark(int newsId) async {
+  Future<void> removeBookmark(String newsId) async {
     await databaseHelper.deleteBookmark(newsId);
   }
 
   @override
-  Future<bool> isBookmarked(int newsId) async {
+  Future<bool> isBookmarked(String newsId) async {
     return await databaseHelper.isBookmarked(newsId);
   }
 
@@ -36,7 +36,7 @@ class BookmarkLocalDataSourceImpl implements BookmarkLocalDataSource {
   }
 
   @override
-  Future<BookmarkModel?> getBookmark(int newsId) async {
+  Future<BookmarkModel?> getBookmark(String newsId) async {
     final map = await databaseHelper.getBookmark(newsId);
     return map != null ? BookmarkModel.fromMap(map) : null;
   }
