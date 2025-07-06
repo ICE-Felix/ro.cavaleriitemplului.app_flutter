@@ -3,7 +3,7 @@ import '../../../../core/network/supabase_client.dart';
 import '../models/news_model.dart';
 import '../models/category_model.dart';
 import '../models/news_response_model.dart';
-import 'news_mock_data_source.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart'
     as supabase_flutter
     hide AuthException;
@@ -328,9 +328,9 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
 
       return categories;
     } catch (e) {
-      // Fallback to mock data if API fails for now
-      print('Failed to fetch categories from API, using mock data: $e');
-      return NewsMockDataSource.getMockCategories();
+      // Return empty list if API fails
+      print('Failed to fetch categories from API: $e');
+      return [];
     }
   }
 }

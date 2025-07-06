@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.3] - 2025-01-06
+
+### Added
+- **App Icons Configuration** - Integrated flutter_launcher_icons package for automated icon generation
+- **Multi-Platform Icons** - App icons now properly configured for Android, iOS, web, Windows, and macOS
+- **High-Quality Icon Assets** - Using 1024x1024 source image for optimal quality across all platforms
+- **Icon Size Optimization** - Automatic generation of all required icon sizes for each platform
+
+### Updated
+- **App Name** - Changed from "app" to "Mommy HAI" across all platforms
+- **Bundle Identifier** - Updated from "com.mommyhai.app" to "com.mommyhai.app.new" for unique app identity
+- **Android Configuration** - Updated AndroidManifest.xml with new app name and package structure
+- **iOS Configuration** - Updated Info.plist with new app name and bundle identifier
+- **Package Structure** - Moved MainActivity.kt to new package directory structure
+
+### Enhanced
+- **App Store Readiness** - Icons now comply with App Store requirements (alpha channel removed for iOS)
+- **Brand Identity** - Consistent "Mommy HAI" branding across all platforms and configurations
+- **Platform Consistency** - Unified app name and identifier structure for Android and iOS
+- **Build Configuration** - Updated build.gradle.kts with new namespace and application ID
+
+### Technical Improvements
+- Added flutter_launcher_icons: ^0.14.1 to dev dependencies
+- Updated Android namespace from "com.mommyhai.app" to "com.mommyhai.app.new"
+- Updated iOS bundle identifier in all build configurations (Debug, Release, Profile)
+- Updated test bundle identifiers to match new package structure
+- Cleaned and rebuilt project dependencies for fresh configuration
+
 ## [1.3.2] - 2025-01-06
 
 ### Fixed
