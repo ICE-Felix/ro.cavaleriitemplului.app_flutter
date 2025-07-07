@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0+6] - 2024-03-26
+
+### Updated
+- **Version Bump** - Incremented build number for new release
+- **News Feature** - Various improvements and bug fixes in news feature implementation
+- **Repository Layer** - Enhanced news repository implementation
+- **UI Components** - Refined news detail page and saved articles functionality
+
 ## [1.3.4] - 2025-01-06
 
 ### Fixed
