@@ -38,7 +38,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     Emitter<NewsState> emit,
   ) async {
     if (event.refresh || _currentNews.isEmpty) {
-      emit(NewsLoading());
+      emit(NewsLoading(isRefreshing: event.refresh));
       _currentNews = [];
       _currentPage = 1;
     }
@@ -76,7 +76,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     SearchNewsRequested event,
     Emitter<NewsState> emit,
   ) async {
-    emit(NewsLoading());
+    emit(NewsLoading(isRefreshing: false));
 
     try {
       final response = await searchNewsUseCase(

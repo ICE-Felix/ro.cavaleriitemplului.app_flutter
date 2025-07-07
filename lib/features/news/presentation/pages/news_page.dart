@@ -4,13 +4,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../core/widgets/custom_top_bar.dart';
 import '../../../../core/style/app_colors.dart';
-import '../../../../core/style/app_text_styles.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../bloc/news_bloc.dart';
 import '../widgets/news_item_widget.dart';
 import 'news_detail_page.dart';
 import 'saved_articles_page.dart';
 import '../../data/models/category_model.dart';
+import '../../domain/entities/news_entity.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -176,171 +176,114 @@ class _NewsPageState extends State<NewsPage> {
             Expanded(
               child: BlocBuilder<NewsBloc, NewsState>(
                 builder: (context, state) {
-                  if (state is NewsLoading) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                      ),
-                    );
-                  }
-
-                  if (state is NewsError) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FaIcon(
-                            FontAwesomeIcons.exclamationTriangle,
-                            size: 48,
-                            color: colorScheme.error,
-                          ),
-                          const SizedBox(height: 16),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 32),
-                            child: Text(
-                              state.message,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.error,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () {
-                              context.read<NewsBloc>().add(
-                                LoadNewsRequested(
-                                  category: _selectedCategory,
-                                  refresh: true,
-                                ),
-                              );
-                            },
-                            child: const Text('Încercați din nou'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+                  final List<NewsEntity> newsToShow = [];
+                  bool hasMore = false;
 
                   if (state is NewsLoaded) {
-                    if (state.news.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.newspaper,
-                              size: 48,
-                              color: AppColors.primary,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Nu sunt știri disponibile',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: colorScheme.onSurface,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
+                    newsToShow.addAll(state.news);
+                    hasMore = state.hasMore;
+                  } else if (state is NewsSearchResults) {
+                    newsToShow.addAll(state.results);
+                    hasMore = state.hasMore;
+                  } else if (state is NewsLoading) {
+                    // Keep showing previous news during any loading state
+                    final previousState = context.read<NewsBloc>().state;
+                    if (previousState is NewsLoaded) {
+                      newsToShow.addAll(previousState.news);
+                      hasMore = previousState.hasMore;
+                    } else if (previousState is NewsSearchResults) {
+                      newsToShow.addAll(previousState.results);
+                      hasMore = previousState.hasMore;
                     }
+                  }
 
-                    return RefreshIndicator(
-                      color: AppColors.primary,
-                      onRefresh: () async {
-                        context.read<NewsBloc>().add(
-                          LoadNewsRequested(
-                            category: _selectedCategory,
-                            refresh: true,
-                          ),
-                        );
-                      },
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.all(16),
-                        itemCount: state.news.length + (state.hasMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == state.news.length) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: CircularProgressIndicator(
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            );
-                          }
-
-                          return NewsItemWidget(
-                            news: state.news[index],
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => NewsDetailPage(
-                                        news: state.news[index],
-                                      ),
-                                ),
-                              );
-                            },
+                  return Stack(
+                    children: [
+                      RefreshIndicator(
+                        color: AppColors.primary,
+                        onRefresh: () async {
+                          context.read<NewsBloc>().add(
+                            LoadNewsRequested(
+                              category: _selectedCategory,
+                              refresh: true,
+                            ),
                           );
                         },
-                      ),
-                    );
-                  }
-
-                  if (state is NewsSearchResults) {
-                    if (state.results.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.magnifyingGlass,
-                              size: 48,
-                              color: AppColors.primary,
-                            ),
-                            const SizedBox(height: 16),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                              ),
-                              child: Text(
-                                'Nu au fost găsite rezultate pentru "${state.query}"',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  color: colorScheme.onSurface,
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.all(16),
+                          itemCount:
+                              newsToShow.isEmpty
+                                  ? 1
+                                  : newsToShow.length + (hasMore ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (newsToShow.isEmpty) {
+                              return SizedBox(
+                                height: MediaQuery.of(context).size.height / 2,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      FaIcon(
+                                        FontAwesomeIcons.newspaper,
+                                        size: 48,
+                                        color: AppColors.primary,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        state is NewsLoading
+                                            ? 'Articolele se încarcă'
+                                            : 'Nu sunt articole disponibile',
+                                        style: theme.textTheme.titleMedium
+                                            ?.copyWith(
+                                              color: colorScheme.onSurface,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
+                              );
+                            }
 
-                    return ListView.builder(
-                      controller: _scrollController,
-                      padding: const EdgeInsets.all(16),
-                      itemCount: state.results.length,
-                      itemBuilder: (context, index) {
-                        return NewsItemWidget(
-                          news: state.results[index],
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => NewsDetailPage(
-                                      news: state.results[index],
-                                    ),
-                              ),
+                            if (index == newsToShow.length) {
+                              return Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              );
+                            }
+
+                            return NewsItemWidget(
+                              news: newsToShow[index],
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => NewsDetailPage(
+                                          news: newsToShow[index],
+                                        ),
+                                  ),
+                                );
+                              },
                             );
                           },
-                        );
-                      },
-                    );
-                  }
-
-                  return const SizedBox.shrink();
+                        ),
+                      ),
+                      if (state is NewsLoading)
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: LinearProgressIndicator(
+                            color: AppColors.primary,
+                            backgroundColor: AppColors.primary.withOpacity(0.1),
+                          ),
+                        ),
+                    ],
+                  );
                 },
               ),
             ),

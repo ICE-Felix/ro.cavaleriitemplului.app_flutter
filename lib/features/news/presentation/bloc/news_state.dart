@@ -8,7 +8,14 @@ abstract class NewsState extends Equatable {
 
 class NewsInitial extends NewsState {}
 
-class NewsLoading extends NewsState {}
+class NewsLoading extends NewsState {
+  final bool isRefreshing;
+
+  NewsLoading({this.isRefreshing = false});
+
+  @override
+  List<Object?> get props => [isRefreshing];
+}
 
 class NewsLoaded extends NewsState {
   final List<NewsEntity> news;
