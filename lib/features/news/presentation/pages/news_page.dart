@@ -178,16 +178,19 @@ class _NewsPageState extends State<NewsPage> {
                 builder: (context, state) {
                   final List<NewsEntity> newsToShow = [];
                   bool hasMore = false;
+                  bool isLoading = state is NewsLoading;
 
+                  // Get news from current or previous state
                   if (state is NewsLoaded) {
                     newsToShow.addAll(state.news);
                     hasMore = state.hasMore;
                   } else if (state is NewsSearchResults) {
                     newsToShow.addAll(state.results);
                     hasMore = state.hasMore;
-                  } else if (state is NewsLoading) {
-                    // Keep showing previous news during any loading state
-                    final previousState = context.read<NewsBloc>().state;
+                  } else if (state is NewsLoading &&
+                      state.previousState != null) {
+                    // Keep showing previous news during loading
+                    final previousState = state.previousState;
                     if (previousState is NewsLoaded) {
                       newsToShow.addAll(previousState.news);
                       hasMore = previousState.hasMore;
@@ -231,7 +234,7 @@ class _NewsPageState extends State<NewsPage> {
                                       ),
                                       const SizedBox(height: 16),
                                       Text(
-                                        state is NewsLoading
+                                        isLoading
                                             ? 'Articolele se încarcă'
                                             : 'Nu sunt articole disponibile',
                                         style: theme.textTheme.titleMedium

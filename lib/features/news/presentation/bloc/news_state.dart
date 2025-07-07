@@ -10,11 +10,12 @@ class NewsInitial extends NewsState {}
 
 class NewsLoading extends NewsState {
   final bool isRefreshing;
+  final NewsState? previousState;
 
-  NewsLoading({this.isRefreshing = false});
+  NewsLoading({this.isRefreshing = false, this.previousState});
 
   @override
-  List<Object?> get props => [isRefreshing];
+  List<Object?> get props => [isRefreshing, previousState];
 }
 
 class NewsLoaded extends NewsState {
