@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'app_initializer.dart';
 import 'core/service_locator.dart';
 import 'core/style/app_theme.dart';
+import 'core/localization/app_localization.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/intro/presentation/bloc/intro_bloc.dart';
 import 'features/news/presentation/bloc/news_bloc.dart';
@@ -29,13 +30,19 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<AuthBloc>()),
         BlocProvider(create: (context) => sl<IntroBloc>()),
         BlocProvider(create: (context) => sl<NewsBloc>()),
+        BlocProvider(
+          create:
+              (context) => sl<LocalizationCubit>()..initializeLocalization(),
+        ),
       ],
-      child: MaterialApp(
-        title: 'Mommy HAI',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
-        home: const AppInitializer(),
+      child: LocalizationProvider(
+        child: MaterialApp(
+          title: 'Mommy HAI',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeMode.system,
+          home: const AppInitializer(),
+        ),
       ),
     );
   }

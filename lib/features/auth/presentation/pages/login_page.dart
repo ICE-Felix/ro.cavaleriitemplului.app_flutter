@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../core/style/app_colors.dart';
+import '../../../../core/localization/app_localization.dart';
 import '../../../news/presentation/pages/news_page.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/custom_button.dart';
@@ -43,6 +44,16 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: LanguageSwitcherWidget(),
+          ),
+        ],
+      ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           // Clear any existing snackbars
@@ -72,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 margin: const EdgeInsets.all(8),
                 action: SnackBarAction(
-                  label: 'Dismiss',
+                  label: context.getString(label: 'dismiss'),
                   textColor: Colors.white,
                   onPressed: () {
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -88,10 +99,10 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const Icon(Icons.check_circle_outline, color: Colors.white),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Login successful! Welcome back.',
-                        style: TextStyle(color: Colors.white),
+                        context.getString(label: 'loginSuccessful'),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ],
@@ -163,14 +174,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 32),
                     Text(
-                      'Welcome Back',
+                      context.getString(label: 'welcomeBack'),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Sign in to your account',
+                      context.getString(label: 'signInToAccount'),
                       textAlign: TextAlign.center,
                       style: Theme.of(
                         context,
@@ -179,18 +190,18 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 32),
                     CustomTextField(
                       controller: _emailController,
-                      labelText: 'Email',
-                      hintText: 'Enter your email',
+                      labelText: context.getString(label: 'email'),
+                      hintText: context.getString(label: 'enterYourEmail'),
                       prefixIcon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return context.getString(label: 'pleaseEnterEmail');
                         }
                         if (!RegExp(
                           r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                         ).hasMatch(value)) {
-                          return 'Please enter a valid email';
+                          return context.getString(label: 'pleaseEnterValidEmail');
                         }
                         return null;
                       },
@@ -198,16 +209,16 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16),
                     CustomTextField(
                       controller: _passwordController,
-                      labelText: 'Password',
-                      hintText: 'Enter your password',
+                      labelText: context.getString(label: 'password'),
+                      hintText: context.getString(label: 'enterYourPassword'),
                       prefixIcon: Icons.lock_outline,
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return context.getString(label: 'pleaseEnterPassword');
                         }
                         if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
+                          return context.getString(label: 'passwordMinLength');
                         }
                         return null;
                       },
@@ -223,20 +234,20 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           );
                         },
-                        child: const Text('Forgot Password?'),
+                        child: Text(context.getString(label: 'forgotPassword')),
                       ),
                     ),
                     const SizedBox(height: 24),
                     CustomButton(
                       onPressed: state is AuthLoading ? null : _login,
-                      text: 'Sign In',
+                      text: context.getString(label: 'signIn'),
                       isLoading: state is AuthLoading,
                     ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have an account?"),
+                        Text(context.getString(label: 'dontHaveAccount')),
                         TextButton(
                           onPressed: () {
                             Navigator.push(
@@ -246,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             );
                           },
-                          child: const Text('Sign Up'),
+                          child: Text(context.getString(label: 'signUp')),
                         ),
                       ],
                     ),

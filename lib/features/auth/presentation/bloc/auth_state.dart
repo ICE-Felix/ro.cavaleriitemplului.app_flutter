@@ -34,7 +34,7 @@ class AuthPasswordResetSent extends AuthState {
   final String message;
 
   AuthPasswordResetSent({
-    this.message = 'Password reset link sent to your email',
+    this.message = '',
   });
 
   @override

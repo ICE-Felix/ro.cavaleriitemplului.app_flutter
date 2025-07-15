@@ -9,6 +9,7 @@ import '../../../../core/service_locator.dart';
 import '../../../../core/widgets/custom_top_bar.dart';
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/style/app_text_styles.dart';
+import '../../../../core/localization/app_localization.dart';
 import '../../domain/entities/news_entity.dart';
 import '../../domain/usecases/toggle_bookmark_usecase.dart';
 import '../../domain/usecases/check_bookmark_usecase.dart';
@@ -153,7 +154,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
-                'MOMMY HAI',
+                context.getString(label: 'appName'),
                 style: AppTextStyles.headlineSmall.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -376,7 +377,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Source: ',
+                      context.getString(label: 'source'),
                       style: AppTextStyles.bodySmall.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -522,8 +523,14 @@ Intră pe Mommy Hai ca să citești acest articol!
         SnackBar(
           content: Text(
             isNowBookmarked
-                ? 'Articolul "${widget.news.title}" a fost salvat!'
-                : 'Articolul "${widget.news.title}" a fost eliminat din favorite!',
+                ? context.getString(
+                  label: 'articleBookmarked',
+                  namedParameters: {'title': widget.news.title},
+                )
+                : context.getString(
+                  label: 'articleUnbookmarked',
+                  namedParameters: {'title': widget.news.title},
+                ),
           ),
           duration: const Duration(seconds: 2),
           backgroundColor: Theme.of(context).colorScheme.primary,

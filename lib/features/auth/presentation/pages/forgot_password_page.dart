@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../core/style/app_colors.dart';
+import '../../../../core/localization/app_localization.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
@@ -36,7 +37,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Reset Password')),
+      appBar: AppBar(
+        title: Text(context.getString(label: 'resetPassword')),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: LanguageSwitcherWidget(),
+          ),
+        ],
+      ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -64,7 +73,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
                 margin: const EdgeInsets.all(8),
                 action: SnackBarAction(
-                  label: 'Dismiss',
+                  label: context.getString(label: 'dismiss'),
                   textColor: Colors.white,
                   onPressed: () {
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -162,7 +171,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       ),
       const SizedBox(height: 32),
       Text(
-        'Forgot Password?',
+        context.getString(label: 'forgotPassword'),
         textAlign: TextAlign.center,
         style: Theme.of(
           context,
@@ -170,7 +179,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       ),
       const SizedBox(height: 8),
       Text(
-        'Enter your email to reset your password',
+        context.getString(label: 'enterEmailToReset'),
         textAlign: TextAlign.center,
         style: Theme.of(
           context,
@@ -179,16 +188,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       const SizedBox(height: 32),
       CustomTextField(
         controller: _emailController,
-        labelText: 'Email',
-        hintText: 'Enter your email',
+        labelText: context.getString(label: 'email'),
+        hintText: context.getString(label: 'enterYourEmail'),
         prefixIcon: Icons.email_outlined,
         keyboardType: TextInputType.emailAddress,
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Please enter your email';
+            return context.getString(label: 'pleaseEnterEmail');
           }
           if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-            return 'Please enter a valid email';
+            return context.getString(label: 'pleaseEnterValidEmail');
           }
           return null;
         },
@@ -199,19 +208,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             context.watch<AuthBloc>().state is AuthLoading
                 ? null
                 : _resetPassword,
-        text: 'Reset Password',
+        text: context.getString(label: 'resetPassword'),
         isLoading: context.watch<AuthBloc>().state is AuthLoading,
       ),
       const SizedBox(height: 16),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Remember your password?"),
+          Text(context.getString(label: 'rememberPassword')),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('Sign In'),
+            child: Text(context.getString(label: 'signIn')),
           ),
         ],
       ),
@@ -227,7 +236,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       ),
       const SizedBox(height: 32),
       Text(
-        'Email Sent!',
+        context.getString(label: 'emailSent'),
         textAlign: TextAlign.center,
         style: Theme.of(
           context,
@@ -235,13 +244,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       ),
       const SizedBox(height: 16),
       Text(
-        'We\'ve sent a password reset link to ${_emailController.text}',
+        '${context.getString(label: 'passwordResetLinkSent')} ${_emailController.text}',
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
       const SizedBox(height: 8),
       Text(
-        'Please check your email and follow the instructions to reset your password.',
+        context.getString(label: 'checkEmailInstructions'),
         textAlign: TextAlign.center,
         style: Theme.of(
           context,
@@ -254,7 +263,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             Navigator.pop(context);
           }
         },
-        text: 'Back to Login',
+        text: context.getString(label: 'backToLogin'),
         isLoading: false,
       ),
     ];

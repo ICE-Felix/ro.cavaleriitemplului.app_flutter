@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/service_locator.dart';
 import '../../../../core/widgets/custom_top_bar.dart';
 import '../../../../core/style/app_text_styles.dart';
+import '../../../../core/localization/app_localization.dart';
 import '../../domain/entities/bookmark_entity.dart';
 import '../../domain/repositories/bookmark_repository.dart';
 import 'news_detail_page.dart';
@@ -56,9 +57,15 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: CompactTopBar(
-        title: 'Articole salvate',
+      appBar: AppBar(
+        title: Text(context.getString(label: 'savedArticles')),
         backgroundColor: colorScheme.surface,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: LanguageSwitcherWidget(isCompact: true),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: _refreshSavedArticles,
@@ -275,9 +282,9 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
         height: 24,
         fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
-          return const Text(
-            'MOMMY\nHAI',
-            style: TextStyle(
+          return Text(
+            context.getString(label: 'appName'),
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 8,
@@ -315,13 +322,28 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return 'acum ${difference.inDays} ${difference.inDays == 1 ? 'zi' : 'zile'}';
+      return context.getString(
+        label: 'timeAgo.daysAgo',
+        namedParameters: {
+          'days': difference.inDays,
+          'dayUnit': context.getString(
+            label: 'timeAgo.dayUnit',
+            variable: difference.inDays,
+          ),
+        },
+      );
     } else if (difference.inHours > 0) {
-      return 'acum ${difference.inHours}h';
+      return context.getString(
+        label: 'timeAgo.hoursAgo',
+        namedParameters: {'hours': difference.inHours},
+      );
     } else if (difference.inMinutes > 0) {
-      return 'acum ${difference.inMinutes}m';
+      return context.getString(
+        label: 'timeAgo.minutesAgo',
+        namedParameters: {'minutes': difference.inMinutes},
+      );
     } else {
-      return 'acum';
+      return context.getString(label: 'timeAgo.now');
     }
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/localization/app_localization.dart';
 import '../../domain/entities/news_entity.dart';
 
 class NewsItemWidget extends StatelessWidget {
@@ -58,8 +59,8 @@ class NewsItemWidget extends StatelessWidget {
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Text(
-                                    'MOMMY\nHAI',
-                                    style: TextStyle(
+                                    context.getString(label: 'appName'),
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 8,
@@ -78,8 +79,8 @@ class NewsItemWidget extends StatelessWidget {
                             fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) {
                               return Text(
-                                'MOMMY\nHAI',
-                                style: TextStyle(
+                                context.getString(label: 'appName'),
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 8,
@@ -130,7 +131,7 @@ class NewsItemWidget extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            _formatDate(news.publishedAt),
+                            _formatDate(context, news.publishedAt),
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
@@ -147,7 +148,7 @@ class NewsItemWidget extends StatelessWidget {
 
                         Expanded(
                           child: Text(
-                            '${_formatViews(news.views)} clickuri',
+                            '${_formatViews(news.views)} ${context.getString(label: 'clicks')}',
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
@@ -176,18 +177,33 @@ class NewsItemWidget extends StatelessWidget {
     return views.toString();
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(BuildContext context, DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays} ${difference.inDays == 1 ? 'zi' : 'zile'}';
+      return context.getString(
+        label: 'timeAgo.daysAgo',
+        namedParameters: {
+          'days': difference.inDays,
+          'dayUnit': context.getString(
+            label: 'timeAgo.dayUnit',
+            variable: difference.inDays,
+          ),
+        },
+      );
     } else if (difference.inHours > 0) {
-      return '${difference.inHours}h';
+      return context.getString(
+        label: 'timeAgo.hoursAgo',
+        namedParameters: {'hours': difference.inHours},
+      );
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m';
+      return context.getString(
+        label: 'timeAgo.minutesAgo',
+        namedParameters: {'minutes': difference.inMinutes},
+      );
     } else {
-      return 'acum';
+      return context.getString(label: 'timeAgo.now');
     }
   }
 }

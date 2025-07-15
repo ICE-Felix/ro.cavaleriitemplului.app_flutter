@@ -6,6 +6,7 @@ import 'database/database_helper.dart';
 import 'network/dio_client.dart';
 import 'network/network_info.dart';
 import 'network/supabase_client.dart';
+import 'localization/app_localization.dart';
 import '../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../features/auth/data/datasources/auth_local_data_source.dart';
 import '../features/auth/data/repositories/auth_repository_impl.dart';
@@ -166,6 +167,7 @@ Future<void> initServiceLocator() async {
       forgotPasswordUseCase: sl<ForgotPasswordUseCase>(),
       checkAuthStatusUseCase: sl<CheckAuthStatusUseCase>(),
       logoutUseCase: sl<LogoutUseCase>(),
+      localizationCubit: sl<LocalizationCubit>(),
     ),
   );
 
@@ -185,4 +187,7 @@ Future<void> initServiceLocator() async {
       getCategoriesUseCase: sl<GetCategoriesUseCase>(),
     ),
   );
+
+  // Localization Cubit
+  sl.registerFactory(() => LocalizationCubit());
 }

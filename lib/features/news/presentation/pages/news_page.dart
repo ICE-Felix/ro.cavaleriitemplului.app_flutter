@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../core/widgets/custom_top_bar.dart';
 import '../../../../core/style/app_colors.dart';
+import '../../../../core/localization/app_localization.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../bloc/news_bloc.dart';
 import '../widgets/news_item_widget.dart';
@@ -111,6 +112,11 @@ class _NewsPageState extends State<NewsPage> {
             print('Logo tapped!');
           },
           customActions: [
+            // Language switcher button
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: LanguageSwitcherWidget(isCompact: true),
+            ),
             // Saved articles button
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
@@ -123,7 +129,7 @@ class _NewsPageState extends State<NewsPage> {
                   );
                 },
                 icon: const FaIcon(FontAwesomeIcons.solidBookmark, size: 20),
-                tooltip: 'Articole salvate',
+                tooltip: context.getString(label: 'savedArticles'),
               ),
             ),
           ],
@@ -154,7 +160,7 @@ class _NewsPageState extends State<NewsPage> {
                       if (index == 0) {
                         return _buildCategoryChip(
                           context,
-                          'All',
+                          context.getString(label: 'all'),
                           null,
                           _selectedCategory == null,
                         );
@@ -235,8 +241,12 @@ class _NewsPageState extends State<NewsPage> {
                                       const SizedBox(height: 16),
                                       Text(
                                         isLoading
-                                            ? 'Articolele se încarcă'
-                                            : 'Nu sunt articole disponibile',
+                                            ? context.getString(
+                                              label: 'articlesLoading',
+                                            )
+                                            : context.getString(
+                                              label: 'noArticlesAvailable',
+                                            ),
                                         style: theme.textTheme.titleMedium
                                             ?.copyWith(
                                               color: colorScheme.onSurface,

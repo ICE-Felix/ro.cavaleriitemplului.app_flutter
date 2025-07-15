@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/style/app_colors.dart';
+import '../../../../core/localization/app_localization.dart';
 
 class NetworkErrorWidget extends StatelessWidget {
   final String message;
@@ -24,7 +25,7 @@ class NetworkErrorWidget extends StatelessWidget {
               Icon(Icons.wifi_off, size: 80, color: AppColors.error),
               const SizedBox(height: 24),
               Text(
-                'Connection Error',
+                context.getString(label: 'connectionError'),
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: AppColors.error,
                   fontWeight: FontWeight.bold,
@@ -49,7 +50,7 @@ class NetworkErrorWidget extends StatelessWidget {
                     vertical: 16,
                   ),
                 ),
-                child: const Text('Retry'),
+                child: Text(context.getString(label: 'retry')),
               ),
             ],
           ),

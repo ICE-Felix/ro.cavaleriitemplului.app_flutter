@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../../core/usecases/usecase.dart';
+import '../../../../core/localization/app_localization.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
@@ -18,6 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final ForgotPasswordUseCase forgotPasswordUseCase;
   final CheckAuthStatusUseCase checkAuthStatusUseCase;
   final LogoutUseCase logoutUseCase;
+  final LocalizationCubit localizationCubit;
 
   AuthBloc({
     required this.loginUseCase,
@@ -25,6 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.forgotPasswordUseCase,
     required this.checkAuthStatusUseCase,
     required this.logoutUseCase,
+    required this.localizationCubit,
   }) : super(AuthInitial()) {
     on<CheckAuthStatusRequested>(_onCheckAuthStatusRequested);
     on<LoginRequested>(_onLoginRequested);
@@ -196,22 +199,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     // Check for specific error patterns
     if (errorMsg.contains('invalid_credentials')) {
-      return 'Invalid email or password. Please try again.';
+      return localizationCubit.getString(label: 'invalidCredentials');
     } else if (errorMsg.contains('email_taken') ||
         errorMsg.contains('duplicate')) {
-      return 'This email is already in use. Please use a different email.';
+      return localizationCubit.getString(label: 'emailAlreadyInUse');
     } else if (errorMsg.contains('weak_password')) {
-      return 'Password is too weak. Please choose a stronger password.';
+      return localizationCubit.getString(label: 'weakPassword');
     } else if (errorMsg.contains('network') ||
         errorMsg.contains('connection')) {
-      return 'Network error. Please check your internet connection.';
+      return localizationCubit.getString(label: 'networkError');
     } else if (errorMsg.contains('timeout')) {
-      return 'Request timed out. Please try again.';
+      return localizationCubit.getString(label: 'requestTimeout');
     } else if (errorMsg.contains('not_found')) {
-      return 'Resource not found. Please try again later.';
+      return localizationCubit.getString(label: 'resourceNotFound');
     } else {
       // Default generic message for unexpected errors
-      return 'Something went wrong. Please try again later.';
+      return localizationCubit.getString(label: 'somethingWentWrong');
     }
   }
 }

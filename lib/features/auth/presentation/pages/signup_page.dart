@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../core/style/app_colors.dart';
+import '../../../../core/localization/app_localization.dart';
 import '../../../news/presentation/pages/news_page.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/custom_button.dart';
@@ -46,7 +47,15 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Account')),
+      appBar: AppBar(
+        title: Text(context.getString(label: 'createAccount')),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: LanguageSwitcherWidget(),
+          ),
+        ],
+      ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           // Clear any existing snackbars
@@ -75,7 +84,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 margin: const EdgeInsets.all(8),
                 action: SnackBarAction(
-                  label: 'Dismiss',
+                  label: context.getString(label: 'dismiss'),
                   textColor: Colors.white,
                   onPressed: () {
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -91,10 +100,10 @@ class _SignupPageState extends State<SignupPage> {
                   children: [
                     const Icon(Icons.check_circle_outline, color: Colors.white),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Account created successfully!',
-                        style: TextStyle(color: Colors.white),
+                        context.getString(label: 'accountCreatedSuccessfully'),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ],
@@ -168,14 +177,14 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     const SizedBox(height: 32),
                     Text(
-                      'Create Account',
+                      context.getString(label: 'createAccount'),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Sign up to get started',
+                      context.getString(label: 'signUpToGetStarted'),
                       textAlign: TextAlign.center,
                       style: Theme.of(
                         context,
@@ -184,12 +193,12 @@ class _SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 32),
                     CustomTextField(
                       controller: _nameController,
-                      labelText: 'Full Name',
-                      hintText: 'Enter your full name',
+                      labelText: context.getString(label: 'fullName'),
+                      hintText: context.getString(label: 'enterYourFullName'),
                       prefixIcon: Icons.person_outline,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return context.getString(label: 'pleaseEnterName');
                         }
                         return null;
                       },
@@ -197,18 +206,18 @@ class _SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 16),
                     CustomTextField(
                       controller: _emailController,
-                      labelText: 'Email',
-                      hintText: 'Enter your email',
+                      labelText: context.getString(label: 'email'),
+                      hintText: context.getString(label: 'enterYourEmail'),
                       prefixIcon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return context.getString(label: 'pleaseEnterEmail');
                         }
                         if (!RegExp(
                           r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                         ).hasMatch(value)) {
-                          return 'Please enter a valid email';
+                          return context.getString(label: 'pleaseEnterValidEmail');
                         }
                         return null;
                       },
@@ -216,16 +225,16 @@ class _SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 16),
                     CustomTextField(
                       controller: _passwordController,
-                      labelText: 'Password',
-                      hintText: 'Enter your password',
+                      labelText: context.getString(label: 'password'),
+                      hintText: context.getString(label: 'enterYourPassword'),
                       prefixIcon: Icons.lock_outline,
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a password';
+                          return context.getString(label: 'pleaseEnterAPassword');
                         }
                         if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
+                          return context.getString(label: 'passwordMinLength');
                         }
                         return null;
                       },
@@ -233,16 +242,16 @@ class _SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 16),
                     CustomTextField(
                       controller: _confirmPasswordController,
-                      labelText: 'Confirm Password',
-                      hintText: 'Confirm your password',
+                      labelText: context.getString(label: 'confirmPassword'),
+                      hintText: context.getString(label: 'confirmYourPassword'),
                       prefixIcon: Icons.lock_outline,
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please confirm your password';
+                          return context.getString(label: 'pleaseConfirmPassword');
                         }
                         if (value != _passwordController.text) {
-                          return 'Passwords do not match';
+                          return context.getString(label: 'passwordsDoNotMatch');
                         }
                         return null;
                       },
@@ -250,19 +259,19 @@ class _SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 32),
                     CustomButton(
                       onPressed: state is AuthLoading ? null : _register,
-                      text: 'Sign Up',
+                      text: context.getString(label: 'signUp'),
                       isLoading: state is AuthLoading,
                     ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Already have an account?"),
+                        Text(context.getString(label: 'alreadyHaveAccount')),
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: const Text('Sign In'),
+                          child: Text(context.getString(label: 'signIn')),
                         ),
                       ],
                     ),
