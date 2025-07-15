@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Mommy HAI',
           theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.system,
+          // darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeMode.light,
           home: const AppInitializer(),
         ),
       ),

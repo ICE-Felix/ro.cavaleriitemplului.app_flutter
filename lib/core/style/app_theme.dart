@@ -52,54 +52,55 @@ class AppTheme {
     );
   }
 
-  static ThemeData get darkTheme {
-    return ThemeData(
-      useMaterial3: true,
-      scaffoldBackgroundColor: AppColors.darkBackground,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
-        brightness: Brightness.dark,
-        surface: AppColors.darkSurface,
-      ),
-      appBarTheme: const AppBarTheme(
-        elevation: 0,
-        centerTitle: true,
-        backgroundColor: AppColors.darkBackground,
-        foregroundColor: Colors.white,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: AppColors.purpleAccent,
-          minimumSize: const Size.fromHeight(50),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.darkBorder),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.purpleAccent),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.error),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        fillColor: AppColors.darkSurface,
-        filled: true,
-      ),
-      textTheme: AppTextStyles.textTheme.apply(
-        bodyColor: AppColors.onDarkBackground,
-        displayColor: AppColors.onDarkBackground,
-      ),
-    );
-  }
+  // not used at the moment
+  // static ThemeData get darkTheme {
+  //   return ThemeData(
+  //     useMaterial3: true,
+  //     scaffoldBackgroundColor: AppColors.darkBackground,
+  //     colorScheme: ColorScheme.fromSeed(
+  //       seedColor: AppColors.primary,
+  //       brightness: Brightness.dark,
+  //       surface: AppColors.darkSurface,
+  //     ),
+  //     appBarTheme: const AppBarTheme(
+  //       elevation: 0,
+  //       centerTitle: true,
+  //       backgroundColor: AppColors.darkBackground,
+  //       foregroundColor: Colors.white,
+  //     ),
+  //     elevatedButtonTheme: ElevatedButtonThemeData(
+  //       style: ElevatedButton.styleFrom(
+  //         foregroundColor: Colors.white,
+  //         backgroundColor: AppColors.purpleAccent,
+  //         minimumSize: const Size.fromHeight(50),
+  //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  //       ),
+  //     ),
+  //     inputDecorationTheme: InputDecorationTheme(
+  //       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+  //       enabledBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(8),
+  //         borderSide: const BorderSide(color: AppColors.darkBorder),
+  //       ),
+  //       focusedBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(8),
+  //         borderSide: const BorderSide(color: AppColors.purpleAccent),
+  //       ),
+  //       errorBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(8),
+  //         borderSide: const BorderSide(color: AppColors.error),
+  //       ),
+  //       contentPadding: const EdgeInsets.symmetric(
+  //         horizontal: 16,
+  //         vertical: 14,
+  //       ),
+  //       fillColor: AppColors.darkSurface,
+  //       filled: true,
+  //     ),
+  //     textTheme: AppTextStyles.textTheme.apply(
+  //       bodyColor: AppColors.onDarkBackground,
+  //       displayColor: AppColors.onDarkBackground,
+  //     ),
+  //   );
+  // }
 }
