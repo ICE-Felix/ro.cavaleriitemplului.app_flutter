@@ -1,6 +1,8 @@
+import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/localization/app_localization.dart';
@@ -120,10 +122,7 @@ class _LoginPageState extends State<LoginPage> {
             // Navigate to news page after successful login
             Future.delayed(const Duration(seconds: 1), () {
               if (mounted) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const NewsPage()),
-                );
+                context.pushReplacementNamed(AppRoutesNames.news.name);
               }
             });
           }
@@ -227,12 +226,7 @@ class _LoginPageState extends State<LoginPage> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ForgotPasswordPage(),
-                            ),
-                          );
+                          context.pushNamed(AppRoutesNames.forgotPassword.name);
                         },
                         child: Text(context.getString(label: 'forgotPassword')),
                       ),
@@ -250,12 +244,7 @@ class _LoginPageState extends State<LoginPage> {
                         Text(context.getString(label: 'dontHaveAccount')),
                         TextButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SignupPage(),
-                              ),
-                            );
+                            context.pushNamed(AppRoutesNames.register.name);
                           },
                           child: Text(context.getString(label: 'signUp')),
                         ),

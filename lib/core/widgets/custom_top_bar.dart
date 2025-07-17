@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import '../style/app_colors.dart';
 import '../style/app_text_styles.dart';
 
@@ -454,7 +455,7 @@ class CompactTopBar extends StatelessWidget implements PreferredSizeWidget {
           leading ??
           (ModalRoute.of(context)?.canPop == true
               ? IconButton(
-                onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
+                onPressed: onBackPressed ?? () => context.pop(),
                 icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 18),
                 tooltip: 'Back',
               )
@@ -527,7 +528,7 @@ class LogoTopBar extends StatelessWidget implements PreferredSizeWidget {
           leading ??
           (ModalRoute.of(context)?.canPop == true
               ? IconButton(
-                onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
+                onPressed: onBackPressed ?? () => context.pop(),
                 icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 18),
                 tooltip: 'Back',
               )

@@ -1,3 +1,4 @@
+import 'package:app/core/navigation/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -35,13 +36,16 @@ class MyApp extends StatelessWidget {
               (context) => sl<LocalizationCubit>()..initializeLocalization(),
         ),
       ],
+
       child: LocalizationProvider(
-        child: MaterialApp(
+        child: MaterialApp.router(
           title: 'Mommy HAI',
           theme: AppTheme.lightTheme,
-          // darkTheme: AppTheme.darkTheme,
+          //darkTheme: AppTheme.darkTheme,
           themeMode: ThemeMode.light,
-          home: const AppInitializer(),
+          routerDelegate: routes.routerDelegate,
+          routeInformationProvider: routes.routeInformationProvider,
+          routeInformationParser: routes.routeInformationParser,
         ),
       ),
     );

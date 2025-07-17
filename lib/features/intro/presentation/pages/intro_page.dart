@@ -1,5 +1,7 @@
+import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../auth/presentation/pages/login_page.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -39,14 +41,9 @@ class IntroView extends StatelessWidget {
             listener: (context, state) {
               if (state is AuthAuthenticated) {
                 // User is authenticated, navigate to news page
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const NewsPage()),
-                );
+                context.replaceNamed(AppRoutesNames.news.name);
               } else if (state is AuthUnauthenticated) {
-                // User is not authenticated, navigate to login page
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                );
+                context.replaceNamed(AppRoutesNames.login.name);
               }
             },
           ),

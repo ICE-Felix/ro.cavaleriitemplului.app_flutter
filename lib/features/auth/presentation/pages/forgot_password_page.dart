@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/localization/app_localization.dart';
@@ -218,7 +219,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           Text(context.getString(label: 'rememberPassword')),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              context.pop();
             },
             child: Text(context.getString(label: 'signIn')),
           ),
@@ -260,7 +261,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       CustomButton(
         onPressed: () {
           if (mounted) {
-            Navigator.pop(context);
+            context.pop();
           }
         },
         text: context.getString(label: 'backToLogin'),

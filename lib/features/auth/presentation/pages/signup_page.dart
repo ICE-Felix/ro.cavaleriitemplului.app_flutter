@@ -1,6 +1,8 @@
+import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/localization/app_localization.dart';
@@ -121,10 +123,7 @@ class _SignupPageState extends State<SignupPage> {
             // Navigate to news page after successful signup
             Future.delayed(const Duration(seconds: 1), () {
               if (mounted) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const NewsPage()),
-                );
+                context.replaceNamed(AppRoutesNames.news.name);
               }
             });
           }
@@ -269,7 +268,7 @@ class _SignupPageState extends State<SignupPage> {
                         Text(context.getString(label: 'alreadyHaveAccount')),
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            context.pop();
                           },
                           child: Text(context.getString(label: 'signIn')),
                         ),

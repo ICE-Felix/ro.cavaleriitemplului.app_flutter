@@ -1,5 +1,7 @@
+import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/service_locator.dart';
@@ -118,7 +120,7 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => context.pop(),
               icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 16),
               label: const Text('Înapoi la articole'),
             ),
@@ -298,22 +300,10 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
 
   void _openArticle(BookmarkEntity bookmark) {
     // Convert BookmarkEntity to NewsEntity for the detail page
-    final newsEntity = NewsEntity(
-      id: bookmark.newsId,
-      title: bookmark.title,
-      content: '', // We don't store full content in bookmarks
-      summary: bookmark.summary,
-      imageUrl: bookmark.imageUrl,
-      author: bookmark.author,
-      publishedAt: bookmark.bookmarkedAt, // Use bookmark date as fallback
-      category: bookmark.category,
-      source: bookmark.source,
-      views: 0, // Default value
-      tags: [], // Default value
-    );
 
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => NewsDetailPage(news: newsEntity)),
+    context.pushNamed(
+      AppRoutesNames.newsDetails.name,
+      pathParameters: {'id': bookmark.newsId},
     );
   }
 

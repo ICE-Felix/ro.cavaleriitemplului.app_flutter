@@ -1,6 +1,8 @@
+import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/custom_top_bar.dart';
 import '../../../../core/style/app_colors.dart';
@@ -81,7 +83,10 @@ class _NewsPageState extends State<NewsPage> {
       listener: (context, state) {
         if (state is AuthUnauthenticated) {
           // Navigate back to intro page when user logs out
-          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          while (context.canPop()) {
+            context.pop();
+          }
+          context.pushNamed(AppRoutesNames.intro.name);
         }
       },
       child: Scaffold(
@@ -122,11 +127,7 @@ class _NewsPageState extends State<NewsPage> {
               padding: const EdgeInsets.only(right: 8.0),
               child: IconButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const SavedArticlesPage(),
-                    ),
-                  );
+                  context.pushNamed(AppRoutesNames.savedArticles.name);
                 },
                 icon: const FaIcon(FontAwesomeIcons.solidBookmark, size: 20),
                 tooltip: context.getString(label: 'savedArticles'),
@@ -272,13 +273,9 @@ class _NewsPageState extends State<NewsPage> {
                             return NewsItemWidget(
                               news: newsToShow[index],
                               onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => NewsDetailPage(
-                                          news: newsToShow[index],
-                                        ),
-                                  ),
+                                context.pushNamed(
+                                  AppRoutesNames.newsDetails.name,
+                                  pathParameters: {'id': newsToShow[index].id},
                                 );
                               },
                             );
@@ -316,13 +313,13 @@ class _NewsPageState extends State<NewsPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
                 // Trigger logout
                 context.read<AuthBloc>().add(LogoutRequested());
               },
