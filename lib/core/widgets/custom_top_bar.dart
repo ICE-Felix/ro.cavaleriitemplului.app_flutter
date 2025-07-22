@@ -14,6 +14,7 @@ class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showProfileButton;
   final bool showNotificationButton;
   final bool showMenuButton;
+  final bool showBackButton;
   final bool showLogo;
   final String? logoPath;
   final double logoHeight;
@@ -44,6 +45,7 @@ class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.showProfileButton = true,
     this.showNotificationButton = true,
     this.showMenuButton = false,
+    this.showBackButton = false,
     this.showLogo = false,
     this.logoPath = 'assets/images/logo/logo_line.png',
     this.logoHeight = 52,
@@ -157,6 +159,13 @@ class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
             },
           ),
         ),
+      );
+    }
+    if (showBackButton) {
+      return IconButton(
+        onPressed: () => context.pop(),
+        icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 20),
+        tooltip: 'Back',
       );
     }
     if (showMenuButton) {

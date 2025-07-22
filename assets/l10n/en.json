@@ -65,5 +65,36 @@
   "articleBookmarked": "Article \"{title}\" has been saved!",
   "articleUnbookmarked": "Article \"{title}\" has been removed from favorites!",
   "language": "Language",
-  "changeLanguage": "Change Language"
+  "changeLanguage": "Change Language",
+  "bottomNavigation": {
+    "news": "News",
+    "locations": "Locations",
+    "shop": "Shop",
+    "services": "Services",
+    "activities": "Activities"
+  },
+  "shop": {
+    "title": "Shop",
+    "categories": "Categories",
+    "products": "Products",
+    "productDetails": "Product Details",
+    "searchProducts": "Search products",
+    "searching": "Searching...",
+    "startTypingToSearch": "Start typing to search for products",
+    "noResultsFound": "No results found",
+    "trySearchingElse": "Try searching for something else",
+    "loading": "Loading...",
+    "error": "Error",
+    "noCategories": "No categories available",
+    "noProducts": "No products available",
+    "price": "Price",
+    "description": "Description",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "productCount": "{count} products",
+    "addToCart": "Add to Cart",
+    "viewProducts": "View Products",
+    "back": "Back",
+    "retry": "Retry"
+  }
 } 

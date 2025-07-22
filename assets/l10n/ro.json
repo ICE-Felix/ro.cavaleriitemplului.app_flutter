@@ -65,5 +65,36 @@
   "articleBookmarked": "Articolul \"{title}\" a fost salvat!",
   "articleUnbookmarked": "Articolul \"{title}\" a fost eliminat din favorite!",
   "language": "Limbă",
-  "changeLanguage": "Schimbă limba"
+  "changeLanguage": "Schimbă limba",
+  "bottomNavigation": {
+    "news": "Știri",
+    "locations": "Locații",
+    "shop": "Magazin",
+    "services": "Servicii",
+    "activities": "Activități"
+  },
+  "shop": {
+    "title": "Magazin",
+    "categories": "Categorii",
+    "products": "Produse",
+    "productDetails": "Detalii produs",
+    "searchProducts": "Caută produse",
+    "searching": "Se caută...",
+    "startTypingToSearch": "Începe să scrii pentru a căuta produse",
+    "noResultsFound": "Nu s-au găsit rezultate",
+    "trySearchingElse": "Încearcă să cauți altceva",
+    "loading": "Se încarcă...",
+    "error": "Eroare",
+    "noCategories": "Nu sunt categorii disponibile",
+    "noProducts": "Nu sunt produse disponibile",
+    "price": "Preț",
+    "description": "Descriere",
+    "inStock": "În stoc",
+    "outOfStock": "Stoc epuizat",
+    "productCount": "{count} produse",
+    "addToCart": "Adaugă în coș",
+    "viewProducts": "Vezi produsele",
+    "back": "Înapoi",
+    "retry": "Încearcă din nou"
+  }
 } 

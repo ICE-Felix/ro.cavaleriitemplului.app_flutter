@@ -48,6 +48,15 @@ class AppTheme {
         fillColor: AppColors.lightSurface,
         filled: true,
       ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        type: BottomNavigationBarType.fixed,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedLabelStyle: TextStyle(fontSize: 12),
+        unselectedLabelStyle: TextStyle(fontSize: 12),
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: Colors.grey,
+      ),
       textTheme: AppTextStyles.textTheme,
     );
   }

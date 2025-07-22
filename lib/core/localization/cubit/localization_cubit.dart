@@ -116,12 +116,25 @@ class LocalizationCubit extends Cubit<LocalizationState> {
 
   // Helper method to get value from nested path (e.g., "timeAgo.now")
   dynamic _getValueFromPath(Map<String, dynamic> map, String path) {
+    if (!path.contains('.')) {
+      return map[path];
+    }
     List<String> pathParts = path.split('.');
-    dynamic current = map;
+
+    final String lastPart = pathParts.last;
+    Map<String, dynamic> current = map;
 
     for (String part in pathParts) {
-      if (current is Map<String, dynamic> && current.containsKey(part)) {
-        current = current[part];
+      if (current.containsKey(part)) {
+        if (current[part] is Map) {
+          current = current[part];
+          if (part == lastPart) {
+            return current;
+          }
+        }
+        if (current[part] is String && part == lastPart) {
+          return current[part];
+        }
       } else {
         return null;
       }

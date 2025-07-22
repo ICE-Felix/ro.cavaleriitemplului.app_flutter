@@ -5,9 +5,14 @@ enum AppRoutesNames {
   register(name: 'register', path: 'register'),
   forgotPassword(name: 'forgot_password', path: 'forgot_password'),
   //News
-  news(name: 'news', path: 'news'),
+  news(name: 'news', path: '/news'),
   savedArticles(name: 'save_articles', path: 'save_articles'),
-  newsDetails(name: 'news_details', path: 'news_details');
+  newsDetails(name: 'news_details', path: 'news_details'),
+  //Shop
+  shop(name: 'shop', path: '/shop'),
+  products(name: 'products', path: 'products'),
+  productDetails(name: 'product_details', path: 'product_details'),
+  searchProducts(name: 'search_products', path: 'search_products');
 
   final String name;
   final String path;

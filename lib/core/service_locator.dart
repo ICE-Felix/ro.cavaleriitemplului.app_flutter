@@ -29,7 +29,8 @@ import '../features/news/data/repositories/news_repository_impl.dart';
 import '../features/news/domain/repositories/news_repository.dart';
 import '../features/news/domain/usecases/get_news_usecase.dart';
 import '../features/news/domain/usecases/search_news_usecase.dart';
-import '../features/news/domain/usecases/get_categories_usecase.dart';
+import '../features/news/domain/usecases/get_categories_usecase.dart'
+    as news_categories;
 import '../features/news/presentation/bloc/news_bloc.dart';
 // Bookmark feature imports
 import '../features/news/data/datasources/bookmark_local_data_source.dart';
@@ -37,6 +38,14 @@ import '../features/news/data/repositories/bookmark_repository_impl.dart';
 import '../features/news/domain/repositories/bookmark_repository.dart';
 import '../features/news/domain/usecases/toggle_bookmark_usecase.dart';
 import '../features/news/domain/usecases/check_bookmark_usecase.dart';
+// Shop feature imports
+import '../features/shop/data/datasources/shop_remote_data_source.dart';
+import '../features/shop/data/repositories/shop_repository_impl.dart';
+import '../features/shop/domain/repositories/shop_repository.dart';
+import '../features/shop/domain/usecases/get_categories_usecase.dart'
+    as shop_categories;
+import '../features/shop/domain/usecases/get_products_by_category_usecase.dart';
+import '../features/shop/domain/usecases/get_product_by_id_usecase.dart';
 
 final sl = GetIt.instance;
 
@@ -148,7 +157,8 @@ Future<void> initServiceLocator() async {
     () => SearchNewsUseCase(repository: sl<NewsRepository>()),
   );
   sl.registerLazySingleton(
-    () => GetCategoriesUseCase(repository: sl<NewsRepository>()),
+    () =>
+        news_categories.GetCategoriesUseCase(repository: sl<NewsRepository>()),
   );
 
   // Bookmark use cases
@@ -184,9 +194,28 @@ Future<void> initServiceLocator() async {
     () => NewsBloc(
       getNewsUseCase: sl<GetNewsUseCase>(),
       searchNewsUseCase: sl<SearchNewsUseCase>(),
-      getCategoriesUseCase: sl<GetCategoriesUseCase>(),
+      getCategoriesUseCase: sl<news_categories.GetCategoriesUseCase>(),
     ),
   );
+
+  // Shop data sources
+  sl.registerLazySingleton<ShopRemoteDataSource>(
+    () => ShopRemoteDataSourceImpl(),
+  );
+
+  // Shop repositories
+  sl.registerLazySingleton<ShopRepository>(
+    () => ShopRepositoryImpl(remoteDataSource: sl<ShopRemoteDataSource>()),
+  );
+
+  // Shop use cases
+  sl.registerLazySingleton(
+    () => shop_categories.GetCategoriesUseCase(sl<ShopRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => GetProductsByCategoryUseCase(sl<ShopRepository>()),
+  );
+  sl.registerLazySingleton(() => GetProductByIdUseCase(sl<ShopRepository>()));
 
   // Localization Cubit
   sl.registerFactory(() => LocalizationCubit());
