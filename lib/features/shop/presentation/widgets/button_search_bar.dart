@@ -1,5 +1,4 @@
 import 'package:app/core/localization/app_localization.dart';
-import 'package:app/core/style/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class ButtonSearchBar extends StatelessWidget {

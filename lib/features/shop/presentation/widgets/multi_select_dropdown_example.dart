@@ -87,7 +87,6 @@ class _MultiSelectDropdownExampleState
                 setState(() {
                   selectedCategoryIds = selectedIds;
                 });
-                print('Selected category IDs: $selectedIds');
               },
             ),
 
@@ -135,7 +134,6 @@ class _MultiSelectDropdownExampleState
                 setState(() {
                   selectedUserEmails = selectedEmails;
                 });
-                print('Selected user emails: $selectedEmails');
               },
             ),
 
@@ -173,7 +171,6 @@ class _MultiSelectDropdownExampleState
                 setState(() {
                   selectedColors = selectedColorList;
                 });
-                print('Selected colors: $selectedColorList');
               },
               maxHeight: 200.0,
             ),

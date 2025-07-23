@@ -29,14 +29,18 @@ class NavigationMenu extends StatelessWidget {
     switch (index) {
       case 0:
         // News
-        context.push(AppRoutesNames.news.path);
+        if (_getCurrentIndex() != 0) {
+          context.push(AppRoutesNames.news.path);
+        }
         break;
       case 1:
         // Locations - Disabled for now
         break;
       case 2:
         // Shop
-        context.push(AppRoutesNames.shop.path);
+        if (_getCurrentIndex() != 2) {
+          context.push(AppRoutesNames.shop.path);
+        }
         break;
     }
   }

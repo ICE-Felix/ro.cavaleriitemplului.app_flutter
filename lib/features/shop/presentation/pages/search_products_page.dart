@@ -1,9 +1,11 @@
 import 'package:app/core/localization/app_localization.dart';
 import 'package:app/core/navigation/routes_name.dart';
 import 'package:app/core/widgets/custom_top_bar.dart';
-import 'package:app/features/shop/presentation/cubit/search_products/cubit/search_products_cubit.dart';
+import 'package:app/features/shop/presentation/cubit/search_products/search_products_cubit.dart';
 import 'package:app/features/shop/presentation/widgets/product_card.dart';
 import 'package:app/features/shop/presentation/widgets/products_search_bar.dart';
+import 'package:app/features/shop/presentation/widgets/search_products/search_products_empty_query.dart';
+import 'package:app/features/shop/presentation/widgets/search_products/search_products_empty_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -18,56 +20,11 @@ class SearchProductsPage extends StatefulWidget {
 
 class _SearchProductsPageState extends State<SearchProductsPage> {
   final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
-  bool _isSearching = false;
-  List<String> _searchResults =
-      []; // This will be replaced with actual product search results
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  void _performSearch(String query) {
-    if (query.trim().isEmpty) {
-      setState(() {
-        _searchQuery = '';
-        _searchResults = [];
-        _isSearching = false;
-      });
-      return;
-    }
-
-    setState(() {
-      _searchQuery = query;
-      _isSearching = true;
-    });
-
-    // TODO: Implement actual search functionality with your search use case
-    // This is a placeholder implementation
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted && _searchQuery == query) {
-        setState(() {
-          _isSearching = false;
-          // Mock search results - replace with actual search logic
-          _searchResults = [
-            'Search result 1 for "$query"',
-            'Search result 2 for "$query"',
-            'Search result 3 for "$query"',
-          ];
-        });
-      }
-    });
-  }
-
-  void _clearSearch() {
-    _searchController.clear();
-    setState(() {
-      _searchQuery = '';
-      _searchResults = [];
-      _isSearching = false;
-    });
   }
 
   @override
@@ -115,8 +72,12 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
                       (query) => context
                           .read<SearchProductsCubit>()
                           .searchProducts(query),
-                  onClear: _clearSearch,
-                  onSubmitted: () => _performSearch(_searchController.text),
+                  onClear:
+                      () => context.read<SearchProductsCubit>().clearSearch(),
+                  onSubmitted:
+                      () => context.read<SearchProductsCubit>().searchProducts(
+                        _searchController.text,
+                      ),
                   margin: const EdgeInsets.all(16.0),
                 ),
 
@@ -131,38 +92,10 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
                             previous.searchQuery != current.searchQuery,
                     builder: (context, state) {
                       if (state.searchQuery.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.search_off,
-                                size: 64,
-                                color: Colors.grey[400],
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                context.getString(label: 'shop.noResultsFound'),
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.grey[600],
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                context.getString(
-                                  label: 'shop.trySearchingElse',
-                                ),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[500],
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        );
+                        return SearchProductsEmptyQuery();
+                      }
+                      if (state.products.isEmpty) {
+                        return SearchProductsEmptyResult();
                       }
                       if (state.isLoading) {
                         return Center(
@@ -177,9 +110,11 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
                         );
                       }
                       // ToDO -> add error state
-                      return ListView.builder(
+                      return ListView.separated(
                         padding: const EdgeInsets.all(16.0),
                         itemCount: state.products.length,
+                        separatorBuilder:
+                            (context, index) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           final product = state.products[index];
                           return ProductCard(
@@ -191,17 +126,6 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
                               );
                             },
                           );
-                          // return Card(
-                          //   margin: const EdgeInsets.only(bottom: 8.0),
-                          //   child: ListTile(
-                          //     leading: const Icon(Icons.shopping_bag_outlined),
-                          //     title: Text(product.name),
-                          //     subtitle: Text(product.description),
-                          //     onTap: () {
-                          //       // TODO: Navigate to product details
-                          //     },
-                          //   ),
-                          // );
                         },
                       );
                     },
@@ -212,104 +136,6 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
           },
         ),
       ),
-    );
-  }
-
-  Widget _buildSearchContent() {
-    if (_searchQuery.isEmpty) {
-      return _buildEmptyState();
-    }
-
-    if (_isSearching) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            Text(context.getString(label: 'shop.searching')),
-          ],
-        ),
-      );
-    }
-
-    if (_searchResults.isEmpty) {
-      return _buildNoResultsState();
-    }
-
-    return _buildSearchResults();
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.search, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            context.getString(label: 'shop.searchProducts'),
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            context.getString(label: 'shop.startTypingToSearch'),
-            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNoResultsState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            context.getString(label: 'shop.noResultsFound'),
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            context.getString(label: 'shop.trySearchingElse'),
-            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSearchResults() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemCount: _searchResults.length,
-      itemBuilder: (context, index) {
-        final result = _searchResults[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 8.0),
-          child: ListTile(
-            leading: const Icon(Icons.shopping_bag_outlined),
-            title: Text(result),
-            subtitle: Text(context.getString(label: 'shop.description')),
-            onTap: () {
-              // TODO: Navigate to product details
-            },
-          ),
-        );
-      },
     );
   }
 }

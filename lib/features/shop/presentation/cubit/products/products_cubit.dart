@@ -9,18 +9,20 @@ import 'package:app/core/error/exceptions.dart';
 part 'products_state.dart';
 
 class ProductsCubit extends Cubit<ProductsState> {
-  ProductsCubit() : super(ProductsState(categoryId: 0));
+  ProductsCubit({required int parentCategoryId})
+    : super(ProductsState(categoryId: parentCategoryId));
 
-  Future<void> getProducts(int parentCategoryId, {String? searchQuery, List<int>? selectedSubCategoriesIds}) async {
+  Future<void> getProducts() async {
     emit(state.copyWith(isLoading: true));
     try {
       final subcategories = await sl.get<ShopRepository>().getSubCategories(
-        parentCategoryId,
+        state.categoryId,
       );
-      final categories = selectedSubCategoriesIds == null || selectedSubCategoriesIds.isEmpty
-          ? [parentCategoryId]
-          : selectedSubCategoriesIds;
-      final query = searchQuery == null || searchQuery.isEmpty ? null : searchQuery;
+      final categories =
+          state.selectedSubCategoriesIds.isEmpty
+              ? [state.categoryId]
+              : state.selectedSubCategoriesIds;
+      final query = state.searchQuery.isEmpty ? null : state.searchQuery;
       final products = await sl.get<ShopRepository>().filterProducts(
         query: query,
         categories: categories,
@@ -47,8 +49,17 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
   }
 
-  void retry(int categoryId) {
-    getProducts(categoryId);
+  void changeSearchQuery(String? query) {
+    if (query == state.searchQuery) {
+      return;
+    }
+    emit(state.copyWith(searchQuery: query));
+    getProducts();
+  }
+
+  void changeSelectedSubCategoriesIds(List<int>? ids) {
+    emit(state.copyWith(selectedSubCategoriesIds: ids ?? []));
+    getProducts();
   }
 
   void clearProducts() {

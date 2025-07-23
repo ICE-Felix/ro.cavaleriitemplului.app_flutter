@@ -18,16 +18,12 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       final categories = await GetParentCategoriesUseCase(
         sl<ShopRepository>(),
       ).call(NoParams());
-      print(categories);
       emit(CategoriesLoaded(categories: categories));
     } on ServerException catch (e) {
-      print('ServerException: ${e.message}');
       emit(CategoriesError(message: e.message));
     } on AuthException catch (e) {
-      print('AuthException: ${e.message}');
       emit(CategoriesError(message: e.message));
     } catch (e) {
-      print('Unexpected error: $e');
       emit(CategoriesError(message: 'An unexpected error occurred: $e'));
     }
   }

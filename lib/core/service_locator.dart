@@ -200,7 +200,7 @@ Future<void> initServiceLocator() async {
 
   // Shop data sources
   sl.registerLazySingleton<ShopRemoteDataSource>(
-    () => ShopRemoteDataSourceImpl(),
+    () => ShopRemoteDataSourceImpl(dio: sl<DioClient>()),
   );
 
   // Shop repositories

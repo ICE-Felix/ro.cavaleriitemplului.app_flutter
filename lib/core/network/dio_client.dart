@@ -1,3 +1,5 @@
+import 'package:app/core/network/supabase_client.dart';
+import 'package:app/core/service_locator.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -6,15 +8,17 @@ import '../error/exceptions.dart';
 
 class DioClient {
   late final Dio _dio;
+  late final SupabaseAuthClient _authClient;
 
   // Singleton pattern
   static final DioClient _instance = DioClient._internal();
   factory DioClient() => _instance;
 
   DioClient._internal() {
+    _authClient = sl.get<SupabaseAuthClient>();
     _dio = Dio(
       BaseOptions(
-        baseUrl: dotenv.get('API_BASE_URL'),
+        baseUrl: '${dotenv.get('SUPABASE_URL')}/functions/v1',
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         sendTimeout: const Duration(seconds: 30),
@@ -32,11 +36,18 @@ class DioClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          // Add auth token if needed
-          // final token = getToken();
-          // if (token != null) {
-          //   options.headers['Authorization'] = 'Bearer $token';
-          // }
+          if (_authClient.isAuthenticated) {
+            final session = _authClient.currentSession;
+            if (session?.accessToken != null) {
+              options.headers['Authorization'] =
+                  'Bearer ${session!.accessToken}';
+            }
+          }
+
+          options.headers['x-client-type'] = 'api';
+          options.headers['apikey'] = dotenv.get('ANON_KEY');
+          options.headers['Content-Type'] = 'application/json';
+          options.headers['Accept'] = 'application/json';
 
           if (kDebugMode) {
             print('REQUEST[${options.method}] => PATH: ${options.path}');

@@ -1,12 +1,12 @@
 import 'package:app/core/navigation/routes_name.dart';
-import 'package:app/features/shop/presentation/widgets/multi_select_dropdown.dart';
+import 'package:app/features/shop/presentation/widgets/multi_select_2_dropdown.dart';
+import 'package:app/features/shop/presentation/widgets/product_card.dart';
 import 'package:app/features/shop/presentation/widgets/products_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:app/core/widgets/custom_top_bar.dart';
 import 'package:app/features/shop/domain/entities/product_category_entity.dart';
 import 'package:app/features/shop/presentation/cubit/products/products_cubit.dart';
-import 'package:app/features/shop/presentation/widgets/product_card.dart';
 import 'package:go_router/go_router.dart';
 
 class ProductsPage extends StatelessWidget {
@@ -17,7 +17,9 @@ class ProductsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ProductsCubit()..getProducts(category.id),
+      create:
+          (context) =>
+              ProductsCubit(parentCategoryId: category.id)..getProducts(),
       child: _ProductsPageView(category: category),
     );
   }
@@ -43,16 +45,16 @@ class _ProductsPageViewState extends State<_ProductsPageView> {
             children: [
               ProductsSearchBar(
                 onChanged: (query) {
-                  context.read<ProductsCubit>().getProducts(
-                    widget.category.id,
-                    searchQuery: query,
-                  );
+                  context.read<ProductsCubit>().changeSearchQuery(query);
                 },
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: MultiSelectDropdown<ProductCategoryEntity, int>(
+                child: MultiSelect2Dropdown<ProductCategoryEntity, int>(
                   items: state.subCategories,
+                  searchExtractor:
+                      (ProductCategoryEntity category) => category.name,
+                  searchHintText: 'Search categories',
                   hintText: 'Choose categories',
                   builderFunction: (ProductCategoryEntity category) {
                     return Text(category.name);
@@ -60,10 +62,9 @@ class _ProductsPageViewState extends State<_ProductsPageView> {
                   valueExtractor:
                       (ProductCategoryEntity category) => category.id,
                   onChanged: (List<int> selectedIds) {
-                    context.read<ProductsCubit>().getProducts(
-                      widget.category.id,
-                      selectedSubCategoriesIds: selectedIds,
-                    );
+                    context
+                        .read<ProductsCubit>()
+                        .changeSelectedSubCategoriesIds(selectedIds);
                   },
                 ),
               ),
@@ -95,9 +96,7 @@ class _ProductsPageViewState extends State<_ProductsPageView> {
                               const SizedBox(height: 16),
                               ElevatedButton(
                                 onPressed: () {
-                                  context.read<ProductsCubit>().retry(
-                                    widget.category.id,
-                                  );
+                                  context.read<ProductsCubit>().getProducts();
                                 },
                                 child: const Text(
                                   'Retry',
@@ -108,8 +107,10 @@ class _ProductsPageViewState extends State<_ProductsPageView> {
                         );
                       }
 
-                      return ListView.builder(
+                      return ListView.separated(
                         padding: const EdgeInsets.all(16.0),
+                        separatorBuilder:
+                            (context, index) => const SizedBox(height: 8),
                         itemCount: state.products.length,
                         itemBuilder: (context, index) {
                           final product = state.products[index];
@@ -146,9 +147,7 @@ class _ProductsPageViewState extends State<_ProductsPageView> {
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: () {
-                                context.read<ProductsCubit>().retry(
-                                  widget.category.id,
-                                );
+                                context.read<ProductsCubit>().getProducts();
                               },
                               child: const Text(
                                 'Retry',

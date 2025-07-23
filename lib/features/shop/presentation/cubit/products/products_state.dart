@@ -8,6 +8,8 @@ class ProductsState extends Equatable {
     this.isLoading = false,
     this.isError = false,
     this.message = '',
+    this.selectedSubCategoriesIds = const [],
+    this.searchQuery = '',
   });
 
   final List<ProductEntity> products;
@@ -16,6 +18,8 @@ class ProductsState extends Equatable {
   final bool isError;
   final String message;
   final List<ProductCategoryEntity> subCategories;
+  final List<int> selectedSubCategoriesIds;
+  final String searchQuery;
 
   ProductsState copyWith({
     List<ProductEntity>? products,
@@ -24,6 +28,8 @@ class ProductsState extends Equatable {
     bool? isError,
     String? message,
     List<ProductCategoryEntity>? subCategories,
+    List<int>? selectedSubCategoriesIds,
+    String? searchQuery,
   }) {
     return ProductsState(
       products: products ?? this.products,
@@ -32,6 +38,9 @@ class ProductsState extends Equatable {
       isError: isError ?? this.isError,
       message: message ?? this.message,
       subCategories: subCategories ?? this.subCategories,
+      selectedSubCategoriesIds:
+          selectedSubCategoriesIds ?? this.selectedSubCategoriesIds,
+      searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 
@@ -43,5 +52,7 @@ class ProductsState extends Equatable {
     isError,
     message,
     subCategories,
+    selectedSubCategoriesIds,
+    searchQuery,
   ];
 }

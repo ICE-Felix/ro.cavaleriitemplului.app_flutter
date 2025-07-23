@@ -84,59 +84,66 @@ class _ProductsSearchBarState extends State<ProductsSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: widget.margin ?? const EdgeInsets.all(16.0),
-      height: widget.height ?? 50.0,
+    return TapRegion(
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(25.0),
-          border: Border.all(color: Colors.grey[300]!),
-        ),
-        child: Row(
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Icon(Icons.search, color: Colors.grey, size: 24.0),
-            ),
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(25.0),
-                child: TextField(
-                  controller: _controller,
-                  autofocus: widget.autofocus,
-                  decoration: InputDecoration(
-                    hintText: context.getString(label: 'shop.searchProducts'),
-                    hintStyle: TextStyle(
-                      color: Colors.grey[600],
-                      // fontSize: 16.0,
-                    ),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 8.0,
-                      horizontal: 2,
-                    ),
-                  ),
-                  style: const TextStyle(fontSize: 16.0),
-                  onSubmitted: (_) => widget.onSubmitted?.call(),
-                ),
+        margin: widget.margin ?? const EdgeInsets.all(16.0),
+        height: widget.height ?? 50.0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(25.0),
+            border: Border.all(color: Colors.grey[300]!),
+          ),
+          child: Row(
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Icon(Icons.search, color: Colors.grey, size: 24.0),
               ),
-            ),
-            if (_showClearButton)
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: IconButton(
-                  onPressed: _onClearPressed,
-                  icon: const Icon(Icons.clear, color: Colors.grey, size: 20.0),
-                  constraints: const BoxConstraints(
-                    minHeight: 32,
-                    minWidth: 32,
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(25.0),
+                  child: TextField(
+                    controller: _controller,
+                    autofocus: widget.autofocus,
+                    decoration: InputDecoration(
+                      hintText: context.getString(label: 'shop.searchProducts'),
+                      hintStyle: TextStyle(
+                        color: Colors.grey[600],
+                        // fontSize: 16.0,
+                      ),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                        horizontal: 2,
+                      ),
+                    ),
+                    style: const TextStyle(fontSize: 16.0),
+                    onSubmitted: (_) => widget.onSubmitted?.call(),
                   ),
                 ),
               ),
-          ],
+              if (_showClearButton)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: IconButton(
+                    onPressed: _onClearPressed,
+                    icon: const Icon(
+                      Icons.clear,
+                      color: Colors.grey,
+                      size: 20.0,
+                    ),
+                    constraints: const BoxConstraints(
+                      minHeight: 32,
+                      minWidth: 32,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
