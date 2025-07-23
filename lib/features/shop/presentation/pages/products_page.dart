@@ -1,4 +1,5 @@
 import 'package:app/core/navigation/routes_name.dart';
+import 'package:app/core/style/app_colors.dart';
 import 'package:app/features/shop/presentation/widgets/multi_select_2_dropdown.dart';
 import 'package:app/features/shop/presentation/widgets/product_card.dart';
 import 'package:app/features/shop/presentation/widgets/products_search_bar.dart';
@@ -38,11 +39,26 @@ class _ProductsPageViewState extends State<_ProductsPageView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomTopBar(title: widget.category.name, showBackButton: true),
+      appBar: CustomTopBar(showBackButton: true, title: 'Products'),
       body: BlocBuilder<ProductsCubit, ProductsState>(
         builder: (context, state) {
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  top: 16.0,
+                  // bottom: 8,
+                ),
+                child: Text(
+                  widget.category.name,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
               ProductsSearchBar(
                 onChanged: (query) {
                   context.read<ProductsCubit>().changeSearchQuery(query);
@@ -76,33 +92,27 @@ class _ProductsPageViewState extends State<_ProductsPageView> {
                       return const Center(child: CircularProgressIndicator());
                     } else if (state.isError == false) {
                       if (state.products.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.shopping_bag_outlined,
-                                size: 64,
-                                color: Colors.grey,
-                              ),
-                              const SizedBox(height: 16),
-                              const Text(
-                                'No products available', // TODO: Use localized string
-                                style: TextStyle(
-                                  fontSize: 16,
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.shopping_bag_outlined,
+                                  size: 64,
                                   color: Colors.grey,
                                 ),
-                              ),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: () {
-                                  context.read<ProductsCubit>().getProducts();
-                                },
-                                child: const Text(
-                                  'Retry',
-                                ), // TODO: Use localized string
-                              ),
-                            ],
+                                const SizedBox(height: 16),
+                                const Text(
+                                  'No products available', // TODO: Use localized string
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       }
@@ -127,33 +137,34 @@ class _ProductsPageViewState extends State<_ProductsPageView> {
                       );
                     } else if (state.isError) {
                       return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.error_outline,
-                              size: 64,
-                              color: Colors.red,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              state.message,
-                              style: const TextStyle(
-                                fontSize: 16,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                size: 64,
                                 color: Colors.red,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                context.read<ProductsCubit>().getProducts();
-                              },
-                              child: const Text(
-                                'Retry',
-                              ), // TODO: Use localized string
-                            ),
-                          ],
+                              const SizedBox(height: 16),
+                              Text(
+                                state.message,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: () {
+                                  context.read<ProductsCubit>().getProducts();
+                                },
+                                child: const Text('Retry'),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }
