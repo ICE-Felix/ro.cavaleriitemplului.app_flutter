@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "767838230428",
+    "project_id": "mommy-hai-ef20b",
+    "storage_bucket": "mommy-hai-ef20b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:767838230428:android:151e983b65025ae2ad1a59",
+        "android_client_info": {
+          "package_name": "com.mommyhai.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7cf0pS7L9F_UKIXf-aafREWLrTHlYfP4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:767838230428:android:9b9113db7be7750cad1a59",
+        "android_client_info": {
+          "package_name": "com.mommyhai.app.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7cf0pS7L9F_UKIXf-aafREWLrTHlYfP4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

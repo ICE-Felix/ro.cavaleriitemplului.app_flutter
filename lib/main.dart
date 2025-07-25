@@ -1,4 +1,7 @@
 import 'package:app/core/navigation/routes.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,9 +13,28 @@ import 'core/localization/app_localization.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/intro/presentation/bloc/intro_bloc.dart';
 import 'features/news/presentation/bloc/news_bloc.dart';
+import 'firebase_options.dart';
+import '../core/services/firebase_messaging_service.dart';
+import 'features/notifications/presentation/bloc/notification_bloc.dart';
+
+// Background message handler (must be top-level function)
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (kDebugMode) {
+    print('Handling a background message: ${message.messageId}');
+  }
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+
+  // Set up background message handler
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   // Load environment variables
   await dotenv.load(fileName: ".env");
   // Initialize dependency injection
@@ -31,17 +53,16 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<AuthBloc>()),
         BlocProvider(create: (context) => sl<IntroBloc>()),
         BlocProvider(create: (context) => sl<NewsBloc>()),
+        BlocProvider(create: (context) => sl<NotificationBloc>()),
         BlocProvider(
           create:
               (context) => sl<LocalizationCubit>()..initializeLocalization(),
         ),
       ],
-
       child: LocalizationProvider(
         child: MaterialApp.router(
           title: 'Mommy HAI',
           theme: AppTheme.lightTheme,
-          //darkTheme: AppTheme.darkTheme,
           themeMode: ThemeMode.light,
           routerConfig: routes,
         ),

@@ -46,6 +46,8 @@ import '../features/shop/domain/usecases/get_categories_usecase.dart'
     as shop_categories;
 import '../features/shop/domain/usecases/get_products_by_category_usecase.dart';
 import '../features/shop/domain/usecases/get_product_by_id_usecase.dart';
+import '../core/services/firebase_messaging_service.dart';
+import '../features/notifications/presentation/bloc/notification_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -219,4 +221,10 @@ Future<void> initServiceLocator() async {
 
   // Localization Cubit
   sl.registerFactory(() => LocalizationCubit());
+
+  // Initialize FCM
+  await FirebaseMessagingService.initialize();
+
+  // Notification BLoC
+  sl.registerFactory(() => NotificationBloc());
 }
