@@ -1,3 +1,4 @@
+import 'package:app/core/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/notification_bloc.dart';
@@ -16,7 +17,7 @@ class NotificationSettingsPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () async {
-                String? token = await FirebaseMessagingService.getToken();
+                String? token = await sl<FirebaseMessagingService>().getToken();
                 if (token != null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Token: $token')),

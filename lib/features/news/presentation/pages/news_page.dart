@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/custom_top_bar.dart';
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/localization/app_localization.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/authentication_bloc.dart';
 import '../bloc/news_bloc.dart';
 import '../widgets/news_item_widget.dart';
 import 'news_detail_page.dart';
@@ -79,7 +79,7 @@ class _NewsPageState extends State<NewsPage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
         if (state is AuthUnauthenticated) {
           // Navigate back to intro page when user logs out
@@ -321,7 +321,7 @@ class _NewsPageState extends State<NewsPage> {
               onPressed: () {
                 context.pop();
                 // Trigger logout
-                context.read<AuthBloc>().add(LogoutRequested());
+                context.read<AuthenticationBloc>().add(LogoutRequested());
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
               child: const Text('Logout'),

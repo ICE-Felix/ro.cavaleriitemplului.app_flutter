@@ -95,6 +95,13 @@
     "addToCart": "Add to Cart",
     "viewProducts": "View Products",
     "back": "Back",
-    "retry": "Retry"
+    "retry": "Retry",
+    "filters": "Filters",
+    "categories": "Categories",
+    "tags": "Tags",
+    "clearFilters": "Clear filters",
+    "viewResults": "View {count} results",
+    "viewAllResults": "View all results",
+    "filtersApplied": "{count} Filters applied"
   }
 } 

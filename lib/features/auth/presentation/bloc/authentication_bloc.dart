@@ -1,6 +1,12 @@
+import 'dart:async';
+
+import 'package:app/core/service_locator.dart';
+import 'package:app/core/services/firebase_messaging_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/localization/app_localization.dart';
@@ -10,18 +16,21 @@ import '../../domain/usecases/register_usecase.dart';
 import '../../domain/usecases/forgot_password_usecase.dart';
 import '../../domain/usecases/check_auth_status_usecase.dart';
 
-part 'auth_event.dart';
-part 'auth_state.dart';
+part 'authentication_event.dart';
+part 'authentication_state.dart';
 
-class AuthBloc extends Bloc<AuthEvent, AuthState> {
+class AuthenticationBloc
+    extends Bloc<AuthenticationEvent, AuthenticationState> {
   final LoginUseCase loginUseCase;
   final RegisterUseCase registerUseCase;
   final ForgotPasswordUseCase forgotPasswordUseCase;
   final CheckAuthStatusUseCase checkAuthStatusUseCase;
   final LogoutUseCase logoutUseCase;
   final LocalizationCubit localizationCubit;
+  late final SupabaseClient _supabaseClient;
+  late final StreamSubscription<AuthState> _authStateSubscription;
 
-  AuthBloc({
+  AuthenticationBloc({
     required this.loginUseCase,
     required this.registerUseCase,
     required this.forgotPasswordUseCase,
@@ -34,11 +43,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LogoutRequested>(_onLogoutRequested);
     on<RegisterRequested>(_onRegisterRequested);
     on<ForgotPasswordRequested>(_onForgotPasswordRequested);
+    _supabaseClient = Supabase.instance.client;
+
+    _authStateSubscription = _supabaseClient.auth.onAuthStateChange.listen((
+      event,
+    ) async {
+      if (event.event == AuthChangeEvent.signedIn) {
+        final user = _supabaseClient.auth.currentUser;
+        await sl<FirebaseMessagingService>().initializeTokenForLoggedUser(
+          userId: user?.id,
+        );
+      } else if (event.event == AuthChangeEvent.signedOut) {
+        await sl<FirebaseMessagingService>().clearAuthData();
+      }
+    });
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((token) {
+      sl<FirebaseMessagingService>().refreshToken();
+    });
+  }
+
+  @override
+  Future<void> close() async {
+    await _authStateSubscription.cancel();
+    return super.close();
   }
 
   Future<void> _onCheckAuthStatusRequested(
     CheckAuthStatusRequested event,
-    Emitter<AuthState> emit,
+    Emitter<AuthenticationState> emit,
   ) async {
     try {
       if (kDebugMode) {
@@ -70,7 +103,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onLoginRequested(
     LoginRequested event,
-    Emitter<AuthState> emit,
+    Emitter<AuthenticationState> emit,
   ) async {
     try {
       if (kDebugMode) {
@@ -99,7 +132,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onLogoutRequested(
     LogoutRequested event,
-    Emitter<AuthState> emit,
+    Emitter<AuthenticationState> emit,
   ) async {
     try {
       if (kDebugMode) {
@@ -126,7 +159,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onRegisterRequested(
     RegisterRequested event,
-    Emitter<AuthState> emit,
+    Emitter<AuthenticationState> emit,
   ) async {
     try {
       if (kDebugMode) {
@@ -161,7 +194,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onForgotPasswordRequested(
     ForgotPasswordRequested event,
-    Emitter<AuthState> emit,
+    Emitter<AuthenticationState> emit,
   ) async {
     try {
       if (kDebugMode) {

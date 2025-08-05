@@ -95,6 +95,13 @@
     "addToCart": "Adaugă în coș",
     "viewProducts": "Vezi produsele",
     "back": "Înapoi",
-    "retry": "Încearcă din nou"
+    "retry": "Încearcă din nou",
+    "filters": "Filtreaza",
+    "categories": "Categorie",
+    "tags": "Etichete",
+    "clearFilters": "Sterge filtre",
+    "viewResults": "Vezi {count} rezultate",
+    "viewAllResults": "Vezi toate rezultatele",
+    "filtersApplied": "{count} Filtre aplicate"
   }
 } 

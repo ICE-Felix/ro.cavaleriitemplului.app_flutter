@@ -10,6 +10,8 @@ class ProductsState extends Equatable {
     this.message = '',
     this.selectedSubCategoriesIds = const [],
     this.searchQuery = '',
+    this.productTags = const [],
+    this.selectedProductTagsIds = const [],
   });
 
   final List<ProductEntity> products;
@@ -18,6 +20,8 @@ class ProductsState extends Equatable {
   final bool isError;
   final String message;
   final List<ProductCategoryEntity> subCategories;
+  final List<ProductTagEntity> productTags;
+  final List<int> selectedProductTagsIds;
   final List<int> selectedSubCategoriesIds;
   final String searchQuery;
 
@@ -30,6 +34,8 @@ class ProductsState extends Equatable {
     List<ProductCategoryEntity>? subCategories,
     List<int>? selectedSubCategoriesIds,
     String? searchQuery,
+    List<ProductTagEntity>? productTags,
+    List<int>? selectedProductTagsIds,
   }) {
     return ProductsState(
       products: products ?? this.products,
@@ -41,6 +47,9 @@ class ProductsState extends Equatable {
       selectedSubCategoriesIds:
           selectedSubCategoriesIds ?? this.selectedSubCategoriesIds,
       searchQuery: searchQuery ?? this.searchQuery,
+      productTags: productTags ?? this.productTags,
+      selectedProductTagsIds:
+          selectedProductTagsIds ?? this.selectedProductTagsIds,
     );
   }
 
@@ -54,5 +63,7 @@ class ProductsState extends Equatable {
     subCategories,
     selectedSubCategoriesIds,
     searchQuery,
+    productTags,
+    selectedProductTagsIds,
   ];
 }

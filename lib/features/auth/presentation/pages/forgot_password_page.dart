@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/localization/app_localization.dart';
-import '../bloc/auth_bloc.dart';
+import '../bloc/authentication_bloc.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 
@@ -29,7 +29,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   void _resetPassword() {
     if (_formKey.currentState!.validate()) {
-      context.read<AuthBloc>().add(
+      context.read<AuthenticationBloc>().add(
         ForgotPasswordRequested(email: _emailController.text.trim()),
       );
     }
@@ -47,7 +47,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           ),
         ],
       ),
-      body: BlocConsumer<AuthBloc, AuthState>(
+      body: BlocConsumer<AuthenticationBloc, AuthenticationState>(
         listener: (context, state) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
@@ -206,11 +206,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       const SizedBox(height: 32),
       CustomButton(
         onPressed:
-            context.watch<AuthBloc>().state is AuthLoading
+            context.watch<AuthenticationBloc>().state is AuthLoading
                 ? null
                 : _resetPassword,
         text: context.getString(label: 'resetPassword'),
-        isLoading: context.watch<AuthBloc>().state is AuthLoading,
+        isLoading: context.watch<AuthenticationBloc>().state is AuthLoading,
       ),
       const SizedBox(height: 16),
       Row(

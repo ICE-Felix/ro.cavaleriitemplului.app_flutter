@@ -1,8 +1,8 @@
 import 'package:app/core/navigation/routes_name.dart';
-import 'package:app/core/style/app_colors.dart';
-import 'package:app/features/shop/presentation/widgets/multi_select_2_dropdown.dart';
 import 'package:app/features/shop/presentation/widgets/product_card.dart';
 import 'package:app/features/shop/presentation/widgets/products_search_bar.dart';
+import 'package:app/features/shop/presentation/widgets/product_filters/products_filter_button.dart';
+import 'package:app/features/shop/presentation/widgets/product_filters/product_filters_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:app/core/widgets/custom_top_bar.dart';
@@ -20,7 +20,7 @@ class ProductsPage extends StatelessWidget {
     return BlocProvider(
       create:
           (context) =>
-              ProductsCubit(parentCategoryId: category.id)..getProducts(),
+              ProductsCubit(parentCategoryId: category.id)..initialize(),
       child: _ProductsPageView(category: category),
     );
   }
@@ -36,55 +36,62 @@ class _ProductsPageView extends StatefulWidget {
 }
 
 class _ProductsPageViewState extends State<_ProductsPageView> {
+  void _showFiltersModal(BuildContext parentContext, ProductsState state) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => ProductFiltersModal(
+            categories: state.subCategories,
+            tags: state.productTags,
+            selectedCategoryIds: state.selectedSubCategoriesIds,
+            selectedTagIds: state.selectedProductTagsIds,
+            onApplyFilters: (categoryIds, tagIds) {
+              parentContext
+                  .read<ProductsCubit>()
+                  .changeSelectedSubCategoriesIds(categoryIds);
+              parentContext.read<ProductsCubit>().changeSelectedProductTagsIds(
+                tagIds,
+              );
+            },
+            onClearFilters: () {
+              parentContext
+                  .read<ProductsCubit>()
+                  .changeSelectedSubCategoriesIds([]);
+              parentContext.read<ProductsCubit>().changeSelectedProductTagsIds(
+                [],
+              );
+            },
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomTopBar(showBackButton: true, title: 'Products'),
+      appBar: CustomTopBar(
+        showBackButton: true,
+        title: widget.category.name,
+        showNotificationButton: false,
+        showProfileButton: false,
+      ),
       body: BlocBuilder<ProductsCubit, ProductsState>(
         builder: (context, state) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 20.0,
-                  top: 16.0,
-                  // bottom: 8,
-                ),
-                child: Text(
-                  widget.category.name,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
               ProductsSearchBar(
                 onChanged: (query) {
                   context.read<ProductsCubit>().changeSearchQuery(query);
                 },
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: MultiSelect2Dropdown<ProductCategoryEntity, int>(
-                  items: state.subCategories,
-                  searchExtractor:
-                      (ProductCategoryEntity category) => category.name,
-                  searchHintText: 'Search categories',
-                  hintText: 'Choose categories',
-                  builderFunction: (ProductCategoryEntity category) {
-                    return Text(category.name);
-                  },
-                  valueExtractor:
-                      (ProductCategoryEntity category) => category.id,
-                  onChanged: (List<int> selectedIds) {
-                    context
-                        .read<ProductsCubit>()
-                        .changeSelectedSubCategoriesIds(selectedIds);
-                  },
-                ),
+              ProductsFilterButton(
+                selectedFiltersCount:
+                    state.selectedSubCategoriesIds.length +
+                    state.selectedProductTagsIds.length,
+                onTap: () => _showFiltersModal(context, state),
               ),
-              const SizedBox(height: 16.0),
               Expanded(
                 child: Builder(
                   builder: (context) {

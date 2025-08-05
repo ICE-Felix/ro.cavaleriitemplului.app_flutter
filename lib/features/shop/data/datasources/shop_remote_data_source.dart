@@ -1,17 +1,21 @@
 import 'package:app/core/network/dio_client.dart';
 import 'package:app/features/shop/data/models/product_model.dart';
+import 'package:app/features/shop/data/models/product_tag_model.dart';
 import 'package:app/features/shop/data/models/shop_category_model.dart';
 import 'package:app/core/error/exceptions.dart';
+import 'package:app/features/shop/domain/entities/product_tag_entity.dart';
 
 abstract class ShopRemoteDataSource {
   Future<List<ShopCategoryModel>> getCategories();
   Future<List<ShopCategoryModel>> getParentCategories();
   Future<List<ShopCategoryModel>> getSubCategories(int parentId);
+  Future<List<ProductTagEntity>> getProductTags({String? categoryId});
   Future<List<ProductModel>> getProductsByCategory(int categoryId);
   Future<ProductModel> getProductById(int productId);
   Future<List<ProductModel>> filterProducts({
     String? query,
     List<int>? categories,
+    List<int>? tags,
   });
 }
 
@@ -153,6 +157,7 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
   Future<List<ProductModel>> filterProducts({
     String? query,
     List<int>? categories,
+    List<int>? tags,
   }) async {
     try {
       final queryParams = <String, dynamic>{};
@@ -163,6 +168,10 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
 
       if (categories != null && categories.isNotEmpty) {
         queryParams['category'] = categories.join(',');
+      }
+
+      if (tags != null && tags.isNotEmpty) {
+        queryParams['tag'] = tags.join(',');
       }
 
       final response = await dio.get(
@@ -182,6 +191,31 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
           .map(
             (product) => ProductModel.fromJson(product as Map<String, dynamic>),
           )
+          .toList();
+    } catch (e) {
+      if (e is AuthException || e is ServerException) rethrow;
+      throw ServerException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<List<ProductTagEntity>> getProductTags({String? categoryId}) async {
+    try {
+      final response = await dio.get(
+        '/woo_product_tags',
+        queryParameters: {if (categoryId != null) 'category': categoryId},
+      );
+
+      if (response['success'] != true) {
+        throw ServerException(
+          message:
+              'API returned error: ${response['error'] ?? 'Unknown error'}',
+        );
+      }
+
+      final List<dynamic> tagsData = response['data'] as List<dynamic>;
+      return tagsData
+          .map((tag) => ProductTagModel.fromJson(tag as Map<String, dynamic>))
           .toList();
     } catch (e) {
       if (e is AuthException || e is ServerException) rethrow;

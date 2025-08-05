@@ -10,20 +10,20 @@ import 'app_initializer.dart';
 import 'core/service_locator.dart';
 import 'core/style/app_theme.dart';
 import 'core/localization/app_localization.dart';
-import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/bloc/authentication_bloc.dart';
 import 'features/intro/presentation/bloc/intro_bloc.dart';
 import 'features/news/presentation/bloc/news_bloc.dart';
 import 'firebase_options.dart';
 import '../core/services/firebase_messaging_service.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
 
-// Background message handler (must be top-level function)
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  if (kDebugMode) {
-    print('Handling a background message: ${message.messageId}');
-  }
-}
+// // Background message handler (must be top-level function)
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+//   if (kDebugMode) {
+//     print('Handling a background message: ${message.messageId}');
+//   }
+// }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,14 +31,14 @@ Future<void> main() async {
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-
   // Set up background message handler
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // Load environment variables
   await dotenv.load(fileName: ".env");
   // Initialize dependency injection
   await initServiceLocator();
+  await sl<FirebaseMessagingService>().initialize();
 
   runApp(const MyApp());
 }
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => sl<AuthBloc>()),
+        BlocProvider(create: (context) => sl<AuthenticationBloc>()),
         BlocProvider(create: (context) => sl<IntroBloc>()),
         BlocProvider(create: (context) => sl<NewsBloc>()),
         BlocProvider(create: (context) => sl<NotificationBloc>()),

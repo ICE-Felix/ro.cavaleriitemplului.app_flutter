@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/localization/app_localization.dart';
 import '../../../news/presentation/pages/news_page.dart';
-import '../bloc/auth_bloc.dart';
+import '../bloc/authentication_bloc.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import 'forgot_password_page.dart';
@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login() {
     if (_formKey.currentState!.validate()) {
-      context.read<AuthBloc>().add(
+      context.read<AuthenticationBloc>().add(
         LoginRequested(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ],
       ),
-      body: BlocConsumer<AuthBloc, AuthState>(
+      body: BlocConsumer<AuthenticationBloc, AuthenticationState>(
         listener: (context, state) {
           // Clear any existing snackbars
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -200,7 +200,9 @@ class _LoginPageState extends State<LoginPage> {
                         if (!RegExp(
                           r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                         ).hasMatch(value)) {
-                          return context.getString(label: 'pleaseEnterValidEmail');
+                          return context.getString(
+                            label: 'pleaseEnterValidEmail',
+                          );
                         }
                         return null;
                       },
@@ -214,7 +216,9 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return context.getString(label: 'pleaseEnterPassword');
+                          return context.getString(
+                            label: 'pleaseEnterPassword',
+                          );
                         }
                         if (value.length < 6) {
                           return context.getString(label: 'passwordMinLength');

@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../auth/presentation/pages/login_page.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/authentication_bloc.dart';
 import '../../../news/presentation/pages/news_page.dart';
 import '../bloc/intro_bloc.dart';
 import '../widgets/animated_background.dart';
@@ -33,11 +33,13 @@ class IntroView extends StatelessWidget {
             listener: (context, state) {
               if (state is IntroNavigateToAuth) {
                 // Check authentication status after intro completes
-                context.read<AuthBloc>().add(CheckAuthStatusRequested());
+                context.read<AuthenticationBloc>().add(
+                  CheckAuthStatusRequested(),
+                );
               }
             },
           ),
-          BlocListener<AuthBloc, AuthState>(
+          BlocListener<AuthenticationBloc, AuthenticationState>(
             listener: (context, state) {
               if (state is AuthAuthenticated) {
                 // User is authenticated, navigate to news page

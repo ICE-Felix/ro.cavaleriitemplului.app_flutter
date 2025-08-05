@@ -1,3 +1,4 @@
+import 'package:app/core/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/notification_bloc.dart';
@@ -20,7 +21,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
   }
 
   void _listenToMessages() {
-    FirebaseMessagingService.messageStream.listen((message) {
+    sl<FirebaseMessagingService>().messageStream.listen((message) {
       // Add the message to the notification bloc
       context.read<NotificationBloc>().add(NotificationReceived(message));
       

@@ -1,14 +1,14 @@
-part of 'auth_bloc.dart';
+part of 'authentication_bloc.dart';
 
 @immutable
-abstract class AuthEvent extends Equatable {
+abstract class AuthenticationEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
 
-class CheckAuthStatusRequested extends AuthEvent {}
+class CheckAuthStatusRequested extends AuthenticationEvent {}
 
-class LoginRequested extends AuthEvent {
+class LoginRequested extends AuthenticationEvent {
   final String email;
   final String password;
 
@@ -18,9 +18,9 @@ class LoginRequested extends AuthEvent {
   List<Object?> get props => [email, password];
 }
 
-class LogoutRequested extends AuthEvent {}
+class LogoutRequested extends AuthenticationEvent {}
 
-class RegisterRequested extends AuthEvent {
+class RegisterRequested extends AuthenticationEvent {
   final String name;
   final String email;
   final String password;
@@ -35,9 +35,9 @@ class RegisterRequested extends AuthEvent {
   List<Object?> get props => [name, email, password];
 }
 
-class GetProfileRequested extends AuthEvent {}
+class GetProfileRequested extends AuthenticationEvent {}
 
-class ForgotPasswordRequested extends AuthEvent {
+class ForgotPasswordRequested extends AuthenticationEvent {
   final String email;
 
   ForgotPasswordRequested({required this.email});

@@ -1,3 +1,4 @@
+import 'package:app/features/shop/domain/entities/product_tag_entity.dart';
 import 'package:app/features/shop/domain/repositories/shop_repository.dart';
 import 'package:app/features/shop/domain/entities/product_entity.dart';
 import 'package:app/features/shop/domain/entities/product_category_entity.dart';
@@ -83,13 +84,29 @@ class ShopRepositoryImpl implements ShopRepository {
   Future<List<ProductEntity>> filterProducts({
     String? query,
     List<int>? categories,
+    List<int>? tags,
   }) async {
     try {
       final products = await remoteDataSource.filterProducts(
         query: query,
         categories: categories,
+        tags: tags,
       );
       return products.map((product) => product.toEntity()).toList();
+    } on ServerException catch (e) {
+      throw ServerException(message: e.message);
+    } on AuthException catch (e) {
+      throw AuthException(message: e.message);
+    } catch (e) {
+      throw ServerException(message: 'Unexpected error occurred: $e');
+    }
+  }
+
+  @override
+  Future<List<ProductTagEntity>> getProductTags({String? categoryId}) async {
+    try {
+      final tags = await remoteDataSource.getProductTags(categoryId: categoryId);
+      return tags;
     } on ServerException catch (e) {
       throw ServerException(message: e.message);
     } on AuthException catch (e) {

@@ -15,7 +15,7 @@ import '../features/auth/domain/usecases/login_usecase.dart';
 import '../features/auth/domain/usecases/register_usecase.dart';
 import '../features/auth/domain/usecases/forgot_password_usecase.dart';
 import '../features/auth/domain/usecases/check_auth_status_usecase.dart';
-import '../features/auth/presentation/bloc/auth_bloc.dart';
+import '../features/auth/presentation/bloc/authentication_bloc.dart';
 // Intro feature imports
 import '../features/intro/data/datasources/intro_local_data_source.dart';
 import '../features/intro/data/repositories/intro_repository_impl.dart';
@@ -48,6 +48,7 @@ import '../features/shop/domain/usecases/get_products_by_category_usecase.dart';
 import '../features/shop/domain/usecases/get_product_by_id_usecase.dart';
 import '../core/services/firebase_messaging_service.dart';
 import '../features/notifications/presentation/bloc/notification_bloc.dart';
+import '../core/services/supabase_fcm_service.dart';
 
 final sl = GetIt.instance;
 
@@ -173,7 +174,7 @@ Future<void> initServiceLocator() async {
 
   //! BLoCs
   sl.registerFactory(
-    () => AuthBloc(
+    () => AuthenticationBloc(
       loginUseCase: sl<LoginUseCase>(),
       registerUseCase: sl<RegisterUseCase>(),
       forgotPasswordUseCase: sl<ForgotPasswordUseCase>(),
@@ -222,8 +223,13 @@ Future<void> initServiceLocator() async {
   // Localization Cubit
   sl.registerFactory(() => LocalizationCubit());
 
-  // Initialize FCM
-  await FirebaseMessagingService.initialize();
+  // Firebase Messaging Service
+  sl.registerLazySingleton(() => FirebaseMessagingService());
+
+  // Supabase FCM Service
+  sl.registerLazySingleton<SupabaseFcmService>(
+    () => SupabaseFcmServiceImpl(dio: sl<DioClient>()),
+  );
 
   // Notification BLoC
   sl.registerFactory(() => NotificationBloc());
