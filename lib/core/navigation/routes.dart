@@ -10,6 +10,7 @@ import 'package:app/features/shop/presentation/pages/categories_page.dart';
 import 'package:app/features/shop/presentation/pages/products_page.dart';
 import 'package:app/features/shop/presentation/pages/product_detail_page.dart';
 import 'package:app/features/shop/presentation/pages/search_products_page.dart';
+import 'package:app/features/cart/presentation/pages/cart_page.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/pages/login_page.dart';
@@ -96,6 +97,11 @@ final routes = GoRouter(
               path: AppRoutesNames.searchProducts.path,
               name: AppRoutesNames.searchProducts.name,
               builder: (context, state) => const SearchProductsPage(),
+            ),
+            GoRoute(
+              path: AppRoutesNames.cart.path,
+              name: AppRoutesNames.cart.name,
+              builder: (context, state) => const CartPage(),
             ),
           ],
         ),

@@ -111,7 +111,7 @@ class _NewsPageState extends State<NewsPage> {
             _showLogoutDialog(context);
           },
           onNotificationTap: () {
-            // Handle notification tap
+            context.pushNamed(AppRoutesNames.cart.name);
           },
           onLogoTap: () {
             print('Logo tapped!');

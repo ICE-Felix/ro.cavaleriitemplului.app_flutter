@@ -49,6 +49,8 @@ import '../features/shop/domain/usecases/get_product_by_id_usecase.dart';
 import '../core/services/firebase_messaging_service.dart';
 import '../features/notifications/presentation/bloc/notification_bloc.dart';
 import '../core/services/supabase_fcm_service.dart';
+// Cart feature imports
+import '../features/cart/cart.dart';
 
 final sl = GetIt.instance;
 
@@ -96,6 +98,9 @@ Future<void> initServiceLocator() async {
     () => BookmarkLocalDataSourceImpl(databaseHelper: sl<DatabaseHelper>()),
   );
 
+  // Cart service
+  sl.registerLazySingleton<CartService>(() => CartServiceImpl());
+
   //! Repositories
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
@@ -125,6 +130,11 @@ Future<void> initServiceLocator() async {
   sl.registerLazySingleton<BookmarkRepository>(
     () =>
         BookmarkRepositoryImpl(localDataSource: sl<BookmarkLocalDataSource>()),
+  );
+
+  // Cart repository
+  sl.registerLazySingleton<CartRepository>(
+    () => CartRepositoryImpl(sl<CartService>()),
   );
 
   //! Use cases
@@ -200,6 +210,9 @@ Future<void> initServiceLocator() async {
       getCategoriesUseCase: sl<news_categories.GetCategoriesUseCase>(),
     ),
   );
+
+  // Cart Cubit
+  sl.registerFactory(() => CartCubit());
 
   // Shop data sources
   sl.registerLazySingleton<ShopRemoteDataSource>(

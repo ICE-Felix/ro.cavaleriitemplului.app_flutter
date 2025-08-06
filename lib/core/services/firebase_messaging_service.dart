@@ -179,12 +179,12 @@ class FirebaseMessagingService {
             },
           );
 
-      // background message
-      FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async {
-        debugPrint(
-          'Received background message: ${message.notification?.title}',
-        );
-      });
+      // // background message
+      // FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async {
+      //   debugPrint(
+      //     'Received background message: ${message.notification?.title}',
+      //   );
+      // });
 
       // Listen for token refresh
       _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh

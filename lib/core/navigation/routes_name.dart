@@ -12,7 +12,8 @@ enum AppRoutesNames {
   shop(name: 'shop', path: '/shop'),
   products(name: 'products', path: 'products'),
   productDetails(name: 'product_details', path: 'product_details'),
-  searchProducts(name: 'search_products', path: 'search_products');
+  searchProducts(name: 'search_products', path: 'search_products'),
+  cart(name: 'cart', path: 'cart');
 
   final String name;
   final String path;
