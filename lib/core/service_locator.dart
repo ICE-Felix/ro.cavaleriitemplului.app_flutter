@@ -51,6 +51,7 @@ import '../features/notifications/presentation/bloc/notification_bloc.dart';
 import '../core/services/supabase_fcm_service.dart';
 // Cart feature imports
 import '../features/cart/cart.dart';
+import '../features/checkout/checkout.dart';
 
 final sl = GetIt.instance;
 
@@ -100,6 +101,19 @@ Future<void> initServiceLocator() async {
 
   // Cart service
   sl.registerLazySingleton<CartService>(() => CartServiceImpl());
+  sl.registerLazySingleton<CartRepository>(
+    () => CartRepositoryImpl(sl<CartService>()),
+  );
+  sl.registerLazySingleton(() => CartCubit()..loadCart());
+
+  // Checkout
+  sl.registerLazySingleton<CheckoutRemoteDataSource>(
+    () => CheckoutRemoteDataSourceImpl(dio: sl<DioClient>()),
+  );
+  sl.registerLazySingleton<CheckoutRepository>(
+    () => CheckoutRepositoryImpl(sl<CheckoutRemoteDataSource>()),
+  );
+  sl.registerFactory(() => CheckoutCubit());
 
   //! Repositories
   sl.registerLazySingleton<AuthRepository>(
@@ -130,11 +144,6 @@ Future<void> initServiceLocator() async {
   sl.registerLazySingleton<BookmarkRepository>(
     () =>
         BookmarkRepositoryImpl(localDataSource: sl<BookmarkLocalDataSource>()),
-  );
-
-  // Cart repository
-  sl.registerLazySingleton<CartRepository>(
-    () => CartRepositoryImpl(sl<CartService>()),
   );
 
   //! Use cases
@@ -210,9 +219,6 @@ Future<void> initServiceLocator() async {
       getCategoriesUseCase: sl<news_categories.GetCategoriesUseCase>(),
     ),
   );
-
-  // Cart Cubit
-  sl.registerFactory(() => CartCubit());
 
   // Shop data sources
   sl.registerLazySingleton<ShopRemoteDataSource>(
