@@ -106,14 +106,7 @@ Future<void> initServiceLocator() async {
   );
   sl.registerLazySingleton(() => CartCubit()..loadCart());
 
-  // Checkout
-  sl.registerLazySingleton<CheckoutRemoteDataSource>(
-    () => CheckoutRemoteDataSourceImpl(dio: sl<DioClient>()),
-  );
-  sl.registerLazySingleton<CheckoutRepository>(
-    () => CheckoutRepositoryImpl(sl<CheckoutRemoteDataSource>()),
-  );
-  sl.registerFactory(() => CheckoutCubit());
+  sl.registerLazySingleton(() => CheckoutCubit());
 
   //! Repositories
   sl.registerLazySingleton<AuthRepository>(

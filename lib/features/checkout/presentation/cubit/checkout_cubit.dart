@@ -3,7 +3,6 @@ import 'package:app/features/checkout/domain/models/checkout_model.dart';
 import 'package:app/features/checkout/domain/models/billing_address_model.dart';
 import 'package:app/features/checkout/domain/models/shipping_address_model.dart';
 import 'package:app/features/checkout/domain/models/payment_method_model.dart';
-import 'package:app/features/checkout/domain/repositories/checkout_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,13 +15,10 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     emit(state.copyWith(isLoading: true, isError: false, message: ''));
 
     try {
-      final repository = sl<CheckoutRepository>();
-      final checkout = await repository.getCheckout();
       final paymentMethods = PaymentMethodModel.getDefaultPaymentMethods();
 
       emit(
         state.copyWith(
-          checkout: checkout,
           availablePaymentMethods: paymentMethods,
           isLoading: false,
         ),
@@ -40,8 +36,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   Future<void> updateBilling(BillingAddressModel billing) async {
     try {
-      final repository = sl<CheckoutRepository>();
-      await repository.updateBilling(billing);
 
       final updatedCheckout = state.checkout.copyWith(billing: billing);
       emit(state.copyWith(checkout: updatedCheckout));
@@ -57,8 +51,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   Future<void> updateShipping(ShippingAddressModel shipping) async {
     try {
-      final repository = sl<CheckoutRepository>();
-      await repository.updateShipping(shipping);
 
       final updatedCheckout = state.checkout.copyWith(shipping: shipping);
       emit(state.copyWith(checkout: updatedCheckout));
@@ -74,8 +66,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   Future<void> updatePaymentMethod(PaymentMethodModel paymentMethod) async {
     try {
-      final repository = sl<CheckoutRepository>();
-      await repository.updatePaymentMethod(paymentMethod);
 
       final updatedCheckout = state.checkout.copyWith(
         selectedPaymentMethod: paymentMethod,
@@ -93,8 +83,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   Future<void> updateBillingSameAsShipping(bool value) async {
     try {
-      final repository = sl<CheckoutRepository>();
-      await repository.updateBillingSameAsShipping(value);
 
       final updatedCheckout = state.checkout.updateBillingSameAsShipping(value);
       emit(state.copyWith(checkout: updatedCheckout));
@@ -112,8 +100,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     emit(state.copyWith(isLoading: true, isError: false, message: ''));
 
     try {
-      final repository = sl<CheckoutRepository>();
-      await repository.clearCheckout();
 
       emit(
         state.copyWith(
