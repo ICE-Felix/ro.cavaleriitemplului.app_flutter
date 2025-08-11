@@ -60,13 +60,13 @@ class PaymentMethodModel extends Equatable {
     return [
       const PaymentMethodModel(
         type: PaymentMethodType.netopia,
-        id: 'netopia',
+        id: 'netopiapayments',
         name: 'Netopia',
         description: 'Pay with Netopia',
       ),
       const PaymentMethodModel(
         type: PaymentMethodType.cash,
-        id: 'cash',
+        id: 'cashpayments',
         name: 'Cash',
         description: 'Pay with cash',
       ),
