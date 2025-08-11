@@ -201,7 +201,7 @@ class _ProductFiltersModalState extends State<ProductFiltersModal> {
                       _totalSelectedFilters > 0
                           ? (context
                                   .getString(label: 'shop.viewResults')
-                                  ?.replaceAll(
+                                  .replaceAll(
                                     '{count}',
                                     _totalSelectedFilters.toString(),
                                   ) ??

@@ -1,3 +1,6 @@
+import 'package:app/features/checkout/data/order_datasource.dart';
+import 'package:app/features/checkout/data/order_datasource_supabase.dart';
+import 'package:app/features/checkout/domain/repository/order_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -97,6 +100,14 @@ Future<void> initServiceLocator() async {
   // Bookmark data sources
   sl.registerLazySingleton<BookmarkLocalDataSource>(
     () => BookmarkLocalDataSourceImpl(databaseHelper: sl<DatabaseHelper>()),
+  );
+
+  sl.registerLazySingleton<OrderDataSource>(
+    () => OrderDataSourceSupabase(dio: sl<DioClient>()),
+  );
+
+  sl.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(orderDataSource: sl<OrderDataSource>()),
   );
 
   // Cart service

@@ -1,8 +1,10 @@
+import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:app/core/service_locator.dart';
 import 'package:app/core/style/app_colors.dart';
 import 'package:app/core/style/app_text_styles.dart';
+import 'package:go_router/go_router.dart';
 import '../cubit/checkout_cubit.dart';
 import '../widgets/billing_form.dart';
 import '../widgets/shipping_form.dart';
@@ -36,6 +38,9 @@ class CheckoutPageView extends StatelessWidget {
       ),
       body: BlocConsumer<CheckoutCubit, CheckoutState>(
         listener: (context, state) {
+          if (state.isPayReady && state.redirectUrl.isNotEmpty) {
+            context.goNamed(AppRoutesNames.paymentWebView.name, pathParameters: {'url': state.redirectUrl});
+          }
           if (state.isError && state.message.isNotEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -110,7 +115,7 @@ class CheckoutPageView extends StatelessWidget {
                 _CheckoutSummaryCard(
                   isComplete: state.checkout.isComplete,
                   onPlaceOrder: () {
-                    _showOrderConfirmationDialog(context);
+                    _showOrderConfirmationDialog(context, context.read<CheckoutCubit>());
                   },
                   onClearCheckout: () {
                     _showClearCheckoutDialog(context);
@@ -126,7 +131,7 @@ class CheckoutPageView extends StatelessWidget {
     );
   }
 
-  void _showOrderConfirmationDialog(BuildContext context) {
+  void _showOrderConfirmationDialog(BuildContext context, CheckoutCubit cubit) {
     showDialog(
       context: context,
       builder:
@@ -140,6 +145,7 @@ class CheckoutPageView extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
+                  cubit.placeOrder();
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(

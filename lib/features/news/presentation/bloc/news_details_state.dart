@@ -17,14 +17,14 @@ final class NewsDetailsLoading extends NewsDetailsState {
 final class NewsDetailsLoaded extends NewsDetailsState {
   final NewsEntity news;
 
-  NewsDetailsLoaded({required this.news});
+  const NewsDetailsLoaded({required this.news});
   @override
   List<Object> get props => [news];
 }
 
 final class NewsDetailsError extends NewsDetailsState {
   final String message;
-  NewsDetailsError({required this.message});
+  const NewsDetailsError({required this.message});
 
   @override
   List<Object> get props => [message];

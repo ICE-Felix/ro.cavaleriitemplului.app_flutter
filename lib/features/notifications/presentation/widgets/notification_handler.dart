@@ -7,7 +7,7 @@ import '../../../../core/services/firebase_messaging_service.dart';
 class NotificationHandler extends StatefulWidget {
   final Widget child;
 
-  const NotificationHandler({Key? key, required this.child}) : super(key: key);
+  const NotificationHandler({super.key, required this.child});
 
   @override
   State<NotificationHandler> createState() => _NotificationHandlerState();
@@ -24,7 +24,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
     sl<FirebaseMessagingService>().messageStream.listen((message) {
       // Add the message to the notification bloc
       context.read<NotificationBloc>().add(NotificationReceived(message));
-      
+
       // Show in-app notification if needed
       _showInAppNotification(message);
     });
@@ -63,12 +63,12 @@ class _NotificationHandlerState extends State<NotificationHandler> {
       listener: (context, state) {
         // Handle notification state changes
         if (state is NotificationError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
         }
       },
       child: widget.child,
     );
   }
-} 
+}

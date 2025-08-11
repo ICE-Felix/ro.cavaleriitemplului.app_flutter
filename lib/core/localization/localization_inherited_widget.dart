@@ -7,11 +7,11 @@ class LocalizationInheritedWidget extends InheritedWidget {
   final LocalizationState localizationState;
 
   const LocalizationInheritedWidget({
-    Key? key,
+    super.key,
     required this.localizationCubit,
     required this.localizationState,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   static LocalizationInheritedWidget? of(BuildContext context) {
     return context
@@ -27,7 +27,7 @@ class LocalizationInheritedWidget extends InheritedWidget {
 class LocalizationProvider extends StatelessWidget {
   final Widget child;
 
-  const LocalizationProvider({Key? key, required this.child}) : super(key: key);
+  const LocalizationProvider({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

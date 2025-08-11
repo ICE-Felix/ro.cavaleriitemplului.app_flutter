@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/news_entity.dart';
 import '../repositories/news_repository.dart';
-import '../../data/models/news_response_model.dart';
 
 class GetNewsByIdUseCase extends UseCase<NewsEntity, GetNewsByIdParams> {
   final NewsRepository repository;

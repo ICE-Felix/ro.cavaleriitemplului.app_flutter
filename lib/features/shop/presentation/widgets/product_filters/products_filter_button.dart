@@ -82,7 +82,7 @@ class ProductsFilterButton extends StatelessWidget {
                   selectedFiltersCount > 0
                       ? (context
                               .getString(label: 'shop.filtersApplied')
-                              ?.replaceAll(
+                              .replaceAll(
                                 '{count}',
                                 selectedFiltersCount.toString(),
                               ) ??

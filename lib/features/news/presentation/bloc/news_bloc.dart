@@ -7,7 +7,6 @@ import '../../domain/usecases/get_news_usecase.dart';
 import '../../domain/usecases/search_news_usecase.dart';
 import '../../domain/usecases/get_categories_usecase.dart';
 import '../../data/models/category_model.dart';
-import '../../data/models/pagination_model.dart';
 
 part 'news_event.dart';
 part 'news_state.dart';

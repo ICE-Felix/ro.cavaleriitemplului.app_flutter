@@ -10,8 +10,6 @@ import '../../../../core/localization/app_localization.dart';
 import '../../../auth/presentation/bloc/authentication_bloc.dart';
 import '../bloc/news_bloc.dart';
 import '../widgets/news_item_widget.dart';
-import 'news_detail_page.dart';
-import 'saved_articles_page.dart';
 import '../../data/models/category_model.dart';
 import '../../domain/entities/news_entity.dart';
 

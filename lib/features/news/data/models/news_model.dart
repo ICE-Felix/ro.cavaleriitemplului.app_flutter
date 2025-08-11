@@ -48,7 +48,7 @@ class NewsModel extends NewsEntity {
     }
     return content.length <= 100
         ? content
-        : content.substring(0, 100).trim() + '...';
+        : '${content.substring(0, 100).trim()}...';
   }
 
   // Helper method to parse keywords string into tags array

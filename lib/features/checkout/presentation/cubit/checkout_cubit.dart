@@ -1,9 +1,13 @@
 import 'package:app/core/service_locator.dart';
+import 'package:app/features/cart/domain/repositories/cart_repository.dart';
 import 'package:app/features/checkout/domain/models/checkout_model.dart';
 import 'package:app/features/checkout/domain/models/billing_address_model.dart';
 import 'package:app/features/checkout/domain/models/shipping_address_model.dart';
 import 'package:app/features/checkout/domain/models/payment_method_model.dart';
+import 'package:app/features/checkout/domain/place_order_usecase.dart';
+import 'package:app/features/checkout/domain/repository/order_repository.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'checkout_state.dart';
@@ -36,7 +40,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   Future<void> updateBilling(BillingAddressModel billing) async {
     try {
-
       final updatedCheckout = state.checkout.copyWith(billing: billing);
       emit(state.copyWith(checkout: updatedCheckout));
     } catch (e) {
@@ -51,7 +54,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   Future<void> updateShipping(ShippingAddressModel shipping) async {
     try {
-
       final updatedCheckout = state.checkout.copyWith(shipping: shipping);
       emit(state.copyWith(checkout: updatedCheckout));
     } catch (e) {
@@ -66,7 +68,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   Future<void> updatePaymentMethod(PaymentMethodModel paymentMethod) async {
     try {
-
       final updatedCheckout = state.checkout.copyWith(
         selectedPaymentMethod: paymentMethod,
       );
@@ -83,7 +84,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   Future<void> updateBillingSameAsShipping(bool value) async {
     try {
-
       final updatedCheckout = state.checkout.updateBillingSameAsShipping(value);
       emit(state.copyWith(checkout: updatedCheckout));
     } catch (e) {
@@ -100,7 +100,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     emit(state.copyWith(isLoading: true, isError: false, message: ''));
 
     try {
-
       emit(
         state.copyWith(
           checkout: CheckoutModel.empty(),
@@ -121,5 +120,69 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   void clearError() {
     emit(state.copyWith(isError: false, message: ''));
+  }
+
+  Future<void> placeOrder() async {
+    emit(state.copyWith(isLoading: true, isError: false, message: ''));
+
+    // Validate required fields
+    if (state.checkout.selectedPaymentMethod == null) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          isError: true,
+          message: 'Please select a payment method',
+        ),
+      );
+      return;
+    }
+
+    try {
+      final cart = await sl.get<CartRepository>().getCart();
+
+      final result = await PlaceOrderUsecase(
+        orderRepository: sl.get<OrderRepository>(),
+      ).call(
+        OrderParams(
+          paymentMethod: state.checkout.selectedPaymentMethod!,
+          billingFirstName: state.checkout.billing.firstName,
+          billingLastName: state.checkout.billing.lastName,
+          billingAddress1: state.checkout.billing.address1,
+          billingCity: state.checkout.billing.city,
+          billingState: state.checkout.billing.state,
+          billingPostcode: state.checkout.billing.postcode,
+          billingCountry: state.checkout.billing.country,
+          billingEmail: state.checkout.shipping.email,
+          billingPhone: state.checkout.shipping.phone,
+          shippingFirstName: state.checkout.shipping.firstName,
+          shippingLastName: state.checkout.shipping.lastName,
+          shippingAddress1: state.checkout.shipping.address1,
+          shippingCity: state.checkout.shipping.city,
+          shippingState: state.checkout.shipping.state,
+          shippingPostcode: state.checkout.shipping.postcode,
+          shippingCountry: state.checkout.shipping.country,
+          lineItems: cart.items,
+        ),
+      );
+      await sl.get<CartRepository>().clearCart();
+      emit(
+        state.copyWith(
+          isLoading: false,
+          isError: false,
+          redirectUrl: result,
+          isPayReady: true,
+          closeCheckout: true,
+          message: 'Order placed successfully! Order ID: $result',
+        ),
+      );
+    } catch (e,str) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          isError: true,
+          message: 'Failed to place order: ${e.toString()}',
+        ),
+      );
+    }
   }
 }

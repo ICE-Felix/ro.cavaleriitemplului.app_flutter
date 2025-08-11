@@ -12,6 +12,7 @@ import 'package:app/features/shop/presentation/pages/product_detail_page.dart';
 import 'package:app/features/shop/presentation/pages/search_products_page.dart';
 import 'package:app/features/cart/presentation/pages/cart_page.dart';
 import 'package:app/features/checkout/presentation/pages/checkout_page.dart';
+import 'package:app/features/checkout/presentation/pages/payment_webview.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/pages/login_page.dart';
@@ -108,6 +109,14 @@ final routes = GoRouter(
               path: AppRoutesNames.checkout.path,
               name: AppRoutesNames.checkout.name,
               builder: (context, state) => const CheckoutPage(),
+            ),
+            GoRoute(
+              path: '${AppRoutesNames.paymentWebView.path}/:url',
+              name: AppRoutesNames.paymentWebView.name,
+              builder:
+                  (context, state) => PaymentWebView(
+                    url: Uri.decodeComponent(state.pathParameters['url']!),
+                  ),
             ),
           ],
         ),
