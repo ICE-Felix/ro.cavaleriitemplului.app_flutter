@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:app/core/service_locator.dart';
 import 'package:app/features/cart/domain/models/cart_model.dart';
 import 'package:app/features/cart/domain/repositories/cart_repository.dart';
@@ -26,101 +28,99 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> addProduct(ProductEntity product, {int quantity = 1}) async {
+  Future<void> addProduct(
+    ProductEntity product, {
+    int quantity = 1,
+    VoidCallback? onSuccess,
+    VoidCallback? onError,
+  }) async {
     try {
       final updatedCart = await sl.get<CartRepository>().addProductToCart(
         product,
         quantity: quantity,
       );
-      emit(
-        state.copyWith(
-          cart: updatedCart,
-          isError: false,
-          message: 'Product added to cart',
-        ),
-      );
+      emit(state.copyWith(cart: updatedCart, isError: false));
+      onSuccess?.call();
     } catch (e) {
-      emit(
-        state.copyWith(
-          isError: true,
-          message: 'Failed to add product: ${e.toString()}',
-        ),
-      );
+      emit(state.copyWith(isError: true));
+      onError?.call();
     }
   }
 
-  Future<void> removeProduct(int productId) async {
+  Future<void> removeProduct(
+    int productId, {
+    VoidCallback? onSuccess,
+    VoidCallback? onError,
+  }) async {
     try {
       final updatedCart = await sl.get<CartRepository>().removeProductFromCart(
         productId,
       );
-      emit(
-        state.copyWith(
-          cart: updatedCart,
-          isError: false,
-          message: 'Product removed from cart',
-        ),
-      );
+      emit(state.copyWith(cart: updatedCart, isError: false));
+      onSuccess?.call();
     } catch (e) {
-      emit(
-        state.copyWith(
-          isError: true,
-          message: 'Failed to remove product: ${e.toString()}',
-        ),
-      );
+      emit(state.copyWith(isError: true));
+      onError?.call();
     }
   }
 
-  Future<void> updateQuantity(int productId, int quantity) async {
+  Future<void> updateQuantity(
+    int productId,
+    int quantity, {
+    VoidCallback? onSuccess,
+    VoidCallback? onError,
+  }) async {
     try {
       final updatedCart = await sl.get<CartRepository>().updateProductQuantity(
         productId,
         quantity,
       );
       emit(state.copyWith(cart: updatedCart, isError: false));
+      onSuccess?.call();
     } catch (e) {
-      emit(
-        state.copyWith(
-          isError: true,
-          message: 'Failed to update quantity: ${e.toString()}',
-        ),
-      );
+      emit(state.copyWith(isError: true));
+      onError?.call();
     }
   }
 
-  Future<void> increaseQuantity(int productId) async {
+  Future<void> increaseQuantity(
+    int productId, {
+    VoidCallback? onSuccess,
+    VoidCallback? onError,
+  }) async {
     try {
       final updatedCart = await sl
           .get<CartRepository>()
           .increaseProductQuantity(productId);
       emit(state.copyWith(cart: updatedCart, isError: false));
+      onSuccess?.call();
     } catch (e) {
-      emit(
-        state.copyWith(
-          isError: true,
-          message: 'Failed to increase quantity: ${e.toString()}',
-        ),
-      );
+      emit(state.copyWith(isError: true));
+      onError?.call();
     }
   }
 
-  Future<void> decreaseQuantity(int productId) async {
+  Future<void> decreaseQuantity(
+    int productId, {
+    VoidCallback? onSuccess,
+    VoidCallback? onError,
+  }) async {
     try {
       final updatedCart = await sl
           .get<CartRepository>()
           .decreaseProductQuantity(productId);
       emit(state.copyWith(cart: updatedCart, isError: false));
+      onSuccess?.call();
     } catch (e) {
-      emit(
-        state.copyWith(
-          isError: true,
-          message: 'Failed to decrease quantity: ${e.toString()}',
-        ),
-      );
+      emit(state.copyWith(isError: true));
+      onError?.call();
     }
   }
 
-  Future<void> clearCart() async {
+  Future<void> clearCart({
+    VoidCallback? onSuccess,
+    VoidCallback? onError,
+  }) async {
     emit(state.copyWith(isLoading: true));
     try {
       await sl.get<CartRepository>().clearCart();
@@ -129,17 +129,12 @@ class CartCubit extends Cubit<CartState> {
           cart: CartModel.empty(),
           isLoading: false,
           isError: false,
-          message: 'Cart cleared',
         ),
       );
+      onSuccess?.call();
     } catch (e) {
-      emit(
-        state.copyWith(
-          isLoading: false,
-          isError: true,
-          message: 'Failed to clear cart: ${e.toString()}',
-        ),
-      );
+      emit(state.copyWith(isLoading: false, isError: true));
+      onError?.call();
     }
   }
 }

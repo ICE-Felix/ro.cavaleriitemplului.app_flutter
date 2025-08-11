@@ -42,7 +42,7 @@ class CartSummary extends StatelessWidget {
                   style: AppTextStyles.bodyMedium,
                 ),
                 Text(
-                  '\$${cart.totalPrice.toStringAsFixed(2)}',
+                  '${cart.totalPrice.toStringAsFixed(2)} RON',
                   style: AppTextStyles.bodyMedium,
                 ),
               ],
@@ -77,7 +77,7 @@ class CartSummary extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '\$${cart.totalPrice.toStringAsFixed(2)}',
+                  '${cart.totalPrice.toStringAsFixed(2)} RON',
                   style: AppTextStyles.titleMedium.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,

@@ -77,7 +77,6 @@ class CheckoutModel extends Equatable {
         firstName: shipping.firstName,
         lastName: shipping.lastName,
         address1: shipping.address1,
-        address2: shipping.address2,
         city: shipping.city,
         state: shipping.state,
         postcode: shipping.postcode,

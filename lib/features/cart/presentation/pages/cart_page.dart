@@ -33,24 +33,7 @@ class CartPageView extends StatelessWidget {
         showNotificationButton: false,
         showProfileButton: false,
       ),
-      body: BlocConsumer<CartCubit, CartState>(
-        listener: (context, state) {
-          if (state.isError && state.message.isNotEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
-          } else if (!state.isError && state.message.isNotEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.green,
-              ),
-            );
-          }
-        },
+      body: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
           if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -82,6 +65,22 @@ class CartPageView extends StatelessWidget {
                           item.product.name,
                           () => context.read<CartCubit>().removeProduct(
                             item.product.id,
+                            onSuccess: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Product removed from cart'),
+                                ),
+                              );
+                            },
+                            onError: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Product not removed from cart',
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         );
                       },

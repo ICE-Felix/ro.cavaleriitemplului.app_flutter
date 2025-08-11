@@ -3,6 +3,52 @@ import 'package:app/core/style/app_text_styles.dart';
 import '../../domain/models/shipping_address_model.dart';
 import 'checkout_text_field.dart';
 
+// Romanian counties (Județe) - names only
+const List<String> _roCounties = [
+  'Alba',
+  'Arad',
+  'Argeș',
+  'Bacău',
+  'Bihor',
+  'Bistrița-Năsăud',
+  'Botoșani',
+  'Brăila',
+  'Brașov',
+  'București',
+  'Buzău',
+  'Călărași',
+  'Caraș-Severin',
+  'Cluj',
+  'Constanța',
+  'Covasna',
+  'Dâmbovița',
+  'Dolj',
+  'Galați',
+  'Giurgiu',
+  'Gorj',
+  'Harghita',
+  'Hunedoara',
+  'Ialomița',
+  'Iași',
+  'Ilfov',
+  'Maramureș',
+  'Mehedinți',
+  'Mureș',
+  'Neamț',
+  'Olt',
+  'Prahova',
+  'Sălaj',
+  'Satu Mare',
+  'Sibiu',
+  'Suceava',
+  'Teleorman',
+  'Timiș',
+  'Tulcea',
+  'Vâlcea',
+  'Vaslui',
+  'Vrancea',
+];
+
 class ShippingForm extends StatefulWidget {
   final ShippingAddressModel initialData;
   final Function(ShippingAddressModel) onChanged;
@@ -21,13 +67,13 @@ class _ShippingFormState extends State<ShippingForm> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _address1Controller;
-  late TextEditingController _address2Controller;
   late TextEditingController _cityController;
   late TextEditingController _stateController;
   late TextEditingController _postcodeController;
   late TextEditingController _countryController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
+  String? _selectedCounty;
 
   @override
   void initState() {
@@ -45,9 +91,6 @@ class _ShippingFormState extends State<ShippingForm> {
     _address1Controller = TextEditingController(
       text: widget.initialData.address1,
     );
-    _address2Controller = TextEditingController(
-      text: widget.initialData.address2,
-    );
     _cityController = TextEditingController(text: widget.initialData.city);
     _stateController = TextEditingController(text: widget.initialData.state);
     _postcodeController = TextEditingController(
@@ -59,11 +102,14 @@ class _ShippingFormState extends State<ShippingForm> {
     _emailController = TextEditingController(text: widget.initialData.email);
     _phoneController = TextEditingController(text: widget.initialData.phone);
 
+    // Initialize selected county from state value if provided
+    _selectedCounty =
+        widget.initialData.state.isNotEmpty ? widget.initialData.state : null;
+
     // Add listeners to notify parent of changes
     _firstNameController.addListener(_onFieldChanged);
     _lastNameController.addListener(_onFieldChanged);
     _address1Controller.addListener(_onFieldChanged);
-    _address2Controller.addListener(_onFieldChanged);
     _cityController.addListener(_onFieldChanged);
     _stateController.addListener(_onFieldChanged);
     _postcodeController.addListener(_onFieldChanged);
@@ -77,7 +123,6 @@ class _ShippingFormState extends State<ShippingForm> {
       firstName: _firstNameController.text,
       lastName: _lastNameController.text,
       address1: _address1Controller.text,
-      address2: _address2Controller.text,
       city: _cityController.text,
       state: _stateController.text,
       postcode: _postcodeController.text,
@@ -100,13 +145,14 @@ class _ShippingFormState extends State<ShippingForm> {
     _firstNameController.text = widget.initialData.firstName;
     _lastNameController.text = widget.initialData.lastName;
     _address1Controller.text = widget.initialData.address1;
-    _address2Controller.text = widget.initialData.address2;
     _cityController.text = widget.initialData.city;
     _stateController.text = widget.initialData.state;
     _postcodeController.text = widget.initialData.postcode;
     _countryController.text = widget.initialData.country;
     _emailController.text = widget.initialData.email;
     _phoneController.text = widget.initialData.phone;
+    _selectedCounty =
+        widget.initialData.state.isNotEmpty ? widget.initialData.state : null;
   }
 
   @override
@@ -114,7 +160,6 @@ class _ShippingFormState extends State<ShippingForm> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _address1Controller.dispose();
-    _address2Controller.dispose();
     _cityController.dispose();
     _stateController.dispose();
     _postcodeController.dispose();
@@ -145,7 +190,7 @@ class _ShippingFormState extends State<ShippingForm> {
                 label: 'First Name',
                 controller: _firstNameController,
                 isRequired: true,
-                hint: 'John',
+                hint: 'Ion',
               ),
             ),
             const SizedBox(width: 16),
@@ -154,31 +199,14 @@ class _ShippingFormState extends State<ShippingForm> {
                 label: 'Last Name',
                 controller: _lastNameController,
                 isRequired: true,
-                hint: 'Doe',
+                hint: 'Popescu',
               ),
             ),
           ],
         ),
         const SizedBox(height: 16),
 
-        // Address fields
-        CheckoutTextField(
-          label: 'Address Line 1',
-          controller: _address1Controller,
-          isRequired: true,
-          hint: '969 Market St',
-        ),
-        const SizedBox(height: 16),
-
-        CheckoutTextField(
-          label: 'Address Line 2',
-          controller: _address2Controller,
-          isRequired: false,
-          hint: 'Apartment, suite, etc. (optional)',
-        ),
-        const SizedBox(height: 16),
-
-        // City, State, Postcode
+        // City, Postcode
         Row(
           children: [
             Expanded(
@@ -187,16 +215,7 @@ class _ShippingFormState extends State<ShippingForm> {
                 label: 'City',
                 controller: _cityController,
                 isRequired: true,
-                hint: 'San Francisco',
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: CheckoutTextField(
-                label: 'State',
-                controller: _stateController,
-                isRequired: true,
-                hint: 'CA',
+                hint: 'București',
               ),
             ),
             const SizedBox(width: 16),
@@ -205,10 +224,47 @@ class _ShippingFormState extends State<ShippingForm> {
                 label: 'Postcode',
                 controller: _postcodeController,
                 isRequired: true,
-                hint: '94103',
+                hint: '010101',
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 16),
+
+        // County dropdown (saved as state) - right before Address
+        DropdownButtonFormField<String>(
+          value:
+              (_selectedCounty != null && _roCounties.contains(_selectedCounty))
+                  ? _selectedCounty
+                  : null,
+          items:
+              _roCounties
+                  .map(
+                    (name) => DropdownMenuItem<String>(
+                      value: name,
+                      child: Text(name),
+                    ),
+                  )
+                  .toList(),
+          decoration: const InputDecoration(
+            labelText: 'County',
+            border: OutlineInputBorder(),
+          ),
+          onChanged: (val) {
+            setState(() {
+              _selectedCounty = val;
+              _stateController.text = val ?? '';
+            });
+          },
+        ),
+        const SizedBox(height: 16),
+
+        // Address fields (moved under City/Postcode)
+        CheckoutTextField(
+          label: 'Address',
+          controller: _address1Controller,
+          isRequired: true,
+          hint: 'Adresa',
         ),
         const SizedBox(height: 16),
 
@@ -216,7 +272,7 @@ class _ShippingFormState extends State<ShippingForm> {
           label: 'Country',
           controller: _countryController,
           isRequired: true,
-          hint: 'US',
+          hint: 'Romania',
         ),
         const SizedBox(height: 16),
 
@@ -226,7 +282,7 @@ class _ShippingFormState extends State<ShippingForm> {
           controller: _emailController,
           isRequired: true,
           keyboardType: TextInputType.emailAddress,
-          hint: 'john.doe@example.com',
+          hint: 'ion.popescu@example.com',
         ),
         const SizedBox(height: 16),
 
@@ -235,7 +291,7 @@ class _ShippingFormState extends State<ShippingForm> {
           controller: _phoneController,
           isRequired: true,
           keyboardType: TextInputType.phone,
-          hint: '(555) 555-5555',
+          hint: '+40 723 456 789',
         ),
       ],
     );
