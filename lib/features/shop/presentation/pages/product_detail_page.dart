@@ -177,12 +177,21 @@ class ProductDetailPage extends StatelessWidget {
                 onPressed:
                     product.stockStatus == 'instock'
                         ? () {
-                          sl<CartCubit>().addProduct(product);
+                          sl<CartCubit>().addProduct(product, onSuccess: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Product added to cart'),
-                            ),
-                          );
+                              const SnackBar(
+                                content: Text('Product added to cart'),
+                              ),
+                            );
+                          },
+                          onError: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Product not added to cart'),
+                              ),
+                            );
+                          },
+                        );
                         }
                         : null,
                 style: ElevatedButton.styleFrom(

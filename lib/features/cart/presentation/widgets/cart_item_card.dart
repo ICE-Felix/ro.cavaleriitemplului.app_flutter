@@ -122,7 +122,7 @@ class CartItemCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            '\$${product.salePrice}',
+                            '${product.salePrice} RON',
                             style: AppTextStyles.bodyLarge.copyWith(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold,
@@ -130,7 +130,7 @@ class CartItemCard extends StatelessWidget {
                           ),
                         ] else
                           Text(
-                            '\$${product.price}',
+                            '${product.price} RON',
                             style: AppTextStyles.bodyLarge.copyWith(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold,
@@ -152,7 +152,7 @@ class CartItemCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Total: \$${item.totalPrice.toStringAsFixed(2)}',
+                          'Total: ${item.totalPrice.toStringAsFixed(2)} RON',
                           style: AppTextStyles.bodyMedium.copyWith(
                             fontWeight: FontWeight.w600,
                           ),

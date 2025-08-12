@@ -30,7 +30,7 @@ class BillingAddressModel extends Equatable {
       city: '',
       state: '',
       postcode: '',
-      country: 'US',
+      country: 'Romania',
     );
   }
 
@@ -43,7 +43,7 @@ class BillingAddressModel extends Equatable {
       city: json['city'] ?? '',
       state: json['state'] ?? '',
       postcode: json['postcode'] ?? '',
-      country: json['country'] ?? 'US',
+      country: json['country'] ?? 'Romania',
     );
   }
 
