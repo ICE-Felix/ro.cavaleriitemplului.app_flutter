@@ -56,14 +56,15 @@ final routes = GoRouter(
           name: AppRoutesNames.forgotPassword.name,
           builder: (context, state) => const ForgotPasswordPage(),
         ),
-        GoRoute(
-          path: '${AppRoutesNames.paymentWebView.path}/:url',
-          name: AppRoutesNames.paymentWebView.name,
-          builder:
-              (context, state) => PaymentWebView(
-                url: Uri.decodeComponent(state.pathParameters['url']!),
-              ),
-        ),
+
+          GoRoute(
+              path: '${AppRoutesNames.paymentWebView.path}/:url',
+              name: AppRoutesNames.paymentWebView.name,
+              builder:
+                  (context, state) => PaymentWebView(
+                    url: Uri.decodeComponent(state.pathParameters['url']!),
+                  ),
+            ),
       ],
     ),
 
