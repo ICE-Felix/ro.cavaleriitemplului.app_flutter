@@ -1,4 +1,9 @@
+import 'package:app/core/navigation/routes_name.dart';
+import 'package:app/core/service_locator.dart';
+import 'package:app/features/cart/domain/repositories/cart_repository.dart';
+import 'package:app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentWebView extends StatefulWidget {
@@ -29,20 +34,38 @@ class _PaymentWebViewState extends State<PaymentWebView> {
                 setState(() {
                   _isLoading = true;
                 });
+                _checkOrderStatus(url);
               },
               onPageFinished: (String url) {
-                debugPrint('WebView finished: $url');
+                _checkOrderStatus(url);
                 setState(() {
                   _isLoading = false;
                 });
               },
               onWebResourceError: (WebResourceError error) {
                 // Handle web resource errors
-                debugPrint('WebView error: ${error.description}');
               },
             ),
           )
           ..loadRequest(Uri.parse(widget.url));
+  }
+
+  void _checkOrderStatus(String url) {
+    final uri = Uri.parse(url);
+    if (uri.pathSegments.contains('order-received')) {
+      // Check if the order is cash on delivery and netopia
+      if (uri.queryParameters['key'] != null &&
+          uri.queryParameters['pay_for_order'] == null) {
+        sl<CartCubit>().clearCart();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Order placed successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.goNamed(AppRoutesNames.news.name);
+      }
+    }
   }
 
   @override
@@ -53,7 +76,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.goNamed(AppRoutesNames.checkout.name),
         ),
       ),
       body: Stack(

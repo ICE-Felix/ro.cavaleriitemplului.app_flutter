@@ -12,8 +12,8 @@ class OrderRequestModel {
 
   OrderRequestModel({
     required this.currency,
-    required this.paymentMethod,
-    required this.paymentMethodTitle,
+     this.paymentMethod ='',
+     this.paymentMethodTitle ='',
     required this.setPaid,
     required this.billing,
     required this.shipping,
@@ -25,7 +25,6 @@ class OrderRequestModel {
     return OrderRequestModel(
       currency: json['currency'] ?? 'RON',
       paymentMethod: json['payment_method'] ?? '',
-
       paymentMethodTitle: json['payment_method_title'] ?? '',
       setPaid: json['set_paid'] ?? false,
       billing: Billing.fromJson(json['billing'] ?? {}),
@@ -45,6 +44,7 @@ class OrderRequestModel {
       'payment_method': paymentMethod,
       'payment_method_title': paymentMethodTitle,
       'set_paid': setPaid,
+      'status': 'pending',
       'billing': billing.toJson(),
       'shipping': shipping.toJson(),
       'line_items': lineItems.map((item) => item.toJson()).toList(),

@@ -39,7 +39,12 @@ class CheckoutPageView extends StatelessWidget {
       body: BlocConsumer<CheckoutCubit, CheckoutState>(
         listener: (context, state) {
           if (state.isPayReady && state.redirectUrl.isNotEmpty) {
-            context.goNamed(AppRoutesNames.paymentWebView.name, pathParameters: {'url': state.redirectUrl});
+            context.read<CheckoutCubit>().resetCheckout();
+
+            context.goNamed(
+              AppRoutesNames.paymentWebView.name,
+              pathParameters: {'url': state.redirectUrl},
+            );
           }
           if (state.isError && state.message.isNotEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -100,22 +105,14 @@ class CheckoutPageView extends StatelessWidget {
                   const SizedBox(height: 32),
                 ],
 
-                // Payment Method Selector
-                PaymentMethodSelector(
-                  paymentMethods: state.availablePaymentMethods,
-                  selectedMethod: state.checkout.selectedPaymentMethod,
-                  onMethodSelected: (method) {
-                    context.read<CheckoutCubit>().updatePaymentMethod(method);
-                  },
-                ),
-
-                const SizedBox(height: 32),
-
                 // Checkout Summary
                 _CheckoutSummaryCard(
                   isComplete: state.checkout.isComplete,
                   onPlaceOrder: () {
-                    _showOrderConfirmationDialog(context, context.read<CheckoutCubit>());
+                    _showOrderConfirmationDialog(
+                      context,
+                      context.read<CheckoutCubit>(),
+                    );
                   },
                   onClearCheckout: () {
                     _showClearCheckoutDialog(context);
@@ -147,12 +144,6 @@ class CheckoutPageView extends StatelessWidget {
                 onPressed: () {
                   cubit.placeOrder();
                   Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Order placed successfully!'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
                 },
                 child: const Text('Place Order'),
               ),

@@ -7,7 +7,6 @@ import 'package:app/features/checkout/domain/repository/order_repository.dart';
 
 
 class OrderParams {
-  final PaymentMethodModel paymentMethod;
   final String billingFirstName;
   final String billingLastName;
   final String billingAddress1;
@@ -27,7 +26,6 @@ class OrderParams {
   final List<CartItemModel> lineItems;
 
   OrderParams({
-    required this.paymentMethod,
     required this.billingFirstName,
     required this.billingLastName,
     required this.billingAddress1,
@@ -58,8 +56,6 @@ class PlaceOrderUsecase extends UseCase<String, OrderParams> {
     return await orderRepository.createOrder(
       OrderRequestModel(
         currency: 'RON',
-        paymentMethod: paramas.paymentMethod.id,
-        paymentMethodTitle: paramas.paymentMethod.description,
         setPaid: false,
         billing: Billing(
           firstName: paramas.billingFirstName,

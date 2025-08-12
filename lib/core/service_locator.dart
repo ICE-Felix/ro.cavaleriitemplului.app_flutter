@@ -1,6 +1,7 @@
 import 'package:app/features/checkout/data/order_datasource.dart';
 import 'package:app/features/checkout/data/order_datasource_supabase.dart';
 import 'package:app/features/checkout/domain/repository/order_repository.dart';
+import 'package:app/features/checkout/domain/service/checkout_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -109,6 +110,7 @@ Future<void> initServiceLocator() async {
   sl.registerLazySingleton<OrderRepository>(
     () => OrderRepositoryImpl(orderDataSource: sl<OrderDataSource>()),
   );
+  sl.registerLazySingleton<CheckoutService>(() => CheckoutServiceImpl());
 
   // Cart service
   sl.registerLazySingleton<CartService>(() => CartServiceImpl());
