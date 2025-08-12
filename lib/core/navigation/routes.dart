@@ -21,6 +21,20 @@ import '../../features/news/presentation/pages/news_page.dart';
 
 final routes = GoRouter(
   initialLocation: AppRoutesNames.intro.path,
+  restorationScopeId: 'app',
+  redirect: (context, state) {
+    // If we're at the root and not authenticated, stay at intro
+    if (state.matchedLocation == AppRoutesNames.intro.path) {
+      return null;
+    }
+
+    // If we're navigating to main sections, ensure proper routing
+    if (state.matchedLocation == '/') {
+      return AppRoutesNames.news.path;
+    }
+
+    return null;
+  },
   routes: [
     GoRoute(
       path: AppRoutesNames.intro.path,
@@ -42,6 +56,14 @@ final routes = GoRouter(
           name: AppRoutesNames.forgotPassword.name,
           builder: (context, state) => const ForgotPasswordPage(),
         ),
+        GoRoute(
+          path: '${AppRoutesNames.paymentWebView.path}/:url',
+          name: AppRoutesNames.paymentWebView.name,
+          builder:
+              (context, state) => PaymentWebView(
+                url: Uri.decodeComponent(state.pathParameters['url']!),
+              ),
+        ),
       ],
     ),
 
@@ -55,67 +77,109 @@ final routes = GoRouter(
           ),
         );
       },
+
       routes: [
+        // News route
         GoRoute(
           path: AppRoutesNames.news.path,
           name: AppRoutesNames.news.name,
-          builder: (context, state) => const NewsPage(),
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                restorationId: 'news_page',
+                child: const NewsPage(),
+              ),
           routes: [
             GoRoute(
               path: AppRoutesNames.savedArticles.path,
               name: AppRoutesNames.savedArticles.name,
-              builder: (context, state) => const SavedArticlesPage(),
+              pageBuilder:
+                  (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    restorationId: 'news_page',
+                    child: const SavedArticlesPage(),
+                  ),
             ),
             GoRoute(
               path: '${AppRoutesNames.newsDetails.path}/:id',
               name: AppRoutesNames.newsDetails.name,
-              builder:
-                  (context, state) =>
-                      NewsDetailPage(id: state.pathParameters['id']!),
+              pageBuilder:
+                  (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    restorationId: 'news_page',
+                    child: NewsDetailPage(id: state.pathParameters['id']!),
+                  ),
             ),
           ],
         ),
+
+        // Shop route
         GoRoute(
           path: AppRoutesNames.shop.path,
           name: AppRoutesNames.shop.name,
-          builder: (context, state) => const CategoriesPage(),
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                restorationId: 'shop_page',
+                child: const CategoriesPage(),
+              ),
           routes: [
             GoRoute(
               path: AppRoutesNames.products.path,
               name: AppRoutesNames.products.name,
-              builder:
-                  (context, state) => ProductsPage(
-                    category: state.extra as ProductCategoryEntity,
+              pageBuilder:
+                  (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    restorationId: 'shop_page',
+                    child: ProductsPage(
+                      category: state.extra as ProductCategoryEntity,
+                    ),
                   ),
             ),
             GoRoute(
               path: AppRoutesNames.productDetails.path,
               name: AppRoutesNames.productDetails.name,
-              builder:
-                  (context, state) =>
-                      ProductDetailPage(product: state.extra as ProductEntity),
+              pageBuilder:
+                  (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    restorationId: 'shop_page',
+                    child: ProductDetailPage(
+                      product: state.extra as ProductEntity,
+                    ),
+                  ),
             ),
             GoRoute(
               path: AppRoutesNames.searchProducts.path,
               name: AppRoutesNames.searchProducts.name,
-              builder: (context, state) => const SearchProductsPage(),
+              pageBuilder:
+                  (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    restorationId: 'shop_page',
+                    child: const SearchProductsPage(),
+                  ),
             ),
-            GoRoute(
-              path: AppRoutesNames.cart.path,
-              name: AppRoutesNames.cart.name,
-              builder: (context, state) => const CartPage(),
-            ),
+          ],
+        ),
+
+        // Cart route
+        GoRoute(
+          path: AppRoutesNames.cart.path,
+          name: AppRoutesNames.cart.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                restorationId: 'cart_page',
+                child: const CartPage(),
+              ),
+          routes: [
             GoRoute(
               path: AppRoutesNames.checkout.path,
               name: AppRoutesNames.checkout.name,
-              builder: (context, state) => const CheckoutPage(),
-            ),
-            GoRoute(
-              path: '${AppRoutesNames.paymentWebView.path}/:url',
-              name: AppRoutesNames.paymentWebView.name,
-              builder:
-                  (context, state) => PaymentWebView(
-                    url: Uri.decodeComponent(state.pathParameters['url']!),
+              pageBuilder:
+                  (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    restorationId: 'cart_page',
+                    child: const CheckoutPage(),
                   ),
             ),
           ],

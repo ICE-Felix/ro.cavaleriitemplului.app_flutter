@@ -18,12 +18,24 @@ class NavigationMenu extends StatelessWidget {
     required this.parentContext,
   });
 
+  int _canNavigate() {
+    if (currentLocation == '/news') {
+      return 0;
+    } else if (currentLocation == '/shop') {
+      return 2;
+    } else if (currentLocation == '/cart') {
+      return 3;
+    }
+    // Default to news
+    return 0;
+  }
+
   int _getCurrentIndex() {
     if (currentLocation.startsWith('/news')) {
       return 0;
-    } else if (currentLocation.endsWith('/shop')) {
+    } else if (currentLocation.startsWith('/shop')) {
       return 2;
-    } else if (currentLocation.endsWith('/cart')) {
+    } else if (currentLocation.startsWith('/cart')) {
       return 3;
     }
     // Default to news
@@ -34,8 +46,8 @@ class NavigationMenu extends StatelessWidget {
     switch (index) {
       case 0:
         // News
-        if (_getCurrentIndex() != 0) {
-          context.push(AppRoutesNames.news.path);
+        if (_canNavigate() != 0) {
+          context.go(AppRoutesNames.news.path);
         }
         break;
       case 1:
@@ -43,13 +55,14 @@ class NavigationMenu extends StatelessWidget {
         break;
       case 2:
         // Shop
-        if (_getCurrentIndex() != 2) {
-          context.push(AppRoutesNames.shop.path);
+        if (_canNavigate() != 2) {
+          context.go(AppRoutesNames.shop.path);
         }
         break;
       case 3:
-        if (_getCurrentIndex() != 3) {
-          context.pushNamed(AppRoutesNames.cart.name);
+        // Cart
+        if (_canNavigate() != 3) {
+          context.go(AppRoutesNames.cart.path);
         }
         break;
     }
