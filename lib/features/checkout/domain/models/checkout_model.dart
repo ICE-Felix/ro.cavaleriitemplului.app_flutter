@@ -6,14 +6,12 @@ import 'payment_method_model.dart';
 class CheckoutModel extends Equatable {
   final BillingAddressModel billing;
   final ShippingAddressModel shipping;
-  final PaymentMethodModel? selectedPaymentMethod;
   final bool billingSameAsShipping;
   final String lastDateModified;
 
   const CheckoutModel({
     required this.billing,
     required this.shipping,
-    this.selectedPaymentMethod,
     this.billingSameAsShipping = false,
     required this.lastDateModified,
   });
@@ -22,7 +20,6 @@ class CheckoutModel extends Equatable {
     return CheckoutModel(
       billing: BillingAddressModel.empty(),
       shipping: ShippingAddressModel.empty(),
-      selectedPaymentMethod: null,
       billingSameAsShipping: false,
       lastDateModified: DateTime.now().toIso8601String(),
     );
@@ -32,10 +29,6 @@ class CheckoutModel extends Equatable {
     return CheckoutModel(
       billing: BillingAddressModel.fromJson(json['billing'] ?? {}),
       shipping: ShippingAddressModel.fromJson(json['shipping'] ?? {}),
-      selectedPaymentMethod:
-          json['selected_payment_method'] != null
-              ? PaymentMethodModel.fromJson(json['selected_payment_method'])
-              : null,
       billingSameAsShipping: json['billing_same_as_shipping'] ?? false,
       lastDateModified:
           json['last_date_modified'] ?? DateTime.now().toIso8601String(),
@@ -46,7 +39,6 @@ class CheckoutModel extends Equatable {
     return {
       'billing': billing.toJson(),
       'shipping': shipping.toJson(),
-      'selected_payment_method': selectedPaymentMethod?.toJson(),
       'billing_same_as_shipping': billingSameAsShipping,
       'last_date_modified': lastDateModified,
     };
@@ -62,8 +54,6 @@ class CheckoutModel extends Equatable {
     return CheckoutModel(
       billing: billing ?? this.billing,
       shipping: shipping ?? this.shipping,
-      selectedPaymentMethod:
-          selectedPaymentMethod ?? this.selectedPaymentMethod,
       billingSameAsShipping:
           billingSameAsShipping ?? this.billingSameAsShipping,
       lastDateModified: lastDateModified ?? DateTime.now().toIso8601String(),
@@ -90,9 +80,7 @@ class CheckoutModel extends Equatable {
   }
 
   bool get isComplete {
-    return billing.isComplete &&
-        shipping.isComplete &&
-        selectedPaymentMethod != null;
+    return billing.isComplete && shipping.isComplete;
   }
 
   bool get hasValidAddresses {
@@ -103,7 +91,6 @@ class CheckoutModel extends Equatable {
   List<Object?> get props => [
     billing,
     shipping,
-    selectedPaymentMethod,
     billingSameAsShipping,
     lastDateModified,
   ];

@@ -175,13 +175,9 @@ final routes = GoRouter(
             GoRoute(
               path: AppRoutesNames.checkout.path,
               name: AppRoutesNames.checkout.name,
-              pageBuilder:
-                  (context, state) => NoTransitionPage(
-                    key: state.pageKey,
-                    restorationId: 'cart_page',
-                    child: const CheckoutPage(),
-                  ),
+              builder: (context, state) => const CheckoutPage(),
             ),
+      
           ],
         ),
       ],
