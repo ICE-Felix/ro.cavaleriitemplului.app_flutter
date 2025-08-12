@@ -4,9 +4,6 @@ import '../models/news_model.dart';
 import '../models/category_model.dart';
 import '../models/news_response_model.dart';
 
-import 'package:supabase_flutter/supabase_flutter.dart'
-    as supabase_flutter
-    hide AuthException;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

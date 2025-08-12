@@ -9,11 +9,11 @@ class LanguageSwitcherWidget extends StatelessWidget {
   final Color? textColor;
 
   const LanguageSwitcherWidget({
-    Key? key,
+    super.key,
     this.isCompact = false,
     this.iconColor,
     this.textColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -104,11 +104,11 @@ class LanguageSwitcherButton extends StatelessWidget {
   final Color? textColor;
 
   const LanguageSwitcherButton({
-    Key? key,
+    super.key,
     this.showLabel = true,
     this.iconColor,
     this.textColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -165,4 +165,3 @@ class LanguageSwitcherButton extends StatelessWidget {
     );
   }
 }
- 

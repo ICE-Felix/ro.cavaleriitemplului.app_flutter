@@ -1,5 +1,4 @@
 import 'package:app/core/localization/app_localization.dart';
-import 'package:app/core/localization/widgets/language_switcher_widget.dart';
 import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

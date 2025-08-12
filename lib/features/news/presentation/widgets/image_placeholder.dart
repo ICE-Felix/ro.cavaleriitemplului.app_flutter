@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/style/app_text_styles.dart';
 
 class ImagePlaceholderWidget extends StatelessWidget {
-  const ImagePlaceholderWidget({Key? key}) : super(key: key);
+  const ImagePlaceholderWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

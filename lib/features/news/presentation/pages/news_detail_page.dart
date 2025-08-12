@@ -106,7 +106,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                           height: 280,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: colorScheme.surfaceVariant,
+                            color: colorScheme.surfaceContainerHighest,
                           ),
                           child:
                               state.news.imageUrl.isNotEmpty
@@ -328,7 +328,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                                                 decoration: BoxDecoration(
                                                   color:
                                                       colorScheme
-                                                          .surfaceVariant,
+                                                          .surfaceContainerHighest,
                                                   borderRadius:
                                                       BorderRadius.circular(16),
                                                 ),
@@ -359,7 +359,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                                   child: Container(
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                      color: colorScheme.surfaceVariant
+                                      color: colorScheme.surfaceContainerHighest
                                           .withOpacity(0.5),
                                       borderRadius: BorderRadius.circular(12),
                                     ),

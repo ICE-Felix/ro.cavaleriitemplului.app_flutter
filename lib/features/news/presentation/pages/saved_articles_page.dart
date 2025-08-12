@@ -2,16 +2,12 @@ import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/service_locator.dart';
-import '../../../../core/widgets/custom_top_bar.dart';
 import '../../../../core/style/app_text_styles.dart';
 import '../../../../core/localization/app_localization.dart';
 import '../../domain/entities/bookmark_entity.dart';
 import '../../domain/repositories/bookmark_repository.dart';
-import 'news_detail_page.dart';
-import '../../domain/entities/news_entity.dart';
 
 class SavedArticlesPage extends StatefulWidget {
   const SavedArticlesPage({super.key});

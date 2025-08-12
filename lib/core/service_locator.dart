@@ -1,3 +1,6 @@
+import 'package:app/features/checkout/data/order_datasource.dart';
+import 'package:app/features/checkout/data/order_datasource_supabase.dart';
+import 'package:app/features/checkout/domain/repository/order_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,6 +52,9 @@ import '../features/shop/domain/usecases/get_product_by_id_usecase.dart';
 import '../core/services/firebase_messaging_service.dart';
 import '../features/notifications/presentation/bloc/notification_bloc.dart';
 import '../core/services/supabase_fcm_service.dart';
+// Cart feature imports
+import '../features/cart/cart.dart';
+import '../features/checkout/checkout.dart';
 
 final sl = GetIt.instance;
 
@@ -95,6 +101,23 @@ Future<void> initServiceLocator() async {
   sl.registerLazySingleton<BookmarkLocalDataSource>(
     () => BookmarkLocalDataSourceImpl(databaseHelper: sl<DatabaseHelper>()),
   );
+
+  sl.registerLazySingleton<OrderDataSource>(
+    () => OrderDataSourceSupabase(dio: sl<DioClient>()),
+  );
+
+  sl.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(orderDataSource: sl<OrderDataSource>()),
+  );
+
+  // Cart service
+  sl.registerLazySingleton<CartService>(() => CartServiceImpl());
+  sl.registerLazySingleton<CartRepository>(
+    () => CartRepositoryImpl(sl<CartService>()),
+  );
+  sl.registerLazySingleton(() => CartCubit()..loadCart());
+
+  sl.registerLazySingleton(() => CheckoutCubit());
 
   //! Repositories
   sl.registerLazySingleton<AuthRepository>(

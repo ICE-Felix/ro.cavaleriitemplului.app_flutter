@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../auth/presentation/pages/login_page.dart';
 import '../../../auth/presentation/bloc/authentication_bloc.dart';
-import '../../../news/presentation/pages/news_page.dart';
 import '../bloc/intro_bloc.dart';
 import '../widgets/animated_background.dart';
 import '../widgets/network_error_widget.dart';

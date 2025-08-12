@@ -5,7 +5,7 @@ import '../bloc/notification_bloc.dart';
 import '../../../../core/services/firebase_messaging_service.dart';
 
 class NotificationSettingsPage extends StatelessWidget {
-  const NotificationSettingsPage({Key? key}) : super(key: key);
+  const NotificationSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +19,9 @@ class NotificationSettingsPage extends StatelessWidget {
               onPressed: () async {
                 String? token = await sl<FirebaseMessagingService>().getToken();
                 if (token != null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Token: $token')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Token: $token')));
                 }
               },
               child: const Text('Get FCM Token'),
@@ -49,4 +49,4 @@ class NotificationSettingsPage extends StatelessWidget {
       ),
     );
   }
-} 
+}

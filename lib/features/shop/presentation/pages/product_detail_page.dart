@@ -1,3 +1,5 @@
+import 'package:app/core/service_locator.dart';
+import 'package:app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:app/core/widgets/custom_top_bar.dart';
 import 'package:app/features/shop/domain/entities/product_entity.dart';
@@ -175,14 +177,21 @@ class ProductDetailPage extends StatelessWidget {
                 onPressed:
                     product.stockStatus == 'instock'
                         ? () {
-                          // TODO: Implement add to cart functionality
+                          sl<CartCubit>().addProduct(product, onSuccess: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Add to cart functionality not implemented yet',
+                              const SnackBar(
+                                content: Text('Product added to cart'),
                               ),
-                            ),
-                          );
+                            );
+                          },
+                          onError: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Product not added to cart'),
+                              ),
+                            );
+                          },
+                        );
                         }
                         : null,
                 style: ElevatedButton.styleFrom(

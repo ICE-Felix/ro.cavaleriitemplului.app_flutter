@@ -1,4 +1,7 @@
+import 'package:app/core/service_locator.dart';
+import 'package:app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:app/core/navigation/routes_name.dart';
 import 'package:app/core/localization/localization_inherited_widget.dart';
@@ -18,8 +21,10 @@ class NavigationMenu extends StatelessWidget {
   int _getCurrentIndex() {
     if (currentLocation.startsWith('/news')) {
       return 0;
-    } else if (currentLocation.startsWith('/shop')) {
+    } else if (currentLocation.endsWith('/shop')) {
       return 2;
+    } else if (currentLocation.endsWith('/cart')) {
+      return 3;
     }
     // Default to news
     return 0;
@@ -40,6 +45,11 @@ class NavigationMenu extends StatelessWidget {
         // Shop
         if (_getCurrentIndex() != 2) {
           context.push(AppRoutesNames.shop.path);
+        }
+        break;
+      case 3:
+        if (_getCurrentIndex() != 3) {
+          context.pushNamed(AppRoutesNames.cart.name);
         }
         break;
     }
@@ -67,8 +77,55 @@ class NavigationMenu extends StatelessWidget {
             label: parentContext.getString(label: 'bottomNavigation.locations'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
+            icon: Icon(Icons.shopping_bag),
             label: parentContext.getString(label: 'bottomNavigation.shop'),
+          ),
+          BottomNavigationBarItem(
+            icon: Stack(
+              children: [
+                Icon(Icons.shopping_cart),
+                BlocProvider.value(
+                  value: sl<CartCubit>(),
+                  child: BlocBuilder<CartCubit, CartState>(
+                    builder: (context, state) {
+                      final totalItems = state.cart.items.fold<int>(
+                        0,
+                        (sum, item) => sum + item.quantity,
+                      );
+
+                      if (totalItems == 0) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                          width: 16,
+                          height: 16,
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              totalItems.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+            label: 'Cart',
+            // label: parentContext.getString(label: 'bottomNavigation.cart'),
           ),
         ],
       ),

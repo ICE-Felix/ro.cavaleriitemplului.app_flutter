@@ -147,15 +147,18 @@ class FirebaseMessagingService {
   /// Setup all message listeners
   Future<void> _setupMessageListeners() async {
     try {
-      // Configure foreground message handling
+      // Listen for messages when app is in foreground
       _foregroundMessageSubscription = FirebaseMessaging.onMessage.listen(
         (RemoteMessage message) {
-          debugPrint(
-            'Received foreground message: ${message.notification?.title}',
-          );
-          debugPrint('Message body: ${message.notification?.body}');
-          debugPrint('Message data: ${message.data}');
+          if (kDebugMode) {
+            debugPrint(
+              'Received foreground message: ${message.notification?.title}',
+            );
+            debugPrint('Message body: ${message.notification?.body}');
+            debugPrint('Message data: ${message.data}');
+          }
 
+          // Add message to stream for listeners
           if (!_messageStreamController.isClosed) {
             _messageStreamController.add(message);
           }
@@ -165,26 +168,22 @@ class FirebaseMessagingService {
         },
       );
 
-      // Handle message tap when app is in background
+      // Listen for messages when app is opened from notification
       _messageOpenedAppSubscription = FirebaseMessaging.onMessageOpenedApp
           .listen(
             (RemoteMessage message) {
-              debugPrint(
-                'Message tapped (background): ${message.notification?.title}',
-              );
+              if (kDebugMode) {
+                debugPrint(
+                  'App opened from notification: ${message.notification?.title}',
+                );
+              }
+              // Handle message tap
               _handleMessageTap(message);
             },
             onError: (error) {
               debugPrint('Error in message opened app listener: $error');
             },
           );
-
-      // background message
-      FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async {
-        debugPrint(
-          'Received background message: ${message.notification?.title}',
-        );
-      });
 
       // Listen for token refresh
       _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh
