@@ -6,6 +6,7 @@ import 'package:app/features/checkout/domain/models/shipping_address_model.dart'
 import 'package:app/features/checkout/domain/models/payment_method_model.dart';
 import 'package:app/features/checkout/domain/place_order_usecase.dart';
 import 'package:app/features/checkout/domain/repository/order_repository.dart';
+import 'package:app/features/checkout/domain/service/checkout_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,14 +20,8 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     emit(state.copyWith(isLoading: true, isError: false, message: ''));
 
     try {
-      final paymentMethods = PaymentMethodModel.getDefaultPaymentMethods();
-
-      emit(
-        state.copyWith(
-          availablePaymentMethods: paymentMethods,
-          isLoading: false,
-        ),
-      );
+      final checkout = await sl.get<CheckoutService>().getCheckout();
+      emit(state.copyWith(checkout: checkout, isLoading: false));
     } catch (e) {
       emit(
         state.copyWith(
@@ -35,6 +30,15 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           message: 'Failed to load checkout data: ${e.toString()}',
         ),
       );
+    }
+  }
+
+  Future<void> resetCheckout() async {
+    final checkout = await sl.get<CheckoutService>().getCheckout();
+    if (checkout != null) {
+      emit(CheckoutState(checkout: checkout, isLoading: false));
+    } else {
+      emit(CheckoutState(checkout: CheckoutModel.empty()));
     }
   }
 
@@ -125,18 +129,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   Future<void> placeOrder() async {
     emit(state.copyWith(isLoading: true, isError: false, message: ''));
 
-    // Validate required fields
-    if (state.checkout.selectedPaymentMethod == null) {
-      emit(
-        state.copyWith(
-          isLoading: false,
-          isError: true,
-          message: 'Please select a payment method',
-        ),
-      );
-      return;
-    }
-
     try {
       final cart = await sl.get<CartRepository>().getCart();
 
@@ -144,7 +136,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         orderRepository: sl.get<OrderRepository>(),
       ).call(
         OrderParams(
-          paymentMethod: state.checkout.selectedPaymentMethod!,
           billingFirstName: state.checkout.billing.firstName,
           billingLastName: state.checkout.billing.lastName,
           billingAddress1: state.checkout.billing.address1,
@@ -164,18 +155,18 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           lineItems: cart.items,
         ),
       );
-      await sl.get<CartRepository>().clearCart();
+      sl.get<CheckoutService>().saveInfo(state.checkout);
       emit(
         state.copyWith(
           isLoading: false,
           isError: false,
-          redirectUrl: result,
           isPayReady: true,
+          redirectUrl: result,
           closeCheckout: true,
           message: 'Order placed successfully! Order ID: $result',
         ),
       );
-    } catch (e,str) {
+    } catch (e, str) {
       emit(
         state.copyWith(
           isLoading: false,
