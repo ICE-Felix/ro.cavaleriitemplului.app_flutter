@@ -27,7 +27,7 @@ class NavigationMenu extends StatelessWidget {
       return 3;
     }
     // Default to news
-    return 0;
+    return -1;
   }
 
   int _getCurrentIndex() {
