@@ -1,3 +1,4 @@
+import 'package:app/features/cart/data/datasource/cart_stock_datasource.dart';
 import 'package:app/features/checkout/data/order_datasource.dart';
 import 'package:app/features/checkout/data/order_datasource_supabase.dart';
 import 'package:app/features/checkout/domain/repository/order_repository.dart';
@@ -114,8 +115,12 @@ Future<void> initServiceLocator() async {
 
   // Cart service
   sl.registerLazySingleton<CartService>(() => CartServiceImpl());
+  // Cart Stock Datasource
+  sl.registerLazySingleton<CartStockDatasource>(
+    () => CartStockDatasourceImpl(dio: sl<DioClient>()),
+  );
   sl.registerLazySingleton<CartRepository>(
-    () => CartRepositoryImpl(sl<CartService>()),
+    () => CartRepositoryImpl(sl<CartService>(), sl<CartStockDatasource>()),
   );
   sl.registerLazySingleton(() => CartCubit()..loadCart());
 

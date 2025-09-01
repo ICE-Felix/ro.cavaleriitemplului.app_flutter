@@ -7,12 +7,14 @@ class CartSummary extends StatelessWidget {
   final CartModel cart;
   final VoidCallback? onCheckout;
   final VoidCallback? onClearCart;
+  final bool isCheckoutLoading;
 
   const CartSummary({
     super.key,
     required this.cart,
     this.onCheckout,
     this.onClearCart,
+    this.isCheckoutLoading = false,
   });
 
   @override
@@ -113,7 +115,14 @@ class CartSummary extends StatelessWidget {
                 Expanded(
                   flex: cart.isNotEmpty ? 2 : 1,
                   child: ElevatedButton(
-                    onPressed: cart.isNotEmpty ? onCheckout : null,
+                    onPressed: cart.isNotEmpty
+                        ? () {
+                            if (isCheckoutLoading) {
+                              return;
+                            }
+                            onCheckout?.call();
+                          }
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(vertical: 12),

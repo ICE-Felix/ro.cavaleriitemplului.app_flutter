@@ -43,7 +43,7 @@ class CartPageView extends StatelessWidget {
             return EmptyCartWidget(
               onContinueShopping: () {
                 // Navigate back to shop
-                context.pop();
+                context.pushNamed(AppRoutesNames.shop.name);
               },
             );
           }
@@ -59,6 +59,9 @@ class CartPageView extends StatelessWidget {
                     final item = state.cart.items[index];
                     return CartItemCard(
                       item: item,
+                      stockInfo: state.cartStock?.getProductStockInfo(
+                        item.product.id,
+                      ),
                       onRemove: () {
                         _showRemoveConfirmation(
                           context,
@@ -102,9 +105,18 @@ class CartPageView extends StatelessWidget {
               // Cart Summary
               CartSummary(
                 cart: state.cart,
-                onCheckout: () {
-                  context.pushNamed(AppRoutesNames.checkout.name);
-                  // _showCheckoutDialog(context);
+                isCheckoutLoading: state.isCheckoutLoading,
+                onCheckout: () async {
+                  final (allInStock, errorMessage) =
+                      await context.read<CartCubit>().checkCurrentStock();
+                  if (allInStock) {
+                    context.pushNamed(AppRoutesNames.checkout.name);
+                  } else {
+                    _showErrorDialog(
+                      context,
+                      errorMessage ?? 'Unknown cart error',
+                    );
+                  }
                 },
                 onClearCart: () {
                   _showClearCartConfirmation(
@@ -183,15 +195,13 @@ class CartPageView extends StatelessWidget {
     );
   }
 
-  void _showCheckoutDialog(BuildContext context) {
+  void _showErrorDialog(BuildContext context, String errorMessage) {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Checkout'),
-          content: const Text(
-            'Checkout functionality will be implemented in future updates.',
-          ),
+          title: const Text('Checkout Error'),
+          content: Text(errorMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),

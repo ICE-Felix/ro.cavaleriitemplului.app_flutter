@@ -1,3 +1,4 @@
+import 'package:app/features/cart/domain/models/cart_stock_response_model.dart';
 import 'package:flutter/material.dart';
 import 'package:app/features/cart/domain/models/cart_item_model.dart';
 import 'package:app/core/style/app_colors.dart';
@@ -9,6 +10,7 @@ class CartItemCard extends StatelessWidget {
   final VoidCallback onRemove;
   final VoidCallback onIncrease;
   final VoidCallback onDecrease;
+  final ProductStockInfo? stockInfo;
 
   const CartItemCard({
     super.key,
@@ -16,6 +18,7 @@ class CartItemCard extends StatelessWidget {
     required this.onRemove,
     required this.onIncrease,
     required this.onDecrease,
+    this.stockInfo,
   });
 
   @override
@@ -24,6 +27,13 @@ class CartItemCard extends StatelessWidget {
     final hasImage = product.images.isNotEmpty;
 
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: stockInfo?.available == false ? Colors.red : Colors.grey,
+          width: 1,
+        ),
+      ),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -97,17 +107,6 @@ class CartItemCard extends StatelessWidget {
 
                     const SizedBox(height: 4),
 
-                    // SKU
-                    if (product.sku.isNotEmpty)
-                      Text(
-                        'SKU: ${product.sku}',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-
-                    const SizedBox(height: 8),
-
                     // Price Row
                     Row(
                       children: [
@@ -141,22 +140,39 @@ class CartItemCard extends StatelessWidget {
 
                     const SizedBox(height: 12),
 
-                    // Quantity Controls and Total - Wrap to prevent overflow
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
                       children: [
-                        QuantityControls(
-                          quantity: item.quantity,
-                          onIncrease: onIncrease,
-                          onDecrease: onDecrease,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            QuantityControls(
+                              quantity: item.quantity,
+                              onIncrease: onIncrease,
+                              onDecrease: onDecrease,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Total: ${item.totalPrice.toStringAsFixed(2)} RON',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Total: ${item.totalPrice.toStringAsFixed(2)} RON',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontWeight: FontWeight.w600,
+                        if (stockInfo?.available == false) Spacer(),
+                        if (stockInfo?.available == false)
+                          Tooltip(
+                            message:
+                                '${stockInfo?.error}. Only ${stockInfo?.availableQuantity} left in stock.',
+                            triggerMode: TooltipTriggerMode.tap,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(
+                                Icons.info,
+                                color: Colors.red.shade400,
+                              ),
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ],

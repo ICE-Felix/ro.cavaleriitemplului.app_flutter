@@ -1,3 +1,4 @@
+import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -66,7 +67,7 @@ class TopBarLeading extends StatelessWidget {
 
     if (showBackButton) {
       return IconButton(
-        onPressed: () => context.pop(),
+        onPressed: () => context.goNamed(AppRoutesNames.shop.name),
         icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 20),
         tooltip: 'Back',
       );
