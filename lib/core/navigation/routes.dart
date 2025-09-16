@@ -2,6 +2,9 @@ import 'package:app/core/navigation/routes_name.dart';
 import 'package:app/core/navigation/widgets/navigation_menu.dart';
 import 'package:app/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:app/features/auth/presentation/pages/signup_page.dart';
+import 'package:app/features/locations/presentations/pages/locations_categories_page.dart';
+import 'package:app/features/locations/presentations/pages/locations_details_page.dart';
+import 'package:app/features/locations/presentations/pages/selected_location_category_page.dart';
 import 'package:app/features/news/presentation/pages/news_detail_page.dart';
 import 'package:app/features/news/presentation/pages/saved_articles_page.dart';
 import 'package:app/features/shop/domain/entities/product_category_entity.dart';
@@ -57,14 +60,14 @@ final routes = GoRouter(
           builder: (context, state) => const ForgotPasswordPage(),
         ),
 
-          GoRoute(
-              path: '${AppRoutesNames.paymentWebView.path}/:url',
-              name: AppRoutesNames.paymentWebView.name,
-              builder:
-                  (context, state) => PaymentWebView(
-                    url: Uri.decodeComponent(state.pathParameters['url']!),
-                  ),
-            ),
+        GoRoute(
+          path: '${AppRoutesNames.paymentWebView.path}/:url',
+          name: AppRoutesNames.paymentWebView.name,
+          builder:
+              (context, state) => PaymentWebView(
+                url: Uri.decodeComponent(state.pathParameters['url']!),
+              ),
+        ),
       ],
     ),
 
@@ -162,6 +165,40 @@ final routes = GoRouter(
           ],
         ),
 
+        // Locations route
+        GoRoute(
+          path: AppRoutesNames.locations.path,
+          name: AppRoutesNames.locations.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const LocationsCategoriesPage(),
+              ),
+        ),
+        GoRoute(
+          path: '${AppRoutesNames.selectedLocationCategory.path}/:id',
+          name: AppRoutesNames.selectedLocationCategory.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: SelectedLocationCategoryPage(
+                  locationId: state.pathParameters['id']!,
+                ),
+              ),
+        ),
+
+        GoRoute(
+          path: '${AppRoutesNames.locationsDetails.path}/:id',
+          name: AppRoutesNames.locationsDetails.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: LocationsDetailsPage(
+                  locationId: state.pathParameters['id']!,
+                ),
+              ),
+        ),
+
         // Cart route
         GoRoute(
           path: AppRoutesNames.cart.path,
@@ -178,7 +215,6 @@ final routes = GoRouter(
               name: AppRoutesNames.checkout.name,
               builder: (context, state) => const CheckoutPage(),
             ),
-      
           ],
         ),
       ],

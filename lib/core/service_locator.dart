@@ -3,6 +3,8 @@ import 'package:app/features/checkout/data/order_datasource.dart';
 import 'package:app/features/checkout/data/order_datasource_supabase.dart';
 import 'package:app/features/checkout/domain/repository/order_repository.dart';
 import 'package:app/features/checkout/domain/service/checkout_service.dart';
+import 'package:app/features/locations/data/datasources/locations_remote_data_source.dart';
+import 'package:app/features/locations/domain/repositories/locations_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -259,6 +261,16 @@ Future<void> initServiceLocator() async {
   // Supabase FCM Service
   sl.registerLazySingleton<SupabaseFcmService>(
     () => SupabaseFcmServiceImpl(dio: sl<DioClient>()),
+  );
+
+  // Locations data sources
+  sl.registerLazySingleton<LocationsRemoteDataSource>(
+    () => LocationsRemoteDataSourceImpl(dio: sl<DioClient>()),
+  );
+  sl.registerLazySingleton<LocationsRepository>(
+    () => LocationsRepositoryImpl(
+      remoteDataSource: sl<LocationsRemoteDataSource>(),
+    ),
   );
 
   // Notification BLoC

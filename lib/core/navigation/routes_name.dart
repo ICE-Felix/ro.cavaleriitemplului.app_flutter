@@ -15,6 +15,12 @@ enum AppRoutesNames {
   searchProducts(name: 'search_products', path: 'search_products'),
   cart(name: 'cart', path: '/cart'),
   checkout(name: 'checkout', path: 'checkout'),
+  locations(name: 'locations', path: '/locations'),
+  selectedLocationCategory(
+    name: 'selected_location_category',
+    path: '/locations',
+  ),
+  locationsDetails(name: 'locations_details', path: '/location'),
   paymentWebView(name: 'payment_webview', path: 'payment_webview');
 
   final String name;

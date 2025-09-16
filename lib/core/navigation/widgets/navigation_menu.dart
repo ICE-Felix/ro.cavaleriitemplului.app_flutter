@@ -21,6 +21,8 @@ class NavigationMenu extends StatelessWidget {
   int _canNavigate() {
     if (currentLocation == '/news') {
       return 0;
+    } else if (currentLocation == '/locations') {
+      return 1;
     } else if (currentLocation == '/shop') {
       return 2;
     } else if (currentLocation == '/cart') {
@@ -33,6 +35,8 @@ class NavigationMenu extends StatelessWidget {
   int _getCurrentIndex() {
     if (currentLocation.startsWith('/news')) {
       return 0;
+    } else if (currentLocation.startsWith('/locations')) {
+      return 1;
     } else if (currentLocation.startsWith('/shop')) {
       return 2;
     } else if (currentLocation.startsWith('/cart')) {
@@ -51,7 +55,9 @@ class NavigationMenu extends StatelessWidget {
         }
         break;
       case 1:
-        // Locations - Disabled for now
+        if (_canNavigate() != 1) {
+          context.go(AppRoutesNames.locations.path);
+        }
         break;
       case 2:
         // Shop
