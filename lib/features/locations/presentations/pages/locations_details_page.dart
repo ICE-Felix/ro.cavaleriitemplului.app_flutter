@@ -5,8 +5,12 @@ import 'package:app/core/widgets/custom_top_bar/custom_top_bar.dart';
 import 'package:app/features/locations/presentations/cubit/location_details/location_details_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:map_launcher/map_launcher.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LocationsDetailsPage extends StatelessWidget {
   const LocationsDetailsPage({super.key, required this.locationId});
@@ -204,8 +208,23 @@ class LocationsDetailsPageView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          // TODO: Implement directions
+                        onPressed: () async {
+                          final latitude = double.tryParse(
+                            state.location!.locationLatitude!,
+                          );
+                          final longitude = double.tryParse(
+                            state.location!.locationLongitude!,
+                          );
+                          if (latitude == null || longitude == null) {
+                            return;
+                          }
+
+                          final availableMaps = await MapLauncher.installedMaps;
+
+                          await availableMaps.first.showMarker(
+                            coords: Coords(latitude, longitude),
+                            title: state.location?.name ?? 'No name available',
+                          );
                         },
                         icon: const Icon(Icons.directions),
                         label: const Text('Get Directions'),
@@ -218,7 +237,11 @@ class LocationsDetailsPageView extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          // TODO: Implement call
+                          if (state.location!.phoneNo != null) {
+                            launchUrl(
+                              Uri.parse('tel:${state.location!.phoneNo}'),
+                            );
+                          }
                         },
                         icon: const Icon(Icons.phone),
                         label: const Text('Call'),
