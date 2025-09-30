@@ -35,7 +35,6 @@ class LocationsDetailsPageView extends StatelessWidget {
     return Scaffold(
       appBar: CustomTopBar(
         showProfileButton: true,
-        showNotificationButton: true,
         showLogo: true,
         logoHeight: 90,
         logoWidth: 140,

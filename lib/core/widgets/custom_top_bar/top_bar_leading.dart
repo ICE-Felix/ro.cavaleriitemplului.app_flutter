@@ -67,7 +67,7 @@ class TopBarLeading extends StatelessWidget {
 
     if (showBackButton) {
       return IconButton(
-        onPressed: () => context.goNamed(AppRoutesNames.shop.name),
+        onPressed: () => context.pop(),
         icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 20),
         tooltip: 'Back',
       );

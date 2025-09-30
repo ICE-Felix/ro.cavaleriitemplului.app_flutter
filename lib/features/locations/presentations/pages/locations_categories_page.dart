@@ -23,7 +23,7 @@ class LocationsCategoriesPage extends StatelessWidget {
           return Scaffold(
             appBar: CustomTopBar(
               showProfileButton: true,
-              showNotificationButton: true,
+              showNotificationButton: false,
               showLogo: true,
               logoHeight: 90,
               logoWidth: 140,

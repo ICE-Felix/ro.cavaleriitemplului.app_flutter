@@ -34,7 +34,7 @@ class _CategoriesPageViewState extends State<_CategoriesPageView> {
     return Scaffold(
       appBar: CustomTopBar(
         showProfileButton: true,
-        showNotificationButton: true,
+        showNotificationButton: false,
         showLogo: true,
         logoHeight: 90,
         logoWidth: 140,
@@ -50,17 +50,6 @@ class _CategoriesPageViewState extends State<_CategoriesPageView> {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: LanguageSwitcherWidget(isCompact: true),
-          ),
-          // Saved articles button
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: IconButton(
-              onPressed: () {
-                context.pushNamed(AppRoutesNames.savedArticles.name);
-              },
-              icon: const FaIcon(FontAwesomeIcons.solidBookmark, size: 20),
-              tooltip: context.getString(label: 'savedArticles'),
-            ),
           ),
         ],
       ),

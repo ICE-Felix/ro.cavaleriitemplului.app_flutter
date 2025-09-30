@@ -5,24 +5,28 @@ import 'package:flutter/material.dart';
 
 class CategoryHorizontalSlider<T> extends StatefulWidget {
   final List<T> items;
-  final Function(T item) onItemSelected;
+  final Function(T? item) onSelectionChanged;
   final int itemsPerPage;
   final String Function(T item) getDisplayName;
   final T? selectedItem;
   final String Function(T item)? getItemId;
   final String? selectedItemId;
   final double height;
+  final bool canUnselect;
+  final bool autoSelectFirstItem;
 
   const CategoryHorizontalSlider({
     super.key,
     required this.items,
     required this.getDisplayName,
-    required this.onItemSelected,
+    required this.onSelectionChanged,
     this.itemsPerPage = 5,
     this.selectedItem,
     this.getItemId,
     this.selectedItemId,
     this.height = 32,
+    this.canUnselect = false,
+    this.autoSelectFirstItem = true,
   });
 
   @override
@@ -40,7 +44,9 @@ class _CategoryHorizontalSliderState<T>
   void initState() {
     super.initState();
     numberOfPages = _computePages(widget.items.length, widget.itemsPerPage);
-    _internalSelectedItem = widget.selectedItem ?? widget.items.firstOrNull;
+    _internalSelectedItem =
+        widget.selectedItem ??
+        (widget.autoSelectFirstItem ? widget.items.firstOrNull : null);
   }
 
   @override
@@ -59,7 +65,13 @@ class _CategoryHorizontalSliderState<T>
     if (widget.selectedItem == null && widget.selectedItemId == null) {
       if (_internalSelectedItem != null &&
           !widget.items.contains(_internalSelectedItem)) {
-        _internalSelectedItem = widget.items.firstOrNull;
+        _internalSelectedItem =
+            widget.autoSelectFirstItem ? widget.items.firstOrNull : null;
+      } else if (_internalSelectedItem == null &&
+          widget.autoSelectFirstItem &&
+          widget.items.isNotEmpty) {
+        // Auto-select first item if no selection and autoSelectFirstItem is true
+        _internalSelectedItem = widget.items.first;
       }
     }
   }
@@ -85,11 +97,30 @@ class _CategoryHorizontalSliderState<T>
                         child: InkWell(
                           borderRadius: BorderRadius.circular(12),
                           onTap: () {
+                            final isCurrentlySelected = _isSelected(item);
+
+                            // If item is already selected and canUnselect is false, do nothing
+                            if (isCurrentlySelected && !widget.canUnselect) {
+                              return;
+                            }
+
                             if (widget.selectedItem == null &&
                                 widget.selectedItemId == null) {
-                              setState(() => _internalSelectedItem = item);
+                              // Uncontrolled mode: toggle selection (only if canUnselect allows it)
+                              setState(() {
+                                _internalSelectedItem =
+                                    (isCurrentlySelected && widget.canUnselect)
+                                        ? null
+                                        : item;
+                              });
                             }
-                            widget.onItemSelected(item);
+
+                            // Call callback with null if deselecting (and canUnselect is true), item if selecting
+                            widget.onSelectionChanged(
+                              (isCurrentlySelected && widget.canUnselect)
+                                  ? null
+                                  : item,
+                            );
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
@@ -189,7 +220,7 @@ class _CategoryHorizontalSliderState<T>
     if (widget.selectedItem != null) {
       return widget.selectedItem == item;
     }
-    return _internalSelectedItem == item;
+    return _internalSelectedItem != null && _internalSelectedItem == item;
   }
 
   int _computePages(int totalItems, int perPage) {

@@ -3,6 +3,10 @@ import 'package:app/features/checkout/data/order_datasource.dart';
 import 'package:app/features/checkout/data/order_datasource_supabase.dart';
 import 'package:app/features/checkout/domain/repository/order_repository.dart';
 import 'package:app/features/checkout/domain/service/checkout_service.dart';
+import 'package:app/features/events/data/events_datasource.dart';
+import 'package:app/features/events/data/events_datasource_supabase.dart';
+import 'package:app/features/events/domain/repository/events_repository.dart';
+import 'package:app/features/events/domain/repository/events_repository_supabase.dart';
 import 'package:app/features/locations/data/datasources/locations_remote_data_source.dart';
 import 'package:app/features/locations/domain/repositories/locations_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -271,6 +275,14 @@ Future<void> initServiceLocator() async {
     () => LocationsRepositoryImpl(
       remoteDataSource: sl<LocationsRemoteDataSource>(),
     ),
+  );
+
+  //Event data sources
+  sl.registerLazySingleton<EventsDatasource>(
+    () => EventsDatasourceSupabase(dio: sl<DioClient>()),
+  );
+  sl.registerLazySingleton<EventsRepository>(
+    () => EventsRepositorySupabase(networkInfo: sl<NetworkInfo>(), eventsDatasource: sl<EventsDatasource>()),
   );
 
   // Notification BLoC

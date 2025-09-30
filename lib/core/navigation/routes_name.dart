@@ -21,6 +21,11 @@ enum AppRoutesNames {
     path: '/locations',
   ),
   locationsDetails(name: 'locations_details', path: '/location'),
+
+  //Events
+  events(name: 'events', path: '/events'),
+  eventDetails(name: 'event_details', path: 'event_details/:id'),
+
   paymentWebView(name: 'payment_webview', path: 'payment_webview');
 
   final String name;

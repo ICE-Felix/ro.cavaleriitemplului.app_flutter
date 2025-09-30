@@ -2,6 +2,8 @@ import 'package:app/core/navigation/routes_name.dart';
 import 'package:app/core/navigation/widgets/navigation_menu.dart';
 import 'package:app/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:app/features/auth/presentation/pages/signup_page.dart';
+import 'package:app/features/events/presentation/events.dart';
+import 'package:app/features/events/presentation/events_details.dart';
 import 'package:app/features/locations/presentations/pages/locations_categories_page.dart';
 import 'package:app/features/locations/presentations/pages/locations_details_page.dart';
 import 'package:app/features/locations/presentations/pages/selected_location_category_page.dart';
@@ -197,6 +199,28 @@ final routes = GoRouter(
                   locationId: state.pathParameters['id']!,
                 ),
               ),
+        ),
+
+        // Events route
+        GoRoute(
+          path: AppRoutesNames.events.path,
+          name: AppRoutesNames.events.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const EventsPage(),
+              ),
+          routes: [
+            GoRoute(
+              path: AppRoutesNames.eventDetails.path,
+              name: AppRoutesNames.eventDetails.name,
+              pageBuilder:
+                  (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    child: EventDetailPage(id: state.pathParameters['id']!),
+                  ),
+            ),
+          ],
         ),
 
         // Cart route

@@ -25,8 +25,10 @@ class NavigationMenu extends StatelessWidget {
       return 1;
     } else if (currentLocation == '/shop') {
       return 2;
-    } else if (currentLocation == '/cart') {
+    } else if (currentLocation == '/events') {
       return 3;
+    } else if (currentLocation == '/cart') {
+      return 4;
     }
     // Default to news
     return -1;
@@ -39,8 +41,10 @@ class NavigationMenu extends StatelessWidget {
       return 1;
     } else if (currentLocation.startsWith('/shop')) {
       return 2;
-    } else if (currentLocation.startsWith('/cart')) {
+    } else if (currentLocation.startsWith('/events')) {
       return 3;
+    } else if (currentLocation.startsWith('/cart')) {
+      return 4;
     }
     // Default to news
     return 0;
@@ -66,8 +70,14 @@ class NavigationMenu extends StatelessWidget {
         }
         break;
       case 3:
-        // Cart
+        // Events
         if (_canNavigate() != 3) {
+          context.go(AppRoutesNames.events.path);
+        }
+        break;
+      case 4:
+        // Cart
+        if (_canNavigate() != 4) {
           context.go(AppRoutesNames.cart.path);
         }
         break;
@@ -99,6 +109,7 @@ class NavigationMenu extends StatelessWidget {
             icon: Icon(Icons.shopping_bag),
             label: parentContext.getString(label: 'bottomNavigation.shop'),
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
           BottomNavigationBarItem(
             icon: Stack(
               children: [

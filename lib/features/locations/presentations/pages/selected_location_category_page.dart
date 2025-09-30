@@ -89,10 +89,10 @@ class SelectedLocationPageView extends StatelessWidget {
                 items: state.subCategories,
                 itemsPerPage: 3,
                 getDisplayName: (category) => category.name,
-                onItemSelected:
+                onSelectionChanged:
                     (category) => context
                         .read<SelectedLocationCategoryCubit>()
-                        .selectSubcategory(category),
+                        .selectSubcategory(category!),
               ),
               if (state.areLocationsLoading)
                 Expanded(
