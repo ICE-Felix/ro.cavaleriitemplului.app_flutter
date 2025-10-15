@@ -1,7 +1,7 @@
+import 'package:app/features/profile/presentation/widgets/language_selection_dialog/language_selection_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:app/features/profile/presentation/widgets/profile_menu_item.dart';
-import 'package:app/features/profile/presentation/widgets/language_selection_dialog.dart';
 
 class ProfileSettingsSection extends StatelessWidget {
   const ProfileSettingsSection({super.key});
