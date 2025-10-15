@@ -12,6 +12,7 @@ class LocationCubit extends Cubit<LocationState> {
 
   /// Initialize and get current location
   Future<void> initialize() async {
+    if (state.hasLocation) return;
     emit(state.copyWith(isLoading: true));
 
     try {
@@ -50,8 +51,6 @@ class LocationCubit extends Cubit<LocationState> {
         );
       }
 
-      // Start background location updates for moving users
-      _locationService.startBackgroundLocationUpdates();
     } catch (e) {
       emit(
         state.copyWith(
@@ -91,20 +90,9 @@ class LocationCubit extends Cubit<LocationState> {
     }
   }
 
-  /// Clear location cache and refresh
-  Future<void> clearCacheAndRefresh() async {
-    _locationService.clearCache();
-    await refreshLocation();
-  }
-
-  /// Stop background location updates
-  void stopBackgroundUpdates() {
-    _locationService.stopBackgroundLocationUpdates();
-  }
-
+  
   @override
   Future<void> close() {
-    _locationService.stopBackgroundLocationUpdates();
     return super.close();
   }
 }

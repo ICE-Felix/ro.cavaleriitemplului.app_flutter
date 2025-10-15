@@ -1,5 +1,4 @@
 import 'package:app/core/cubit/location_cubit.dart';
-import 'package:app/core/service_locator.dart';
 import 'package:app/core/style/app_colors.dart';
 import 'package:app/core/widgets/custom_top_bar/custom_top_bar.dart';
 import 'package:app/features/locations/presentations/cubit/selected_location_category/selected_location_category_cubit.dart';
@@ -17,15 +16,6 @@ class SelectedLocationCategoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<LocationCubit>(
-          create: (context) {
-            final cubit = sl<LocationCubit>();
-            // Initialize location in background without blocking UI
-            // Use Future.delayed to ensure UI renders first
-            Future.delayed(Duration.zero, () => cubit.initialize());
-            return cubit;
-          },
-        ),
         BlocProvider<SelectedLocationCategoryCubit>(
           create: (context) {
             final cubit = SelectedLocationCategoryCubit(

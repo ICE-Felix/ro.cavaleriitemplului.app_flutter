@@ -313,5 +313,10 @@ Future<void> initServiceLocator() async {
   sl.registerFactory(() => NotificationBloc());
 
   // Location Cubit
-  sl.registerFactory(() => LocationCubit(sl<LocationService>()));
+  sl.registerLazySingleton(() {
+    final locationCubit = LocationCubit(sl<LocationService>());
+    // Initialize in background without blocking
+    locationCubit.initialize();
+    return locationCubit;
+  });
 }
