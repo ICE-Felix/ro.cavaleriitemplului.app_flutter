@@ -9,6 +9,12 @@ class SelectedLocationCategoryState extends Equatable {
     this.locations = const [],
     this.subCategories = const [],
     this.selectedSubcategory,
+    this.vectorMapStyle,
+    this.attributeFilters = const {},
+    this.selectedAttributeIds = const [],
+    this.areFiltersLoading = false,
+    this.searchQuery = '',
+    this.filteredLocations = const [],
   });
 
   final bool isLoading;
@@ -18,6 +24,12 @@ class SelectedLocationCategoryState extends Equatable {
   final List<LocationModel> locations;
   final List<LocationCategoryModel> subCategories;
   final LocationCategoryModel? selectedSubcategory;
+  final Style? vectorMapStyle;
+  final Map<String, List<AttributeFilterOption>> attributeFilters;
+  final List<String> selectedAttributeIds;
+  final bool areFiltersLoading;
+  final String searchQuery;
+  final List<LocationModel> filteredLocations;
 
   SelectedLocationCategoryState copyWith({
     bool? isLoading,
@@ -27,6 +39,12 @@ class SelectedLocationCategoryState extends Equatable {
     List<LocationCategoryModel>? subCategories,
     Nullable<LocationCategoryModel>? selectedSubcategory,
     Nullable<String>? errorMessage,
+    Style? vectorMapStyle,
+    Map<String, List<AttributeFilterOption>>? attributeFilters,
+    List<String>? selectedAttributeIds,
+    bool? areFiltersLoading,
+    String? searchQuery,
+    List<LocationModel>? filteredLocations,
   }) {
     return SelectedLocationCategoryState(
       isLoading: isLoading ?? this.isLoading,
@@ -40,6 +58,12 @@ class SelectedLocationCategoryState extends Equatable {
           selectedSubcategory != null
               ? selectedSubcategory.value
               : this.selectedSubcategory,
+      vectorMapStyle: vectorMapStyle ?? this.vectorMapStyle,
+      attributeFilters: attributeFilters ?? this.attributeFilters,
+      selectedAttributeIds: selectedAttributeIds ?? this.selectedAttributeIds,
+      areFiltersLoading: areFiltersLoading ?? this.areFiltersLoading,
+      searchQuery: searchQuery ?? this.searchQuery,
+      filteredLocations: filteredLocations ?? this.filteredLocations,
     );
   }
 
@@ -47,8 +71,16 @@ class SelectedLocationCategoryState extends Equatable {
   List<Object?> get props => [
     isLoading,
     areLocationsLoading,
+    isError,
+    errorMessage,
     locations,
     subCategories,
     selectedSubcategory,
+    vectorMapStyle,
+    attributeFilters,
+    selectedAttributeIds,
+    areFiltersLoading,
+    searchQuery,
+    filteredLocations,
   ];
 }

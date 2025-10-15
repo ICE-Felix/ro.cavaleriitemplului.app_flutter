@@ -20,8 +20,10 @@ import 'network/supabase_client.dart';
 import 'localization/app_localization.dart';
 import '../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../features/auth/data/datasources/auth_local_data_source.dart';
-import '../features/auth/data/repositories/auth_repository_impl.dart';
+import '../features/auth/domain/repositories/auth_repository_impl.dart';
 import '../features/auth/domain/repositories/auth_repository.dart';
+import '../features/auth/domain/services/authentication_service.dart';
+import '../features/auth/domain/services/supabase_authentication_service.dart';
 import '../features/auth/domain/usecases/login_usecase.dart';
 import '../features/auth/domain/usecases/register_usecase.dart';
 import '../features/auth/domain/usecases/forgot_password_usecase.dart';
@@ -60,6 +62,10 @@ import '../features/shop/domain/usecases/get_product_by_id_usecase.dart';
 import '../core/services/firebase_messaging_service.dart';
 import '../features/notifications/presentation/bloc/notification_bloc.dart';
 import '../core/services/supabase_fcm_service.dart';
+import '../core/services/location_service.dart';
+import '../core/cubit/location_cubit.dart';
+import '../core/services/share_page_service.dart';
+import '../core/navigation/routes.dart';
 // Cart feature imports
 import '../features/cart/cart.dart';
 import '../features/checkout/checkout.dart';
@@ -93,6 +99,12 @@ Future<void> initServiceLocator() async {
   // Auth local data source
   sl.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSourceImpl(sharedPreferences: sl<SharedPreferences>()),
+  );
+
+  // Authentication service
+  sl.registerLazySingleton<AuthenticationService>(
+    () =>
+        SupabaseAuthenticationService(supabaseClient: sl<SupabaseAuthClient>()),
   );
 
   // Intro data sources
@@ -217,6 +229,7 @@ Future<void> initServiceLocator() async {
       checkAuthStatusUseCase: sl<CheckAuthStatusUseCase>(),
       logoutUseCase: sl<LogoutUseCase>(),
       localizationCubit: sl<LocalizationCubit>(),
+      authenticationService: sl<AuthenticationService>(),
     ),
   );
 
@@ -267,6 +280,14 @@ Future<void> initServiceLocator() async {
     () => SupabaseFcmServiceImpl(dio: sl<DioClient>()),
   );
 
+  // Location Service
+  sl.registerLazySingleton<LocationService>(
+    () => LocationService(sl<SharedPreferences>()),
+  );
+
+  // Share Page Service
+  sl.registerLazySingleton<SharePageService>(() => SharePageService(routes));
+
   // Locations data sources
   sl.registerLazySingleton<LocationsRemoteDataSource>(
     () => LocationsRemoteDataSourceImpl(dio: sl<DioClient>()),
@@ -282,9 +303,15 @@ Future<void> initServiceLocator() async {
     () => EventsDatasourceSupabase(dio: sl<DioClient>()),
   );
   sl.registerLazySingleton<EventsRepository>(
-    () => EventsRepositorySupabase(networkInfo: sl<NetworkInfo>(), eventsDatasource: sl<EventsDatasource>()),
+    () => EventsRepositorySupabase(
+      networkInfo: sl<NetworkInfo>(),
+      eventsDatasource: sl<EventsDatasource>(),
+    ),
   );
 
   // Notification BLoC
   sl.registerFactory(() => NotificationBloc());
+
+  // Location Cubit
+  sl.registerFactory(() => LocationCubit(sl<LocationService>()));
 }

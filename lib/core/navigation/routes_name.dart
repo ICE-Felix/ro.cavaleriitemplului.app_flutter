@@ -26,6 +26,9 @@ enum AppRoutesNames {
   events(name: 'events', path: '/events'),
   eventDetails(name: 'event_details', path: 'event_details/:id'),
 
+  //Profile
+  profile(name: 'profile', path: '/profile'),
+
   paymentWebView(name: 'payment_webview', path: 'payment_webview');
 
   final String name;

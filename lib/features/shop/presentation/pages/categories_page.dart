@@ -1,4 +1,3 @@
-import 'package:app/core/localization/app_localization.dart';
 import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,7 +5,6 @@ import 'package:app/core/widgets/custom_top_bar.dart';
 import 'package:app/features/shop/presentation/cubit/categories/categories_cubit.dart';
 import 'package:app/features/shop/presentation/widgets/category_card.dart';
 import 'package:app/features/shop/presentation/widgets/button_search_bar.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class CategoriesPage extends StatelessWidget {
@@ -32,26 +30,17 @@ class _CategoriesPageViewState extends State<_CategoriesPageView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomTopBar(
-        showProfileButton: true,
-        showNotificationButton: false,
+      appBar: CustomTopBar.withCart(
+        context: context,
         showLogo: true,
         logoHeight: 90,
         logoWidth: 140,
         logoPadding: const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
-        notificationCount: 0,
-        onProfileTap: () {},
+        showNotificationButton: true,
         onNotificationTap: () {
           // Handle notification tap
         },
         onLogoTap: () {},
-        customActions: [
-          // Language switcher button
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: LanguageSwitcherWidget(isCompact: true),
-          ),
-        ],
       ),
       body: Column(
         children: [

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'notification_button.dart';
 import 'profile_button.dart';
+import 'cart_button.dart';
 
 class TopBarActions extends StatelessWidget {
   final bool showNotificationButton;
   final bool showProfileButton;
+  final bool showCartButton;
   final int notificationCount;
   final VoidCallback? onNotificationTap;
   final VoidCallback? onProfileTap;
+  final VoidCallback? onCartTap;
   final List<Widget>? customActions;
   final Widget? customRightWidget;
 
@@ -15,9 +18,11 @@ class TopBarActions extends StatelessWidget {
     super.key,
     this.showNotificationButton = true,
     this.showProfileButton = true,
+    this.showCartButton = false,
     this.notificationCount = 0,
     this.onNotificationTap,
     this.onProfileTap,
+    this.onCartTap,
     this.customActions,
     this.customRightWidget,
   });
@@ -49,6 +54,11 @@ class TopBarActions extends StatelessWidget {
           notificationCount: notificationCount,
         ),
       );
+    }
+
+    // Add cart button
+    if (showCartButton) {
+      actions.add(CartButton(onPressed: onCartTap));
     }
 
     // Add profile button

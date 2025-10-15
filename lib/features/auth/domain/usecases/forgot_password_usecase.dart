@@ -10,7 +10,7 @@ class ForgotPasswordUseCase implements VoidUseCase<ForgotPasswordParams> {
 
   @override
   Future<void> call(ForgotPasswordParams params) async {
-    return await repository.resetPassword(params.email);
+    return await repository.resetPassword(email: params.email);
   }
 }
 

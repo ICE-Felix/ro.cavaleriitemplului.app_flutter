@@ -109,6 +109,19 @@ class SupabaseAuthClient {
       throw AuthException(message: e.toString());
     }
   }
+
+  // Listen to auth state changes
+  Stream<AuthState> get onAuthStateChange =>
+      Supabase.instance.client.auth.onAuthStateChange;
+
+  // Refresh session
+  Future<void> refreshSession() async {
+    try {
+      await Supabase.instance.client.auth.refreshSession();
+    } catch (e) {
+      throw AuthException(message: e.toString());
+    }
+  }
 }
 
 /// General Supabase client for database operations

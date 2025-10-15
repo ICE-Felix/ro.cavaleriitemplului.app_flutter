@@ -1,6 +1,5 @@
 import 'package:app/core/navigation/routes_name.dart';
 import 'package:app/core/service_locator.dart';
-import 'package:app/features/cart/domain/repositories/cart_repository.dart';
 import 'package:app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'business_hours_model.dart';
 
 class LocationModel {
   final String id;
@@ -20,6 +21,9 @@ class LocationModel {
   final List<String>? locationCategoryId;
   final String? orderDisplay;
   final String? imageFeaturedId;
+  final List<String>? venueCategoryTitles;
+  final List<String>? attributeNames;
+  final List<LocationAttribute>? attributes;
 
   const LocationModel({
     required this.id,
@@ -41,6 +45,9 @@ class LocationModel {
     this.locationCategoryId,
     this.orderDisplay,
     this.imageFeaturedId,
+    this.venueCategoryTitles,
+    this.attributeNames,
+    this.attributes,
   });
 
   factory LocationModel.fromJson(Map<String, dynamic> json) {
@@ -82,6 +89,23 @@ class LocationModel {
               : null,
       orderDisplay: json['order_display'] as String?,
       imageFeaturedId: json['image_featured_id'] as String?,
+      venueCategoryTitles:
+          json['venue_category_titles'] != null
+              ? List<String>.from(json['venue_category_titles'] as List)
+              : null,
+      attributeNames:
+          json['attribute_names'] != null
+              ? List<String>.from(json['attribute_names'] as List)
+              : null,
+      attributes:
+          json['attributes'] != null
+              ? (json['attributes'] as List)
+                  .map(
+                    (e) =>
+                        LocationAttribute.fromJson(e as Map<String, dynamic>),
+                  )
+                  .toList()
+              : null,
     );
   }
 
@@ -106,6 +130,70 @@ class LocationModel {
       'venue_category_id': locationCategoryId,
       'order_display': orderDisplay,
       'image_featured_id': imageFeaturedId,
+      'venue_category_titles': venueCategoryTitles,
+      'attribute_names': attributeNames,
+      'attributes': attributes?.map((e) => e.toJson()).toList(),
     };
+  }
+
+  /// Get parsed business hours
+  WeeklyBusinessHours? get parsedBusinessHours {
+    if (businessHours == null || businessHours!.isEmpty) return null;
+    try {
+      return WeeklyBusinessHours.fromJson(businessHours!);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Check if location is currently open
+  bool get isCurrentlyOpen {
+    final hours = parsedBusinessHours;
+    return hours?.isCurrentlyOpen ?? false;
+  }
+
+  /// Get today's business hours as a formatted string
+  String get todayHoursFormatted {
+    final hours = parsedBusinessHours;
+    return hours?.todayHoursFormatted ?? 'Hours not available';
+  }
+
+  /// Get a compact summary of all business hours
+  String get businessHoursSummary {
+    final hours = parsedBusinessHours;
+    return hours?.compactSummary ?? 'Hours not available';
+  }
+
+  /// Get current status (Open/Closed) with hours
+  String get currentStatus {
+    if (isCurrentlyOpen) {
+      return 'Open now';
+    } else {
+      return 'Closed';
+    }
+  }
+}
+
+class LocationAttribute {
+  final String id;
+  final String type;
+  final String value;
+
+  const LocationAttribute({
+    required this.id,
+    required this.type,
+    required this.value,
+  });
+
+  factory LocationAttribute.fromJson(Map<String, dynamic> json) {
+    return LocationAttribute(
+      id: json['id'] as String,
+      type: json['type'] as String,
+      value: json['value'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'type': type, 'value': value};
   }
 }

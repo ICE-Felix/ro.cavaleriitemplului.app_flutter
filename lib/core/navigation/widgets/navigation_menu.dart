@@ -1,7 +1,4 @@
-import 'package:app/core/service_locator.dart';
-import 'package:app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:app/core/navigation/routes_name.dart';
 import 'package:app/core/localization/localization_inherited_widget.dart';
@@ -27,7 +24,7 @@ class NavigationMenu extends StatelessWidget {
       return 2;
     } else if (currentLocation == '/events') {
       return 3;
-    } else if (currentLocation == '/cart') {
+    } else if (currentLocation == '/profile') {
       return 4;
     }
     // Default to news
@@ -43,7 +40,7 @@ class NavigationMenu extends StatelessWidget {
       return 2;
     } else if (currentLocation.startsWith('/events')) {
       return 3;
-    } else if (currentLocation.startsWith('/cart')) {
+    } else if (currentLocation.startsWith('/profile')) {
       return 4;
     }
     // Default to news
@@ -76,9 +73,9 @@ class NavigationMenu extends StatelessWidget {
         }
         break;
       case 4:
-        // Cart
+        // Profile
         if (_canNavigate() != 4) {
-          context.go(AppRoutesNames.cart.path);
+          context.go(AppRoutesNames.profile.path);
         }
         break;
     }
@@ -110,53 +107,7 @@ class NavigationMenu extends StatelessWidget {
             label: parentContext.getString(label: 'bottomNavigation.shop'),
           ),
           BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
-          BottomNavigationBarItem(
-            icon: Stack(
-              children: [
-                Icon(Icons.shopping_cart),
-                BlocProvider.value(
-                  value: sl<CartCubit>(),
-                  child: BlocBuilder<CartCubit, CartState>(
-                    builder: (context, state) {
-                      final totalItems = state.cart.items.fold<int>(
-                        0,
-                        (sum, item) => sum + item.quantity,
-                      );
-
-                      if (totalItems == 0) {
-                        return const SizedBox.shrink();
-                      }
-
-                      return Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Container(
-                          width: 16,
-                          height: 16,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Text(
-                              totalItems.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            label: 'Cart',
-            // label: parentContext.getString(label: 'bottomNavigation.cart'),
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );

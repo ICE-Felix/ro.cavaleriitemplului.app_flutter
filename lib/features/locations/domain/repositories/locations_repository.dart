@@ -9,8 +9,13 @@ abstract class LocationsRepository {
   Future<List<LocationCategoryModel>> getAllLocationCategories();
   Future<List<LocationCategoryModel>> getAllParentCategories();
   Future<List<LocationCategoryModel>> getAllSubCategories(String parentId);
-  Future<List<LocationModel>> getAllLoactionsForCategory(String categoryId);
+  Future<List<LocationModel>> getAllLoactionsForCategory(String? categoryId);
   Future<LocationModel> getLocationById(String locationId);
+  Future<Map<String, List<AttributeFilterOption>>> getVenueAttributeFilters();
+  Future<List<LocationModel>> getAllLoactionsForCategoryWithFilters(
+    String categoryId, {
+    List<String>? attributeFilters,
+  });
 }
 
 class LocationsRepositoryImpl implements LocationsRepository {
@@ -59,7 +64,7 @@ class LocationsRepositoryImpl implements LocationsRepository {
 
   @override
   Future<List<LocationModel>> getAllLoactionsForCategory(
-    String categoryId,
+    String? categoryId,
   ) async {
     try {
       return await remoteDataSource.getAllLoactionsForCategory(categoryId);
@@ -104,6 +109,39 @@ class LocationsRepositoryImpl implements LocationsRepository {
   Future<LocationModel> getLocationById(String locationId) async {
     try {
       return await remoteDataSource.getLocationById(locationId);
+    } on ServerException catch (e) {
+      throw ServerException(message: e.message);
+    } on AuthException catch (e) {
+      throw AuthException(message: e.message);
+    } catch (e) {
+      throw ServerException(message: 'Unexpected error occurred: $e');
+    }
+  }
+
+  @override
+  Future<Map<String, List<AttributeFilterOption>>>
+  getVenueAttributeFilters() async {
+    try {
+      return await remoteDataSource.getVenueAttributeFilters();
+    } on ServerException catch (e) {
+      throw ServerException(message: e.message);
+    } on AuthException catch (e) {
+      throw AuthException(message: e.message);
+    } catch (e) {
+      throw ServerException(message: 'Unexpected error occurred: $e');
+    }
+  }
+
+  @override
+  Future<List<LocationModel>> getAllLoactionsForCategoryWithFilters(
+    String categoryId, {
+    List<String>? attributeFilters,
+  }) async {
+    try {
+      return await remoteDataSource.getAllLoactionsForCategoryWithFilters(
+        categoryId,
+        attributeFilters: attributeFilters,
+      );
     } on ServerException catch (e) {
       throw ServerException(message: e.message);
     } on AuthException catch (e) {

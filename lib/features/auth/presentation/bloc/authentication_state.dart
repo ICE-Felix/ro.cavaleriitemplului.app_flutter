@@ -11,7 +11,7 @@ class AuthInitial extends AuthenticationState {}
 class AuthLoading extends AuthenticationState {}
 
 class AuthAuthenticated extends AuthenticationState {
-  final UserEntity user;
+  final UserModel user;
 
   AuthAuthenticated(this.user);
 
@@ -33,9 +33,7 @@ class AuthError extends AuthenticationState {
 class AuthPasswordResetSent extends AuthenticationState {
   final String message;
 
-  AuthPasswordResetSent({
-    this.message = '',
-  });
+  AuthPasswordResetSent({this.message = ''});
 
   @override
   List<Object?> get props => [message];

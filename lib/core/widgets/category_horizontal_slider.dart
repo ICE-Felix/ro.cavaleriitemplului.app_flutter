@@ -14,6 +14,8 @@ class CategoryHorizontalSlider<T> extends StatefulWidget {
   final double height;
   final bool canUnselect;
   final bool autoSelectFirstItem;
+  final bool showAllButton;
+  final String allButtonText;
 
   const CategoryHorizontalSlider({
     super.key,
@@ -27,6 +29,8 @@ class CategoryHorizontalSlider<T> extends StatefulWidget {
     this.height = 32,
     this.canUnselect = false,
     this.autoSelectFirstItem = true,
+    this.showAllButton = false,
+    this.allButtonText = 'All',
   });
 
   @override
@@ -39,22 +43,35 @@ class _CategoryHorizontalSliderState<T>
   int currentPage = 0;
   T? _internalSelectedItem;
   late int numberOfPages;
+  bool _isAllSelected = false;
 
   @override
   void initState() {
     super.initState();
-    numberOfPages = _computePages(widget.items.length, widget.itemsPerPage);
-    _internalSelectedItem =
-        widget.selectedItem ??
-        (widget.autoSelectFirstItem ? widget.items.firstOrNull : null);
+    numberOfPages = _computePages(_getTotalItems(), widget.itemsPerPage);
+    _initializeSelection();
+  }
+
+  void _initializeSelection() {
+    if (widget.showAllButton) {
+      // When All button is shown, default to All selected (no item selected)
+      _isAllSelected =
+          widget.selectedItem == null && widget.selectedItemId == null;
+      _internalSelectedItem = null;
+    } else {
+      _internalSelectedItem =
+          widget.selectedItem ??
+          (widget.autoSelectFirstItem ? widget.items.firstOrNull : null);
+    }
   }
 
   @override
   void didUpdateWidget(covariant CategoryHorizontalSlider<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final newPages = _computePages(widget.items.length, widget.itemsPerPage);
+    final newPages = _computePages(_getTotalItems(), widget.itemsPerPage);
     if (newPages != numberOfPages ||
-        widget.itemsPerPage != oldWidget.itemsPerPage) {
+        widget.itemsPerPage != oldWidget.itemsPerPage ||
+        widget.showAllButton != oldWidget.showAllButton) {
       numberOfPages = newPages;
       if (currentPage >= numberOfPages) {
         currentPage = numberOfPages == 0 ? 0 : numberOfPages - 1;
@@ -63,22 +80,40 @@ class _CategoryHorizontalSliderState<T>
 
     // In uncontrolled mode keep selection valid after items change
     if (widget.selectedItem == null && widget.selectedItemId == null) {
-      if (_internalSelectedItem != null &&
-          !widget.items.contains(_internalSelectedItem)) {
-        _internalSelectedItem =
-            widget.autoSelectFirstItem ? widget.items.firstOrNull : null;
-      } else if (_internalSelectedItem == null &&
-          widget.autoSelectFirstItem &&
-          widget.items.isNotEmpty) {
-        // Auto-select first item if no selection and autoSelectFirstItem is true
-        _internalSelectedItem = widget.items.first;
+      if (widget.showAllButton) {
+        // When All button is shown, check if current selection is still valid
+        if (_internalSelectedItem != null &&
+            !widget.items.contains(_internalSelectedItem)) {
+          _isAllSelected = true;
+          _internalSelectedItem = null;
+        }
+      } else {
+        if (_internalSelectedItem != null &&
+            !widget.items.contains(_internalSelectedItem)) {
+          _internalSelectedItem =
+              widget.autoSelectFirstItem ? widget.items.firstOrNull : null;
+        } else if (_internalSelectedItem == null &&
+            widget.autoSelectFirstItem &&
+            widget.items.isNotEmpty) {
+          // Auto-select first item if no selection and autoSelectFirstItem is true
+          _internalSelectedItem = widget.items.first;
+        }
       }
     }
   }
 
+  int _getTotalItems() {
+    // When showAllButton is true, we show the "All" button plus regular items
+    // But we need to account for pagination properly
+    if (widget.showAllButton) {
+      return widget.items.length + 1; // +1 for the "All" button
+    }
+    return widget.items.length;
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.items.isEmpty) {
+    if (widget.items.isEmpty && !widget.showAllButton) {
       return const SizedBox.shrink(child: Center(child: Text('No items')));
     }
     return SizedBox(
@@ -108,10 +143,18 @@ class _CategoryHorizontalSliderState<T>
                                 widget.selectedItemId == null) {
                               // Uncontrolled mode: toggle selection (only if canUnselect allows it)
                               setState(() {
-                                _internalSelectedItem =
-                                    (isCurrentlySelected && widget.canUnselect)
-                                        ? null
-                                        : item;
+                                if (item == null) {
+                                  // This is the "All" button
+                                  _isAllSelected = true;
+                                  _internalSelectedItem = null;
+                                } else {
+                                  _isAllSelected = false;
+                                  _internalSelectedItem =
+                                      (isCurrentlySelected &&
+                                              widget.canUnselect)
+                                          ? null
+                                          : item;
+                                }
                               });
                             }
 
@@ -153,7 +196,9 @@ class _CategoryHorizontalSliderState<T>
                             ),
                             child: Center(
                               child: Text(
-                                widget.getDisplayName(item),
+                                item == null
+                                    ? widget.allButtonText
+                                    : widget.getDisplayName(item),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -182,11 +227,45 @@ class _CategoryHorizontalSliderState<T>
     );
   }
 
-  List<T> _getItemsForPage() {
-    return widget.items.sublist(
-      currentPage * widget.itemsPerPage,
-      min((currentPage + 1) * widget.itemsPerPage, widget.items.length),
-    );
+  List<T?> _getItemsForPage() {
+    final List<T?> items = [];
+
+    if (widget.showAllButton) {
+      // When "All" button is shown, it's always the first item
+      // and we need to adjust pagination for regular items
+      if (currentPage == 0) {
+        // First page: show "All" button + some regular items
+        items.add(null); // "All" button
+        final remainingSlots = widget.itemsPerPage - 1;
+        final endIndex = min(remainingSlots, widget.items.length);
+        if (endIndex > 0) {
+          items.addAll(widget.items.sublist(0, endIndex));
+        }
+      } else {
+        // Subsequent pages: only regular items
+        final startIndex =
+            (currentPage - 1) * widget.itemsPerPage + (widget.itemsPerPage - 1);
+        final endIndex = min(
+          startIndex + widget.itemsPerPage,
+          widget.items.length,
+        );
+        if (startIndex < widget.items.length) {
+          items.addAll(widget.items.sublist(startIndex, endIndex));
+        }
+      }
+    } else {
+      // No "All" button, normal pagination
+      final startIndex = currentPage * widget.itemsPerPage;
+      final endIndex = min(
+        (currentPage + 1) * widget.itemsPerPage,
+        widget.items.length,
+      );
+      if (startIndex < widget.items.length) {
+        items.addAll(widget.items.sublist(startIndex, endIndex));
+      }
+    }
+
+    return items;
   }
 
   void _onNextPage() {
@@ -213,7 +292,15 @@ class _CategoryHorizontalSliderState<T>
     }
   }
 
-  bool _isSelected(T item) {
+  bool _isSelected(T? item) {
+    // Handle "All" button (null item)
+    if (item == null) {
+      if (widget.selectedItem == null && widget.selectedItemId == null) {
+        return _isAllSelected;
+      }
+      return false; // "All" is not selected if there's a specific selection
+    }
+
     if (widget.selectedItemId != null && widget.getItemId != null) {
       return widget.getItemId!(item) == widget.selectedItemId;
     }
@@ -225,6 +312,19 @@ class _CategoryHorizontalSliderState<T>
 
   int _computePages(int totalItems, int perPage) {
     if (perPage <= 0) return 0;
+
+    if (widget.showAllButton) {
+      // When "All" button is shown, we need special pagination logic
+      if (widget.items.isEmpty) return 1; // Just the "All" button
+
+      // First page has "All" button + (perPage - 1) regular items
+      // Remaining items need (items.length - (perPage - 1)) / perPage pages
+      final remainingItems = widget.items.length - (perPage - 1);
+      if (remainingItems <= 0) return 1; // Only first page needed
+
+      return 1 + (remainingItems / perPage).ceil();
+    }
+
     return (totalItems / perPage).ceil();
   }
 }

@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import '../cubit/checkout_cubit.dart';
 import '../widgets/billing_form.dart';
 import '../widgets/shipping_form.dart';
-import '../widgets/payment_method_selector.dart';
 import '../widgets/billing_same_as_shipping_checkbox.dart';
 
 class CheckoutPage extends StatelessWidget {

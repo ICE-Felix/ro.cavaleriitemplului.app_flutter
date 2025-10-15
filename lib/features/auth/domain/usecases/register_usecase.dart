@@ -1,20 +1,20 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/usecases/usecase.dart';
-import '../entities/user_entity.dart';
+import '../../data/models/user_model.dart';
 import '../repositories/auth_repository.dart';
 
-class RegisterUseCase implements UseCase<UserEntity, RegisterParams> {
+class RegisterUseCase implements UseCase<UserModel, RegisterParams> {
   final AuthRepository repository;
 
   RegisterUseCase({required this.repository});
 
   @override
-  Future<UserEntity> call(RegisterParams params) async {
-    return await repository.register(
-      params.name,
-      params.email,
-      params.password,
+  Future<UserModel> call(RegisterParams params) async {
+    return await repository.signUp(
+      email: params.email,
+      password: params.password,
+      userData: {'name': params.name},
     );
   }
 }

@@ -1,15 +1,15 @@
 import '../../../../core/usecases/usecase.dart';
-import '../entities/user_entity.dart';
+import '../../data/models/user_model.dart';
 import '../repositories/auth_repository.dart';
 
-class CheckAuthStatusUseCase implements UseCase<UserEntity?, NoParams> {
+class CheckAuthStatusUseCase implements UseCase<UserModel?, NoParams> {
   final AuthRepository repository;
 
   CheckAuthStatusUseCase({required this.repository});
 
   @override
-  Future<UserEntity?> call(NoParams params) async {
-    return await repository.getCachedUser();
+  Future<UserModel?> call(NoParams params) async {
+    return await repository.getCurrentUser();
   }
 }
 
@@ -20,6 +20,6 @@ class LogoutUseCase implements UseCase<void, NoParams> {
 
   @override
   Future<void> call(NoParams params) async {
-    return await repository.logout();
+    return await repository.signOut();
   }
 }

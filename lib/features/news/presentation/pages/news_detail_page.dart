@@ -11,7 +11,6 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/service_locator.dart';
 import '../../../../core/widgets/custom_top_bar.dart';
-import '../../../../core/style/app_colors.dart';
 import '../../../../core/style/app_text_styles.dart';
 import '../../../../core/localization/app_localization.dart';
 import '../../domain/entities/news_entity.dart';

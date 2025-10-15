@@ -89,10 +89,8 @@ class _NewsPageState extends State<NewsPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.grey[50],
-        appBar: CustomTopBar(
-          showSearchBar: true,
-          showProfileButton: true,
-          showNotificationButton: true,
+        appBar: CustomTopBar.withSearchAndCart(
+          context: context,
           showLogo: true,
           logoHeight: 90,
           logoWidth: 140,
@@ -101,15 +99,10 @@ class _NewsPageState extends State<NewsPage> {
             top: 10.0,
             bottom: 10.0,
           ),
-          notificationCount: 0,
           searchController: _searchController,
           onSearchChanged: _onSearchChanged,
-          onProfileTap: () {
-            // Handle profile tap - show logout dialog
-            _showLogoutDialog(context);
-          },
           onNotificationTap: () {
-            context.pushNamed(AppRoutesNames.cart.name);
+            // Handle notification tap
           },
           onLogoTap: () {
             print('Logo tapped!');
@@ -298,35 +291,6 @@ class _NewsPageState extends State<NewsPage> {
           ],
         ),
       ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to logout?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                context.pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                context.pop();
-                // Trigger logout
-                context.read<AuthenticationBloc>().add(LogoutRequested());
-              },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Logout'),
-            ),
-          ],
-        );
-      },
     );
   }
 

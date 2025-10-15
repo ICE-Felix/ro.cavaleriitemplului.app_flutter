@@ -103,5 +103,22 @@
     "viewResults": "View {count} results",
     "viewAllResults": "View all results",
     "filtersApplied": "{count} Filters applied"
+  },
+  "locations": {
+    "title": "Locations",
+    "searchLocations": "Search locations",
+    "filters": "Filters",
+    "amenities": "Amenities",
+    "size": "Size",
+    "clearFilters": "Clear filters",
+    "viewResults": "View {count} results",
+    "viewAllResults": "View all results",
+    "filtersApplied": "{count} Filters applied",
+    "noLocationsFound": "No locations found",
+    "tryAdjustingSearch": "Try adjusting your search or filters",
+    "attributes": "Attributes",
+    "accessibility": "Accessibility",
+    "features": "Features",
+    "services": "Services"
   }
 } 

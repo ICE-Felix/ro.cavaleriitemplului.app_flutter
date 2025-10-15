@@ -1,10 +1,7 @@
 import 'package:app/core/usecases/usecase.dart';
 import 'package:app/features/cart/domain/models/cart_item_model.dart';
 import 'package:app/features/checkout/domain/models/order_request_model.dart';
-import 'package:app/features/checkout/domain/models/payment_method_model.dart';
 import 'package:app/features/checkout/domain/repository/order_repository.dart';
-
-
 
 class OrderParams {
   final String billingFirstName;

@@ -1,10 +1,9 @@
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/network_info.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/auth_repository.dart';
-import '../datasources/auth_remote_data_source.dart';
-import '../datasources/auth_local_data_source.dart';
-import '../models/user_model.dart';
+import 'auth_repository.dart';
+import '../../data/datasources/auth_remote_data_source.dart';
+import '../../data/datasources/auth_local_data_source.dart';
+import '../../data/models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -18,10 +17,16 @@ class AuthRepositoryImpl implements AuthRepository {
   });
 
   @override
-  Future<UserEntity> login(String email, String password) async {
+  Future<UserModel> signIn({
+    required String email,
+    required String password,
+  }) async {
     if (await networkInfo.isConnected) {
       try {
-        final user = await remoteDataSource.login(email, password);
+        final user = await remoteDataSource.signIn(
+          email: email,
+          password: password,
+        );
         // Cache the user locally after successful login
         await localDataSource.cacheUser(user);
         return user;
@@ -34,14 +39,14 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> logout() async {
+  Future<void> signOut() async {
     try {
       // Clear local cache first
       await localDataSource.clearCachedUser();
 
       // Then try to logout from remote if connected
       if (await networkInfo.isConnected) {
-        await remoteDataSource.logout();
+        await remoteDataSource.signOut();
       }
     } catch (e) {
       // Even if remote logout fails, we've cleared local cache
@@ -50,14 +55,18 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserEntity> register(
-    String name,
-    String email,
-    String password,
-  ) async {
+  Future<UserModel> signUp({
+    required String email,
+    required String password,
+    Map<String, dynamic>? userData,
+  }) async {
     if (await networkInfo.isConnected) {
       try {
-        final user = await remoteDataSource.register(name, email, password);
+        final user = await remoteDataSource.signUp(
+          email: email,
+          password: password,
+          userData: userData,
+        );
         // Cache the user locally after successful registration
         await localDataSource.cacheUser(user);
         return user;
@@ -70,12 +79,14 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserEntity> getProfile() async {
+  Future<UserModel?> getCurrentUser() async {
     if (await networkInfo.isConnected) {
       try {
-        final user = await remoteDataSource.getProfile();
-        // Update local cache with fresh profile data
-        await localDataSource.cacheUser(user);
+        final user = await remoteDataSource.getCurrentUser();
+        if (user != null) {
+          // Update local cache with fresh profile data
+          await localDataSource.cacheUser(user);
+        }
         return user;
       } catch (e) {
         // If remote fails, try to get from local cache
@@ -98,19 +109,22 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<bool> isAuthenticated() async {
+  bool get isAuthenticated => remoteDataSource.isAuthenticated;
+
+  @override
+  Future<Map<String, dynamic>?> getCurrentSession() async {
     try {
-      return await localDataSource.isAuthenticated();
+      return await remoteDataSource.getCurrentSession();
     } catch (e) {
-      return false;
+      throw ServerException(message: e.toString());
     }
   }
 
   @override
-  Future<void> resetPassword(String email) async {
+  Future<void> resetPassword({required String email}) async {
     if (await networkInfo.isConnected) {
       try {
-        await remoteDataSource.resetPassword(email);
+        await remoteDataSource.resetPassword(email: email);
       } catch (e) {
         throw ServerException(message: e.toString());
       }
@@ -120,7 +134,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserEntity?> getCachedUser() async {
+  Future<UserModel?> getCachedUser() async {
     try {
       return await localDataSource.getCachedUser();
     } catch (e) {
@@ -129,16 +143,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> cacheUser(UserEntity user) async {
+  Future<void> cacheUser(UserModel user) async {
     try {
-      final userModel = UserModel(
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        avatar: user.avatar,
-        token: user.token,
-      );
-      await localDataSource.cacheUser(userModel);
+      await localDataSource.cacheUser(user);
     } catch (e) {
       throw CacheException(message: e.toString());
     }

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class OrderRequestModel {
   final String currency;
   final String paymentMethod;
@@ -12,8 +10,8 @@ class OrderRequestModel {
 
   OrderRequestModel({
     required this.currency,
-     this.paymentMethod ='',
-     this.paymentMethodTitle ='',
+    this.paymentMethod = '',
+    this.paymentMethodTitle = '',
     required this.setPaid,
     required this.billing,
     required this.shipping,
@@ -199,8 +197,8 @@ class Billing {
         other.state == state &&
         other.postcode == postcode &&
         other.country == country &&
-    other.email == email &&
-    other.phone == phone;
+        other.email == email &&
+        other.phone == phone;
   }
 
   @override

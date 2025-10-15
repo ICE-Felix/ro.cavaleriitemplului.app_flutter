@@ -8,7 +8,6 @@ import 'package:app/features/shop/presentation/widgets/search_products/search_pr
 import 'package:app/features/shop/presentation/widgets/search_products/search_products_empty_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class SearchProductsPage extends StatefulWidget {
@@ -30,33 +29,14 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomTopBar(
-        showProfileButton: true,
+      appBar: CustomTopBar.withCart(
+        context: context,
         showNotificationButton: true,
         showLogo: false,
         showBackButton: true,
         logoHeight: 90,
         logoWidth: 140,
         logoPadding: const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
-        notificationCount: 0,
-        customActions: [
-          // Language switcher button
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: LanguageSwitcherWidget(isCompact: true),
-          ),
-          // Saved articles button
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: IconButton(
-              onPressed: () {
-                context.pushNamed(AppRoutesNames.savedArticles.name);
-              },
-              icon: const FaIcon(FontAwesomeIcons.solidBookmark, size: 20),
-              tooltip: context.getString(label: 'savedArticles'),
-            ),
-          ),
-        ],
       ),
       body: BlocProvider(
         create: (context) => SearchProductsCubit(),

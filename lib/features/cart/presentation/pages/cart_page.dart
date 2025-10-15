@@ -27,11 +27,16 @@ class CartPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomTopBar(
+      appBar: CustomTopBar(
+        context: context,
         title: 'Shopping Cart',
         showBackButton: true,
-        showNotificationButton: false,
+        showNotificationButton: true,
+        onNotificationTap: () {
+          // Handle notification tap
+        },
         showProfileButton: false,
+        showCartButton: false,
       ),
       body: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {

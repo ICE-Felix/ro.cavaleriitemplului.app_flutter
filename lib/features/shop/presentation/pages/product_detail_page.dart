@@ -12,7 +12,12 @@ class ProductDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomTopBar(showBackButton: true),
+      appBar: CustomTopBar(
+        context: context,
+        showBackButton: true,
+        showCartButton: true,
+        showProfileButton: false,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -177,21 +182,23 @@ class ProductDetailPage extends StatelessWidget {
                 onPressed:
                     product.stockStatus == 'instock'
                         ? () {
-                          sl<CartCubit>().addProduct(product, onSuccess: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Product added to cart'),
-                              ),
-                            );
-                          },
-                          onError: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Product not added to cart'),
-                              ),
-                            );
-                          },
-                        );
+                          sl<CartCubit>().addProduct(
+                            product,
+                            onSuccess: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Product added to cart'),
+                                ),
+                              );
+                            },
+                            onError: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Product not added to cart'),
+                                ),
+                              );
+                            },
+                          );
                         }
                         : null,
                 style: ElevatedButton.styleFrom(

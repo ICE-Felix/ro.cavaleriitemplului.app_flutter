@@ -97,11 +97,27 @@
     "back": "Înapoi",
     "retry": "Încearcă din nou",
     "filters": "Filtreaza",
-    "categories": "Categorie",
     "tags": "Etichete",
     "clearFilters": "Sterge filtre",
     "viewResults": "Vezi {count} rezultate",
     "viewAllResults": "Vezi toate rezultatele",
     "filtersApplied": "{count} Filtre aplicate"
+  },
+  "locations": {
+    "title": "Locatii",
+    "searchLocations": "Cauta locatii",
+    "filters": "Filtre",
+    "amenities": "Facilitati",
+    "size": "Marime",
+    "clearFilters": "Sterge filtre",
+    "viewResults": "Vezi {count} rezultate",
+    "viewAllResults": "Vezi toate rezultatele",
+    "filtersApplied": "{count} Filtre aplicate",
+    "noLocationsFound": "Nu s-au gasit locatii",
+    "tryAdjustingSearch": "Incearca sa ajustezi cautarea sau filtrele",
+    "attributes": "Atribute",
+    "accessibility": "Accesibilitate",
+    "features": "Caracteristici",
+    "services": "Servicii"
   }
 } 

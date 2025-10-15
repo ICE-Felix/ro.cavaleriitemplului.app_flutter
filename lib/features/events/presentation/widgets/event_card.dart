@@ -1,6 +1,5 @@
 import 'package:app/core/navigation/routes_name.dart';
 import 'package:app/features/events/domain/model/events.dart';
-import 'package:app/features/events/presentation/events_details.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

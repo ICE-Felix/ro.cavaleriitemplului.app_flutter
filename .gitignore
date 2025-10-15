@@ -54,3 +54,6 @@ android/key.properties
 
 # VSCode
 .vscode/
+
+# Cursor
+.cursor/

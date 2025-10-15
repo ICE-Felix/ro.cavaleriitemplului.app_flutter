@@ -6,11 +6,11 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/localization/app_localization.dart';
-import '../../domain/entities/user_entity.dart';
+import '../../data/models/user_model.dart';
+import '../../domain/services/authentication_service.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
 import '../../domain/usecases/forgot_password_usecase.dart';
@@ -27,8 +27,8 @@ class AuthenticationBloc
   final CheckAuthStatusUseCase checkAuthStatusUseCase;
   final LogoutUseCase logoutUseCase;
   final LocalizationCubit localizationCubit;
-  late final SupabaseClient _supabaseClient;
-  late final StreamSubscription<AuthState> _authStateSubscription;
+  final AuthenticationService _authenticationService;
+  late final StreamSubscription<UserModel?> _authStateSubscription;
 
   AuthenticationBloc({
     required this.loginUseCase,
@@ -37,26 +37,39 @@ class AuthenticationBloc
     required this.checkAuthStatusUseCase,
     required this.logoutUseCase,
     required this.localizationCubit,
-  }) : super(AuthInitial()) {
+    required AuthenticationService authenticationService,
+  }) : _authenticationService = authenticationService,
+       super(AuthInitial()) {
     on<CheckAuthStatusRequested>(_onCheckAuthStatusRequested);
     on<LoginRequested>(_onLoginRequested);
     on<LogoutRequested>(_onLogoutRequested);
     on<RegisterRequested>(_onRegisterRequested);
     on<ForgotPasswordRequested>(_onForgotPasswordRequested);
-    _supabaseClient = Supabase.instance.client;
 
-    _authStateSubscription = _supabaseClient.auth.onAuthStateChange.listen((
-      event,
-    ) async {
-      if (event.event == AuthChangeEvent.signedIn) {
-        final user = _supabaseClient.auth.currentUser;
-        await sl<FirebaseMessagingService>().initializeTokenForLoggedUser(
-          userId: user?.id,
-        );
-      } else if (event.event == AuthChangeEvent.signedOut) {
-        await sl<FirebaseMessagingService>().clearAuthData();
-      }
-    });
+    // Listen to real-time auth state changes
+    _authStateSubscription = _authenticationService.authStateChanges.listen(
+      (UserModel? user) async {
+        if (user != null) {
+          // User signed in
+          await sl<FirebaseMessagingService>().initializeTokenForLoggedUser(
+            userId: user.id.toString(),
+          );
+          // Note: We can't emit here as we're not in an event handler
+          // The auth state changes will be handled by the individual event handlers
+        } else {
+          // User signed out
+          await sl<FirebaseMessagingService>().clearAuthData();
+          // Note: We can't emit here as we're not in an event handler
+          // The auth state changes will be handled by the individual event handlers
+        }
+      },
+      onError: (error) {
+        if (kDebugMode) {
+          print('❌ AuthBloc: Auth state change error: $error');
+        }
+        // Note: We can't emit here as we're not in an event handler
+      },
+    );
 
     FirebaseMessaging.instance.onTokenRefresh.listen((token) {
       sl<FirebaseMessagingService>().refreshToken();
@@ -66,6 +79,7 @@ class AuthenticationBloc
   @override
   Future<void> close() async {
     await _authStateSubscription.cancel();
+    _authenticationService.dispose();
     return super.close();
   }
 

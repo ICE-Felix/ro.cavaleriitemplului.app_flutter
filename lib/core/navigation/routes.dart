@@ -23,6 +23,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/intro/presentation/pages/intro_page.dart';
 import '../../features/news/presentation/pages/news_page.dart';
+import '../../features/profile/presentation/pages/profile_page.dart';
 
 final routes = GoRouter(
   initialLocation: AppRoutesNames.intro.path,
@@ -221,6 +222,18 @@ final routes = GoRouter(
                   ),
             ),
           ],
+        ),
+
+        // Profile route
+        GoRoute(
+          path: AppRoutesNames.profile.path,
+          name: AppRoutesNames.profile.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                restorationId: 'profile_page',
+                child: const ProfilePage(),
+              ),
         ),
 
         // Cart route

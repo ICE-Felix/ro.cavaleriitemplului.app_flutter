@@ -1,15 +1,34 @@
-import '../entities/user_entity.dart';
+import '../../data/models/user_model.dart';
 
+/// Abstract repository for authentication operations
 abstract class AuthRepository {
-  Future<UserEntity> login(String email, String password);
-  Future<void> logout();
-  Future<UserEntity> register(String name, String email, String password);
-  Future<UserEntity> getProfile();
-  Future<bool> isAuthenticated();
-  Future<void> resetPassword(String email);
+  /// Sign in with email and password
+  Future<UserModel> signIn({required String email, required String password});
+
+  /// Sign up with email, password and user data
+  Future<UserModel> signUp({
+    required String email,
+    required String password,
+    Map<String, dynamic>? userData,
+  });
+
+  /// Sign out the current user
+  Future<void> signOut();
+
+  /// Reset password for the given email
+  Future<void> resetPassword({required String email});
+
+  /// Get the current user profile
+  Future<UserModel?> getCurrentUser();
+
+  /// Check if user is currently authenticated
+  bool get isAuthenticated;
+
+  /// Get the current session
+  Future<Map<String, dynamic>?> getCurrentSession();
 
   // Persistence methods
-  Future<UserEntity?> getCachedUser();
-  Future<void> cacheUser(UserEntity user);
+  Future<UserModel?> getCachedUser();
+  Future<void> cacheUser(UserModel user);
   Future<void> clearCachedUser();
 }

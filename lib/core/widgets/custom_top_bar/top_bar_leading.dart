@@ -1,4 +1,3 @@
-import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -35,6 +34,7 @@ class TopBarLeading extends StatelessWidget {
           logoPadding ??
           const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0);
       final effectiveWidth = logoWidth ?? (logoHeight * 2);
+      final effectiveLogoPath = logoPath ?? 'assets/images/logo/logo_line.png';
 
       return GestureDetector(
         onTap: onLogoTap,
@@ -42,7 +42,7 @@ class TopBarLeading extends StatelessWidget {
           width: double.infinity,
           padding: effectivePadding,
           child: Image.asset(
-            logoPath!,
+            effectiveLogoPath,
             height: logoHeight,
             width: effectiveWidth,
             fit: BoxFit.contain,

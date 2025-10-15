@@ -1,15 +1,12 @@
-import 'package:app/core/localization/app_localization.dart';
-import 'package:app/core/localization/widgets/language_switcher_widget.dart';
-import 'package:app/core/navigation/routes_name.dart';
-import 'package:app/core/widgets/app_search_bar.dart';
-import 'package:app/core/widgets/category_horizontal_slider.dart';
+import 'package:app/core/cubit/location_cubit.dart';
+import 'package:app/core/service_locator.dart';
+import 'package:app/core/style/app_colors.dart';
 import 'package:app/core/widgets/custom_top_bar/custom_top_bar.dart';
 import 'package:app/features/locations/presentations/cubit/selected_location_category/selected_location_category_cubit.dart';
-import 'package:app/features/locations/presentations/widgets/location_list_item.dart';
+import 'package:app/features/locations/presentations/widgets/location_list_view.dart';
+import 'package:app/features/locations/presentations/widgets/location_map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
 
 class SelectedLocationCategoryPage extends StatelessWidget {
   const SelectedLocationCategoryPage({super.key, required this.locationId});
@@ -18,107 +15,291 @@ class SelectedLocationCategoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<SelectedLocationCategoryCubit>(
-      create:
-          (context) =>
-              SelectedLocationCategoryCubit(parentCategoryId: locationId)
-                ..initialize(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<LocationCubit>(
+          create: (context) {
+            final cubit = sl<LocationCubit>();
+            // Initialize location in background without blocking UI
+            // Use Future.delayed to ensure UI renders first
+            Future.delayed(Duration.zero, () => cubit.initialize());
+            return cubit;
+          },
+        ),
+        BlocProvider<SelectedLocationCategoryCubit>(
+          create: (context) {
+            final cubit = SelectedLocationCategoryCubit(
+              parentCategoryId: locationId,
+            );
+            // Initialize category data and filters in background without blocking UI
+            // Use Future.delayed to ensure UI renders first
+            Future.delayed(Duration.zero, () async {
+              await cubit.initialize();
+              await cubit.loadAttributeFilters();
+            });
+            return cubit;
+          },
+        ),
+      ],
       child: const SelectedLocationPageView(),
     );
   }
 }
 
-class SelectedLocationPageView extends StatelessWidget {
+class SelectedLocationPageView extends StatefulWidget {
   const SelectedLocationPageView({super.key});
+
+  @override
+  State<SelectedLocationPageView> createState() =>
+      _SelectedLocationPageViewState();
+}
+
+class _SelectedLocationPageViewState extends State<SelectedLocationPageView>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomTopBar(
-        showProfileButton: true,
+      appBar: CustomTopBar.withCart(
+        context: context,
+        showLogo: false,
+        showBackButton: true,
         showNotificationButton: true,
-        showLogo: true,
-        logoHeight: 90,
-        logoWidth: 140,
-        logoPadding: const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
-        notificationCount: 0,
-        onProfileTap: () {},
         onNotificationTap: () {
           // Handle notification tap
         },
         onLogoTap: () {},
-        customActions: [
-          // Language switcher button
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: LanguageSwitcherWidget(isCompact: true),
-          ),
-          // Saved articles button
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: IconButton(
-              onPressed: () {
-                context.pushNamed(AppRoutesNames.savedArticles.name);
-              },
-              icon: const FaIcon(FontAwesomeIcons.solidBookmark, size: 20),
-              tooltip: context.getString(label: 'savedArticles'),
-            ),
-          ),
-        ],
       ),
-      body: BlocBuilder<
-        SelectedLocationCategoryCubit,
-        SelectedLocationCategoryState
-      >(
-        builder: (context, state) {
-          if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state.isError) {
-            return Center(
-              child: Text(state.errorMessage ?? 'An error occurred'),
-            );
-          }
-          return Column(
-            children: [
-              AppSearchBar(
-                hintText: 'Search locations',
-                margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              ),
-              CategoryHorizontalSlider(
-                items: state.subCategories,
-                itemsPerPage: 3,
-                getDisplayName: (category) => category.name,
-                onSelectionChanged:
-                    (category) => context
-                        .read<SelectedLocationCategoryCubit>()
-                        .selectSubcategory(category!),
-              ),
-              if (state.areLocationsLoading)
-                Expanded(
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
-              if (state.areLocationsLoading == false &&
-                  state.locations.isNotEmpty)
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16.0),
-                    itemCount: state.locations.length,
-                    itemBuilder:
-                        (context, index) => LocationListItem(
-                          location: state.locations[index],
-                          onTap: () {
-                            context.pushNamed(
-                              AppRoutesNames.locationsDetails.name,
-                              pathParameters: {'id': state.locations[index].id},
-                            );
-                          },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppColors.primary.withValues(alpha: 0.1), Colors.white],
+            stops: const [0.0, 0.3],
+          ),
+        ),
+        child: BlocBuilder<LocationCubit, LocationState>(
+          builder: (context, locationState) {
+            return BlocBuilder<
+              SelectedLocationCategoryCubit,
+              SelectedLocationCategoryState
+            >(
+              builder: (context, categoryState) {
+                // Show loading state while both cubits are initializing
+                if (categoryState.isLoading && locationState.isLoading) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.blue.shade50, Colors.purple.shade50],
+                      ),
+                    ),
+                    child: const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(strokeWidth: 3),
+                          SizedBox(height: 24),
+                          Text(
+                            'Loading locations and getting your position...',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: [
+                    // Modern Tab bar
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: TabBar(
+                        controller: _tabController,
+                        indicator: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          color: AppColors.primary,
                         ),
-                  ),
-                ),
-            ],
-          );
-        },
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        indicatorPadding: const EdgeInsets.all(8),
+                        labelColor: Colors.white,
+                        unselectedLabelColor: Colors.grey.shade600,
+                        labelStyle: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                        unselectedLabelStyle: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                        tabs: [
+                          Tab(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.list_alt, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Locations'),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Tab(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.map, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Map'),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Tab content with modern styling
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(color: Colors.grey.shade50),
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                          child: TabBarView(
+                            controller: _tabController,
+                            children: [
+                              // Locations List Tab
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.02,
+                                      ),
+                                      blurRadius: 5,
+                                      offset: const Offset(0, -2),
+                                    ),
+                                  ],
+                                ),
+                                child: const LocationListView(),
+                              ),
+                              // Map Tab
+                              if (categoryState.vectorMapStyle != null)
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.02,
+                                        ),
+                                        blurRadius: 5,
+                                        offset: const Offset(0, -2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: LocationMapWidget(
+                                    style: categoryState.vectorMapStyle!,
+                                    locations: categoryState.locations,
+                                    currentLocation:
+                                        locationState.currentLocation,
+                                    isLocationLoading: locationState.isLoading,
+                                  ),
+                                )
+                              else
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
+                                    ),
+                                  ),
+                                  child: const Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.map_outlined,
+                                          size: 64,
+                                          color: Colors.grey,
+                                        ),
+                                        SizedBox(height: 16),
+                                        Text(
+                                          'Map style not loaded',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.grey,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

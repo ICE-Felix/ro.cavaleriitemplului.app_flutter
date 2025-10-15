@@ -1,4 +1,3 @@
-import 'package:app/core/localization/widgets/language_switcher_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:app/core/widgets/custom_top_bar.dart';
@@ -53,17 +52,14 @@ class _EventsPageContentState extends State<_EventsPageContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomTopBar(
+      appBar: CustomTopBar.withCart(
+        context: context,
         showLogo: true,
         showBackButton: false,
-        showNotificationButton: false,
-        showProfileButton: true,
-        customActions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: LanguageSwitcherWidget(isCompact: true),
-          ),
-        ],
+        showNotificationButton: true,
+        onNotificationTap: () {
+          // Handle notification tap
+        },
       ),
       body: BlocBuilder<EventsBloc, EventsState>(
         builder: (context, state) {
@@ -149,8 +145,7 @@ class _EventsPageContentState extends State<_EventsPageContent> {
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
                     child: CategoryHorizontalSlider<EventType>(
-                      canUnselect: true,
-                      autoSelectFirstItem: false,
+                      showAllButton: true,
                       items: state.eventTypes,
                       getDisplayName: (eventType) => eventType.name,
                       onSelectionChanged: (eventType) {

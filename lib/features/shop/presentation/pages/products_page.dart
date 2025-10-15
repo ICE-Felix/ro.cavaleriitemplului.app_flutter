@@ -70,11 +70,14 @@ class _ProductsPageViewState extends State<_ProductsPageView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomTopBar(
-        showBackButton: true,
+      appBar: CustomTopBar.withCart(
+        context: context,
         title: widget.category.name,
-        showNotificationButton: false,
-        showProfileButton: false,
+        showBackButton: true,
+        showNotificationButton: true,
+        onNotificationTap: () {
+          // Handle notification tap
+        },
       ),
       body: BlocBuilder<ProductsCubit, ProductsState>(
         builder: (context, state) {

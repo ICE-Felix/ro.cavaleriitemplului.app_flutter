@@ -1,13 +1,8 @@
-import 'package:app/core/localization/app_localization.dart';
-import 'package:app/core/localization/widgets/language_switcher_widget.dart';
-import 'package:app/core/navigation/routes_name.dart';
 import 'package:app/core/widgets/custom_top_bar/custom_top_bar.dart';
 import 'package:app/features/events/presentation/cubit/event_details/event_details_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
 
 class EventDetailPage extends StatelessWidget {
   final String id;
@@ -18,41 +13,13 @@ class EventDetailPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => EventDetailsCubit()..getEventDetails(id),
       child: Scaffold(
-        appBar: CustomTopBar(
+        appBar: CustomTopBar.withCart(
+          context: context,
           showBackButton: true,
-          showProfileButton: true,
-          // showLogo: true, 
-          logoHeight: 90,
-          logoWidth: 140,
-          logoPadding: const EdgeInsets.only(
-            left: 20.0,
-            top: 10.0,
-            bottom: 10.0,
-          ),
-          notificationCount: 0,
-          onProfileTap: () {},
+          showLogo: false,
           onNotificationTap: () {
             // Handle notification tap
           },
-          onLogoTap: () {},
-          customActions: [
-            // Language switcher button
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: LanguageSwitcherWidget(isCompact: true),
-            ),
-            // Saved articles button
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: IconButton(
-                onPressed: () {
-                  context.pushNamed(AppRoutesNames.savedArticles.name);
-                },
-                icon: const FaIcon(FontAwesomeIcons.solidBookmark, size: 20),
-                tooltip: context.getString(label: 'savedArticles'),
-              ),
-            ),
-          ],
         ),
         body: BlocBuilder<EventDetailsCubit, EventDetailsState>(
           builder: (context, state) {
