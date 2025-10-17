@@ -12,6 +12,9 @@ class ImageGallery extends StatefulWidget {
   State<ImageGallery> createState() => _ImageGalleryState();
 }
 
+//This works due to that we do not have refresh on the page
+//if the bloc will be rebuilded the widget will not rebuild
+//fix in the future by adding onWidgetChange function
 class _ImageGalleryState extends State<ImageGallery> {
   late PageController _pageController;
   late List<String> _allImages;
