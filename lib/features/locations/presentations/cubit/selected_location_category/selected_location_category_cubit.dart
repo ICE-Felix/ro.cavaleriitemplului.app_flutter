@@ -45,7 +45,7 @@ class SelectedLocationCategoryCubit
           vectorMapStyle: vectorMapStyle,
         ),
       );
-    } catch (e) {
+    } catch (e,str) {
       emit(
         state.copyWith(
           isLoading: false,

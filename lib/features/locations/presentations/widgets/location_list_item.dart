@@ -62,20 +62,48 @@ class LocationListItem extends StatelessWidget {
                 height: 80,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AppColors.primary.withOpacity(0.1),
-                      AppColors.primary.withOpacity(0.05),
-                    ],
-                  ),
+                  color:
+                      location.imageFeaturedUrl != null
+                          ? Colors.transparent
+                          : AppColors.primary,
                 ),
-                child: Icon(
-                  Icons.location_on,
-                  color: AppColors.primary,
-                  size: 32,
-                ),
+                child:
+                    location.imageFeaturedUrl != null
+                        ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            location.imageFeaturedUrl!,
+                            fit: BoxFit.cover,
+                            width: 80,
+                            height: 80,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                color: AppColors.primary.withOpacity(0.1),
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppColors.primary,
+                                child: Image.asset(
+                                  'assets/images/logo/logo.png',
+                                  height: 40,
+                                  fit: BoxFit.contain,
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                        : Image.asset(
+                          'assets/images/logo/logo.png',
+                          height: 40,
+                          fit: BoxFit.contain,
+                        ),
               ),
               const SizedBox(width: 16),
 
