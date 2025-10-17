@@ -88,7 +88,7 @@ class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
       return data
           .map((e) => LocationModel.fromJson(e as Map<String, dynamic>))
           .toList();
-    } catch (e) {
+    } catch (e,str) {
       if (e is AuthException || e is ServerException) rethrow;
       throw ServerException(message: e.toString());
     }

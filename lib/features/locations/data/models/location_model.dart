@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:app/core/widgets/image_gallery/model/image_model.dart';
+
 import 'business_hours_model.dart';
 
 class LocationModel {
@@ -20,10 +22,11 @@ class LocationModel {
   final String? galleryId;
   final List<String>? locationCategoryId;
   final String? orderDisplay;
-  final String? imageFeaturedId;
+  final String? imageFeaturedUrl;
   final List<String>? venueCategoryTitles;
   final List<String>? attributeNames;
   final List<LocationAttribute>? attributes;
+  final List<ImageModel> images;
 
   const LocationModel({
     required this.id,
@@ -44,10 +47,11 @@ class LocationModel {
     this.galleryId,
     this.locationCategoryId,
     this.orderDisplay,
-    this.imageFeaturedId,
+    this.imageFeaturedUrl,
     this.venueCategoryTitles,
     this.attributeNames,
     this.attributes,
+    required this.images,
   });
 
   factory LocationModel.fromJson(Map<String, dynamic> json) {
@@ -79,6 +83,12 @@ class LocationModel {
               ? List<String>.from(json['attribute_ids'] as List)
               : null,
       phoneNo: json['phone_no'] as String?,
+      images:
+          json['images'] != null
+              ? (json['images'] as List)
+                  .map((e) => ImageModel.fromJson(e as Map<String, dynamic>))
+                  .toList()
+              : [],
       email: json['email'] as String?,
       isActive: json['is_active'] as bool?,
       businessHours: businessHours,
@@ -88,7 +98,7 @@ class LocationModel {
               ? List<String>.from(json['venue_category_id'] as List)
               : null,
       orderDisplay: json['order_display'] as String?,
-      imageFeaturedId: json['image_featured_id'] as String?,
+      imageFeaturedUrl: json['image_url'] as String?,
       venueCategoryTitles:
           json['venue_category_titles'] != null
               ? List<String>.from(json['venue_category_titles'] as List)
@@ -129,7 +139,7 @@ class LocationModel {
       'gallery_id': galleryId,
       'venue_category_id': locationCategoryId,
       'order_display': orderDisplay,
-      'image_featured_id': imageFeaturedId,
+      'image_url': imageFeaturedUrl,
       'venue_category_titles': venueCategoryTitles,
       'attribute_names': attributeNames,
       'attributes': attributes?.map((e) => e.toJson()).toList(),

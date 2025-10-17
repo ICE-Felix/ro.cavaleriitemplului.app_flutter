@@ -68,7 +68,7 @@ class LocationsRepositoryImpl implements LocationsRepository {
   ) async {
     try {
       return await remoteDataSource.getAllLoactionsForCategory(categoryId);
-    } on ServerException catch (e) {
+    } on ServerException catch (e,str) {
       throw ServerException(message: e.message);
     } on AuthException catch (e) {
       throw AuthException(message: e.message);

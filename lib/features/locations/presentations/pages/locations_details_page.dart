@@ -1,4 +1,5 @@
 import 'package:app/core/widgets/custom_top_bar/custom_top_bar.dart';
+import 'package:app/core/widgets/image_gallery/wiget/image_gallery.dart';
 import 'package:app/features/locations/presentations/cubit/location_details/location_details_cubit.dart';
 import 'package:app/features/locations/presentations/widgets/location_details/location_image_widget.dart';
 import 'package:app/features/locations/presentations/widgets/location_details/location_info_widget.dart';
@@ -65,8 +66,8 @@ class LocationsDetailsPageView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Location Image
-                const LocationImageWidget(),
-
+                ImageGallery(images: state.location?.images ?? [],featureImage: state.location?.imageFeaturedUrl),
+              
                 // Location Info
                 LocationInfoWidget(location: state.location!),
                 const SizedBox(height: 20),
