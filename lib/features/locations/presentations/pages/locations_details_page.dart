@@ -1,7 +1,6 @@
 import 'package:app/core/widgets/custom_top_bar/custom_top_bar.dart';
 import 'package:app/core/widgets/image_gallery/wiget/image_gallery.dart';
 import 'package:app/features/locations/presentations/cubit/location_details/location_details_cubit.dart';
-import 'package:app/features/locations/presentations/widgets/location_details/location_image_widget.dart';
 import 'package:app/features/locations/presentations/widgets/location_details/location_info_widget.dart';
 import 'package:app/features/locations/presentations/widgets/location_details/business_hours_widget.dart';
 import 'package:app/features/locations/presentations/widgets/location_details/description_widget.dart';
