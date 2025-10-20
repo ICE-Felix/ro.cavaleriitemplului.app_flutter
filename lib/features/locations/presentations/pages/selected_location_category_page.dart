@@ -6,6 +6,7 @@ import 'package:app/features/locations/presentations/widgets/location_list_view.
 import 'package:app/features/locations/presentations/widgets/location_map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:app/core/widgets/permission_wrapper.dart';
 
 class SelectedLocationCategoryPage extends StatelessWidget {
   const SelectedLocationCategoryPage({super.key, required this.locationId});
@@ -14,24 +15,24 @@ class SelectedLocationCategoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<SelectedLocationCategoryCubit>(
-          create: (context) {
-            final cubit = SelectedLocationCategoryCubit(
-              parentCategoryId: locationId,
-            );
-            // Initialize category data and filters in background without blocking UI
-            // Use Future.delayed to ensure UI renders first
-            Future.delayed(Duration.zero, () async {
-              await cubit.initialize();
-              await cubit.loadAttributeFilters();
-            });
-            return cubit;
-          },
-        ),
-      ],
-      child: const SelectedLocationPageView(),
+    return PermissionWrapper.location(
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<SelectedLocationCategoryCubit>(
+            create: (context) {
+              final cubit = SelectedLocationCategoryCubit(
+                parentCategoryId: locationId,
+              );
+              Future.delayed(Duration.zero, () async {
+                await cubit.initialize();
+                await cubit.loadAttributeFilters();
+              });
+              return cubit;
+            },
+          ),
+        ],
+        child: const SelectedLocationPageView(),
+      ),
     );
   }
 }
