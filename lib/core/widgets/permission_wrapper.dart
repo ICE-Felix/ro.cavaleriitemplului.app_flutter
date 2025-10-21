@@ -126,9 +126,9 @@ class _Denied extends StatelessWidget {
           children: [
             const Icon(Icons.privacy_tip_outlined, size: 48),
             const SizedBox(height: 12),
-            const Text('Permission is required to continue.'),
+            const Text('Permisiunea este necesară pentru a continua.'),
             const SizedBox(height: 12),
-            ElevatedButton(onPressed: onRequest, child: const Text('Allow')),
+            ElevatedButton(onPressed: onRequest, child: const Text('Permite')),
           ],
         ),
       ),
@@ -151,11 +151,11 @@ class _PermanentlyDenied extends StatelessWidget {
           children: [
             const Icon(Icons.lock, size: 48),
             const SizedBox(height: 12),
-            const Text('Permission is permanently denied.'),
+            const Text('Permisiunea a fost refuzată permanent.'),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: onOpenSettings,
-              child: const Text('Open App Settings'),
+              child: const Text('Deschide Setările Aplicației'),
             ),
           ],
         ),
@@ -179,11 +179,11 @@ class _DisabledServices extends StatelessWidget {
           children: [
             const Icon(Icons.settings, size: 48),
             const SizedBox(height: 12),
-            const Text('Required services are disabled.'),
+            const Text('Serviciile necesare sunt dezactivate.'),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: onOpenSettings,
-              child: const Text('Open Settings'),
+              child: const Text('Deschide Setările'),
             ),
           ],
         ),
