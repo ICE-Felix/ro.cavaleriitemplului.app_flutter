@@ -1,3 +1,6 @@
+import 'package:app/core/banners/domain/entities/banner_entity.dart';
+import 'package:app/core/banners/presentation/cubit/banners_cubit.dart';
+import 'package:app/core/banners/widgets/banner_widget.dart';
 import 'package:app/core/navigation/routes_name.dart';
 import 'package:app/core/widgets/app_search_bar.dart';
 import 'package:app/core/widgets/custom_top_bar/custom_top_bar.dart';
@@ -13,8 +16,14 @@ class LocationsCategoriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => LocationsCubit()..initialize(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create:
+              (context) => BannersCubit()..loadBanners(page: BannerPage.venue),
+        ),
+        BlocProvider(create: (context) => LocationsCubit()..initialize()),
+      ],
       child: BlocBuilder<LocationsCubit, LocationsState>(
         builder: (context, state) {
           return Scaffold(
@@ -63,10 +72,7 @@ class LocationsCategoriesPage extends StatelessWidget {
                     // Banner Section
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: LocationsBanner(imageUrl: state.bannerUrl),
-                      ),
+                      child: BannerWidget(type: BannerType.primary),
                     ),
 
                     const SizedBox(height: 16),
@@ -271,6 +277,12 @@ class LocationsCategoriesPage extends StatelessWidget {
                       },
                     ),
 
+                    const SizedBox(height: 16),
+
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      child: BannerWidget(type: BannerType.secondary),
+                    ),
                     const SizedBox(height: 32),
                   ],
                 ),

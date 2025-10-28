@@ -1,3 +1,6 @@
+import 'package:app/core/banners/data/datasources/banners_remote_data_source.dart';
+import 'package:app/core/banners/domain/repositories/banners_repository.dart';
+import 'package:app/core/banners/domain/repositories/banners_repository_impl.dart';
 import 'package:app/features/cart/data/datasource/cart_stock_datasource.dart';
 import 'package:app/features/checkout/data/order_datasource.dart';
 import 'package:app/features/checkout/data/order_datasource_supabase.dart';
@@ -319,4 +322,15 @@ Future<void> initServiceLocator() async {
     locationCubit.initialize();
     return locationCubit;
   });
+
+
+
+
+  // Banners repository
+  sl.registerLazySingleton<BannersRemoteDataSource>(
+    () => BannersRemoteDataSourceImpl(dio: sl<DioClient>()),
+  );
+  sl.registerLazySingleton<BannersRepository>(
+    () => BannersRepositoryImpl(remoteDataSource: sl<BannersRemoteDataSource>()),
+  );
 }
