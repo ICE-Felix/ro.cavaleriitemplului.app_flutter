@@ -1,6 +1,37 @@
-enum BannerType { primary, secondary }
+enum BannerType {
+  primary('primary'),
+  secondary('secondary');
 
-enum BannerPage { shop, venue, service }
+  const BannerType(this.value);
+  final String value;
+
+  static BannerType? getEnumByValue(String value) {
+    for (BannerType type in BannerType.values) {
+      if (type.value == value) {
+        return type;
+      }
+    }
+    return null;
+  }
+}
+
+enum BannerPage {
+  shop('shop'),
+  venue('venue'),
+  service('service');
+
+  const BannerPage(this.value);
+  final String value;
+
+  static BannerPage? getEnumByValue(String value) {
+    for (BannerPage page in BannerPage.values) {
+      if (page.value == value) {
+        return page;
+      }
+    }
+    return null;
+  }
+}
 
 class BannerEntity {
   final String id;
