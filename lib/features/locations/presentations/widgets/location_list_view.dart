@@ -26,10 +26,16 @@ class LocationListView extends StatelessWidget {
           (modalContext) => LocationFiltersModal(
             attributeFilters: state.attributeFilters,
             selectedAttributeIds: state.selectedAttributeIds,
+            radiusKm: state.radiusKm,
             onApplyFilters: (attributeIds) {
               context
                   .read<SelectedLocationCategoryCubit>()
                   .applyAttributeFilters(attributeIds);
+            },
+            onRadiusChanged: (radiusKm) {
+              context.read<SelectedLocationCategoryCubit>().updateRadius(
+                radiusKm,
+              );
             },
             onClearFilters: () {
               context
@@ -100,10 +106,11 @@ class LocationListView extends StatelessWidget {
                   items: categoryState.subCategories,
                   itemsPerPage: 3,
                   getDisplayName: (category) => category.name,
-                  onSelectionChanged:
-                      (category) => context
-                          .read<SelectedLocationCategoryCubit>()
-                          .selectSubcategory(category!),
+                  onSelectionChanged: (category) async {
+                    await context
+                        .read<SelectedLocationCategoryCubit>()
+                        .selectSubcategory(category);
+                  },
                 ),
                 SizedBox(height: 16),
                 if (categoryState.areLocationsLoading)
@@ -113,11 +120,44 @@ class LocationListView extends StatelessWidget {
                 if (categoryState.areLocationsLoading == false &&
                     categoryState.filteredLocations.isNotEmpty)
                   Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                      itemCount: categoryState.filteredLocations.length,
-                      itemBuilder:
-                          (context, index) => LocationListItem(
+                    child: NotificationListener<ScrollNotification>(
+                      onNotification: (ScrollNotification scrollInfo) {
+                        final atEnd =
+                            scrollInfo.metrics.pixels >=
+                            scrollInfo.metrics.maxScrollExtent - 200;
+                        if (atEnd &&
+                            categoryState.hasMorePages &&
+                            !categoryState.isLoadingMore &&
+                            !categoryState.areLocationsLoading &&
+                            locationState.currentLocation != null) {
+                          // Load more locations when reaching the bottom
+                          context
+                              .read<SelectedLocationCategoryCubit>()
+                              .loadMoreLocations(
+                                latitude:
+                                    locationState.currentLocation!.latitude,
+                                longitude:
+                                    locationState.currentLocation!.longitude,
+                                nearby: true,
+                              );
+                        }
+                        return false;
+                      },
+                      child: ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                        itemCount:
+                            categoryState.filteredLocations.length +
+                            (categoryState.isLoadingMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          // Show loading indicator at the bottom when loading more
+                          if (index == categoryState.filteredLocations.length) {
+                            return const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          }
+
+                          return LocationListItem(
                             location: categoryState.filteredLocations[index],
                             currentLocation: locationState.currentLocation,
                             onTap: () {
@@ -129,7 +169,9 @@ class LocationListView extends StatelessWidget {
                                 },
                               );
                             },
-                          ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 if (categoryState.areLocationsLoading == false &&
@@ -165,6 +207,46 @@ class LocationListView extends StatelessWidget {
                               fontSize: 14,
                               color: Colors.grey.shade600,
                             ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                if (categoryState.areLocationsLoading == false &&
+                    categoryState.filteredLocations.isEmpty &&
+                    categoryState.locations.isEmpty)
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.location_off,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            context.getString(
+                              label: 'locations.noLocationsNearYou',
+                            ),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            context.getString(
+                              label: 'locations.tryExpandingRange',
+                            ),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),

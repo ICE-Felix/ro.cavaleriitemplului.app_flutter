@@ -16,21 +16,6 @@ class LocationCubit extends Cubit<LocationState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      // First, try to get last known location instantly
-      final lastKnownLocation = await _locationService.getLastKnownLocation();
-
-      if (lastKnownLocation != null) {
-        // Emit immediately with last known location
-        emit(
-          state.copyWith(
-            isLoading: false,
-            currentLocation: lastKnownLocation,
-            hasLocation: true,
-          ),
-        );
-      }
-
-      // Then get fresh location in background
       final location = await _locationService.getCurrentLocation();
 
       if (location != null) {
@@ -41,16 +26,7 @@ class LocationCubit extends Cubit<LocationState> {
             hasLocation: true,
           ),
         );
-      } else if (lastKnownLocation == null) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            hasLocation: false,
-            error: 'Unable to get location',
-          ),
-        );
       }
-
     } catch (e) {
       emit(
         state.copyWith(
@@ -90,7 +66,6 @@ class LocationCubit extends Cubit<LocationState> {
     }
   }
 
-  
   @override
   Future<void> close() {
     return super.close();

@@ -1,5 +1,6 @@
 import 'package:app/core/localization/app_localization.dart';
 import 'package:app/core/style/app_colors.dart';
+import 'package:app/core/utils/map_utils.dart';
 import 'package:app/features/locations/data/datasources/locations_remote_data_source.dart';
 import 'package:app/core/widgets/location_filters_modal/filter_section_item.dart';
 import 'package:app/core/widgets/location_filters_modal/filter_content_widget.dart';
@@ -8,14 +9,18 @@ import 'package:flutter/material.dart';
 class LocationFiltersModal extends StatefulWidget {
   final Map<String, List<AttributeFilterOption>> attributeFilters;
   final List<String> selectedAttributeIds;
+  final int radiusKm;
   final Function(List<String> attributeIds) onApplyFilters;
+  final Function(int radiusKm) onRadiusChanged;
   final VoidCallback onClearFilters;
 
   const LocationFiltersModal({
     super.key,
     required this.attributeFilters,
     required this.selectedAttributeIds,
+    required this.radiusKm,
     required this.onApplyFilters,
+    required this.onRadiusChanged,
     required this.onClearFilters,
   });
 
@@ -25,16 +30,16 @@ class LocationFiltersModal extends StatefulWidget {
 
 class _LocationFiltersModalState extends State<LocationFiltersModal> {
   late List<String> _selectedAttributeIds;
-  String _selectedFilterSection = '';
+  late int _radiusKm;
+  String _selectedFilterSection = 'range';
 
   @override
   void initState() {
     super.initState();
     _selectedAttributeIds = List.from(widget.selectedAttributeIds);
-    // Set the first available section as default
-    if (widget.attributeFilters.isNotEmpty) {
-      _selectedFilterSection = widget.attributeFilters.keys.first;
-    }
+    _radiusKm = widget.radiusKm;
+    // Set range as default section
+    _selectedFilterSection = 'range';
   }
 
   int get _totalSelectedFilters => _selectedAttributeIds.length;
@@ -52,9 +57,7 @@ class _LocationFiltersModalState extends State<LocationFiltersModal> {
       ),
       child: Column(
         children: [
-          _ModalHeader(
-            onClose: () => Navigator.of(context).pop(),
-          ),
+          _ModalHeader(onClose: () => Navigator.of(context).pop()),
           Expanded(
             child: Row(
               children: [
@@ -62,6 +65,7 @@ class _LocationFiltersModalState extends State<LocationFiltersModal> {
                   attributeFilters: widget.attributeFilters,
                   selectedAttributeIds: _selectedAttributeIds,
                   selectedFilterSection: _selectedFilterSection,
+                  radiusKm: _radiusKm,
                   onSectionSelected: (sectionKey) {
                     setState(() {
                       _selectedFilterSection = sectionKey;
@@ -72,10 +76,17 @@ class _LocationFiltersModalState extends State<LocationFiltersModal> {
                   selectedFilterSection: _selectedFilterSection,
                   attributeFilters: widget.attributeFilters,
                   selectedAttributeIds: _selectedAttributeIds,
+                  radiusKm: _radiusKm,
                   onAttributeSelectionChanged: (attributeIds) {
                     setState(() {
                       _selectedAttributeIds = attributeIds;
                     });
+                  },
+                  onRadiusChanged: (radiusKm) {
+                    setState(() {
+                      _radiusKm = radiusKm;
+                    });
+                    widget.onRadiusChanged(radiusKm);
                   },
                 ),
               ],
@@ -110,19 +121,14 @@ class _ModalHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey, width: 0.5),
-        ),
+        border: Border(bottom: BorderSide(color: Colors.grey, width: 0.5)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             context.getString(label: 'locations.filters'),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           IconButton(
             onPressed: onClose,
@@ -140,12 +146,14 @@ class _FilterSidebar extends StatelessWidget {
   final Map<String, List<AttributeFilterOption>> attributeFilters;
   final List<String> selectedAttributeIds;
   final String selectedFilterSection;
+  final int radiusKm;
   final Function(String sectionKey) onSectionSelected;
 
   const _FilterSidebar({
     required this.attributeFilters,
     required this.selectedAttributeIds,
     required this.selectedFilterSection,
+    required this.radiusKm,
     required this.onSectionSelected,
   });
 
@@ -155,29 +163,37 @@ class _FilterSidebar extends StatelessWidget {
       width: 150,
       decoration: const BoxDecoration(
         color: Color(0xFFF5F5F5),
-        border: Border(
-          right: BorderSide(color: Colors.grey, width: 0.5),
-        ),
+        border: Border(right: BorderSide(color: Colors.grey, width: 0.5)),
       ),
       child: Column(
-        children: attributeFilters.keys.map((sectionKey) {
-          final sectionOptions = attributeFilters[sectionKey] ?? [];
-          final selectedCount = selectedAttributeIds
-              .where(
-                (id) => sectionOptions.any(
-                  (option) => option.uuid == id,
-                ),
-              )
-              .length;
+        children: [
+          // Range section (always first)
+          FilterSectionItem(
+            sectionId: 'range',
+            title: context.getString(label: 'locations.range'),
+            selectedCount: radiusKm != 30 ? 1 : 0,
+            isSelected: selectedFilterSection == 'range',
+            onTap: () => onSectionSelected('range'),
+          ),
+          // Other attribute filter sections
+          ...attributeFilters.keys.map((sectionKey) {
+            final sectionOptions = attributeFilters[sectionKey] ?? [];
+            final selectedCount =
+                selectedAttributeIds
+                    .where(
+                      (id) => sectionOptions.any((option) => option.uuid == id),
+                    )
+                    .length;
 
-          return FilterSectionItem(
-            sectionId: sectionKey,
-            title: _getSectionTitle(context, sectionKey),
-            selectedCount: selectedCount,
-            isSelected: selectedFilterSection == sectionKey,
-            onTap: () => onSectionSelected(sectionKey),
-          );
-        }).toList(),
+            return FilterSectionItem(
+              sectionId: sectionKey,
+              title: _getSectionTitle(context, sectionKey),
+              selectedCount: selectedCount,
+              isSelected: selectedFilterSection == sectionKey,
+              onTap: () => onSectionSelected(sectionKey),
+            );
+          }).toList(),
+        ],
       ),
     );
   }
@@ -198,13 +214,17 @@ class _FilterContentArea extends StatelessWidget {
   final String selectedFilterSection;
   final Map<String, List<AttributeFilterOption>> attributeFilters;
   final List<String> selectedAttributeIds;
+  final int radiusKm;
   final Function(List<String> attributeIds) onAttributeSelectionChanged;
+  final Function(int radiusKm) onRadiusChanged;
 
   const _FilterContentArea({
     required this.selectedFilterSection,
     required this.attributeFilters,
     required this.selectedAttributeIds,
+    required this.radiusKm,
     required this.onAttributeSelectionChanged,
+    required this.onRadiusChanged,
   });
 
   @override
@@ -212,16 +232,20 @@ class _FilterContentArea extends StatelessWidget {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(16),
-        child: selectedFilterSection.isNotEmpty
-            ? FilterContentWidget(
-                selectedFilterSection: selectedFilterSection,
-                attributeFilters: attributeFilters,
-                selectedAttributeIds: selectedAttributeIds,
-                onAttributeSelectionChanged: onAttributeSelectionChanged,
-              )
-            : const Center(
-                child: Text('Select a filter category'),
-              ),
+        child:
+            selectedFilterSection.isNotEmpty
+                ? selectedFilterSection == 'range'
+                    ? _RangeFilterWidget(
+                      radiusKm: radiusKm,
+                      onRadiusChanged: onRadiusChanged,
+                    )
+                    : FilterContentWidget(
+                      selectedFilterSection: selectedFilterSection,
+                      attributeFilters: attributeFilters,
+                      selectedAttributeIds: selectedAttributeIds,
+                      onAttributeSelectionChanged: onAttributeSelectionChanged,
+                    )
+                : const Center(child: Text('Select a filter category')),
       ),
     );
   }
@@ -273,10 +297,7 @@ class _ModalFooter extends StatelessWidget {
                 totalSelectedFilters > 0
                     ? context
                         .getString(label: 'locations.viewResults')
-                        .replaceAll(
-                          '{count}',
-                          totalSelectedFilters.toString(),
-                        )
+                        .replaceAll('{count}', totalSelectedFilters.toString())
                     : context.getString(label: 'locations.viewAllResults'),
                 style: const TextStyle(color: Colors.white),
               ),
@@ -284,6 +305,75 @@ class _ModalFooter extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _RangeFilterWidget extends StatelessWidget {
+  final int radiusKm;
+  final Function(int radiusKm) onRadiusChanged;
+
+  const _RangeFilterWidget({
+    required this.radiusKm,
+    required this.onRadiusChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.getString(label: 'locations.range'),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          context.getString(label: 'locations.rangeDescription'),
+          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+        ),
+        const SizedBox(height: 24),
+        Row(
+          children: [
+            Text(
+              '${radiusKm}km',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Slider(
+                value: radiusKm.toDouble(),
+                min: MapUtils.minRadiusFilterValue.toDouble(),
+                max: MapUtils.maxRadiusFilterValue.toDouble(),
+                divisions: MapUtils.radiusFilterDivisions, // 5km increments (100/5 = 20)
+                activeColor: AppColors.primary,
+                inactiveColor: Colors.grey[300],
+                onChanged: (value) {
+                  onRadiusChanged(value.round());
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '0km',
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
+            Text(
+              '100km',
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

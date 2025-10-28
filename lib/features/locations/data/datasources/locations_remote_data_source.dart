@@ -11,8 +11,8 @@ class AttributeFilterOption {
 
   factory AttributeFilterOption.fromJson(Map<String, dynamic> json) {
     return AttributeFilterOption(
-      value: json['value'] as String,
-      uuid: json['uuid'] as String,
+      value: (json['value'] ?? '').toString(),
+      uuid: (json['uuid'] ?? '').toString(),
     );
   }
 
@@ -32,6 +32,12 @@ abstract class LocationsRemoteDataSource {
   Future<List<LocationModel>> getAllLoactionsForCategoryWithFilters(
     String categoryId, {
     List<String>? attributeFilters,
+    double? locationLatitude,
+    double? locationLongitude,
+    bool? orderByDistance,
+    int? radiusKm,
+    int? page,
+    int? limit,
   });
 }
 
@@ -76,7 +82,11 @@ class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
     try {
       final response = await dio.get(
         '/venues',
-        queryParameters: {if (categoryId != null) 'category_id': categoryId},
+        // Keep param consistent with filtered endpoint to ensure correct
+        // server behavior and ordering
+        queryParameters: {
+          if (categoryId != null) 'venue_category_id': categoryId,
+        },
       );
       if (response['success'] != true) {
         throw ServerException(
@@ -88,7 +98,7 @@ class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
       return data
           .map((e) => LocationModel.fromJson(e as Map<String, dynamic>))
           .toList();
-    } catch (e,str) {
+    } catch (e) {
       if (e is AuthException || e is ServerException) rethrow;
       throw ServerException(message: e.toString());
     }
@@ -163,7 +173,7 @@ class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
 
   @override
   Future<Map<String, List<AttributeFilterOption>>>
-  getVenueAttributeFilters() async {
+      getVenueAttributeFilters() async {
     try {
       final response = await dio.get('/venue_attributes_filters');
       if (response['success'] != true) {
@@ -178,14 +188,13 @@ class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
 
       data.forEach((key, value) {
         if (value is List) {
-          result[key] =
-              value
-                  .map(
-                    (e) => AttributeFilterOption.fromJson(
-                      e as Map<String, dynamic>,
-                    ),
-                  )
-                  .toList();
+          result[key] = value
+              .map(
+                (e) => AttributeFilterOption.fromJson(
+                  e as Map<String, dynamic>,
+                ),
+              )
+              .toList();
         }
       });
 
@@ -200,11 +209,44 @@ class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
   Future<List<LocationModel>> getAllLoactionsForCategoryWithFilters(
     String categoryId, {
     List<String>? attributeFilters,
+    double? locationLatitude,
+    double? locationLongitude,
+    bool? orderByDistance,
+    int? radiusKm,
+    int? page,
+    int? limit,
   }) async {
     try {
-      final Map<String, dynamic> queryParameters = {'category_id': categoryId};
+      final Map<String, dynamic> queryParameters = {
+        'venue_category_id': categoryId,
+      };
+
       if (attributeFilters != null && attributeFilters.isNotEmpty) {
         queryParameters['attribute_filters'] = attributeFilters;
+      }
+
+      if (locationLatitude != null) {
+        queryParameters['location_latitude'] = locationLatitude;
+      }
+
+      if (locationLongitude != null) {
+        queryParameters['location_longitude'] = locationLongitude;
+      }
+
+      if (orderByDistance != null && orderByDistance == true) {
+        queryParameters['nearby'] = 'true';
+      }
+
+      if (radiusKm != null) {
+        queryParameters['radius_km'] = radiusKm;
+      }
+
+      if (page != null) {
+        queryParameters['page'] = page;
+      }
+
+      if (limit != null) {
+        queryParameters['limit'] = limit;
       }
 
       final response = await dio.get(

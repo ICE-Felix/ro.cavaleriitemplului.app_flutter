@@ -281,9 +281,7 @@ Future<void> initServiceLocator() async {
   );
 
   // Location Service
-  sl.registerLazySingleton<LocationService>(
-    () => LocationService(sl<SharedPreferences>()),
-  );
+  sl.registerLazySingleton<LocationService>(() => LocationService());
 
   // Share Page Service
   sl.registerLazySingleton<SharePageService>(() => SharePageService(routes));

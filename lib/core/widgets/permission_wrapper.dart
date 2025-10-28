@@ -79,6 +79,7 @@ class _PermissionWrapperState extends State<PermissionWrapper> {
     return BlocBuilder<PermissionCubit, PermissionState>(
       bloc: _cubit,
       builder: (BuildContext context, PermissionState state) {
+        if (state.status.isGranted) return widget.child;
         if (state.isChecking) {
           if (widget.checkingBuilder != null)
             return widget.checkingBuilder!(context);
@@ -91,7 +92,6 @@ class _PermissionWrapperState extends State<PermissionWrapper> {
             onOpenSettings: _cubit.openServiceSettingsSafe,
           );
         }
-        if (state.status.isGranted) return widget.child;
         if (state.status.isPermanentlyDenied) {
           if (widget.permanentlyDeniedBuilder != null)
             return widget.permanentlyDeniedBuilder!(context);

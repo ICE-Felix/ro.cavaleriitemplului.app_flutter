@@ -7,6 +7,7 @@ class SelectedLocationCategoryState extends Equatable {
     this.isError = false,
     this.errorMessage,
     this.locations = const [],
+    this.mapVenues = const [],
     this.subCategories = const [],
     this.selectedSubcategory,
     this.vectorMapStyle,
@@ -15,6 +16,11 @@ class SelectedLocationCategoryState extends Equatable {
     this.areFiltersLoading = false,
     this.searchQuery = '',
     this.filteredLocations = const [],
+    this.currentPage = 1,
+    this.hasMorePages = true,
+    this.isLoadingMore = false,
+    this.totalLocations = 0,
+    this.radiusKm = MapUtils.defaultRadiusKmForList,
   });
 
   final bool isLoading;
@@ -22,6 +28,7 @@ class SelectedLocationCategoryState extends Equatable {
   final bool isError;
   final String? errorMessage;
   final List<LocationModel> locations;
+  final List<LocationModel> mapVenues;
   final List<LocationCategoryModel> subCategories;
   final LocationCategoryModel? selectedSubcategory;
   final Style? vectorMapStyle;
@@ -30,12 +37,18 @@ class SelectedLocationCategoryState extends Equatable {
   final bool areFiltersLoading;
   final String searchQuery;
   final List<LocationModel> filteredLocations;
+  final int currentPage;
+  final bool hasMorePages;
+  final bool isLoadingMore;
+  final int totalLocations;
+  final int radiusKm;
 
   SelectedLocationCategoryState copyWith({
     bool? isLoading,
     bool? areLocationsLoading,
     bool? isError,
     List<LocationModel>? locations,
+    List<LocationModel>? mapVenues,
     List<LocationCategoryModel>? subCategories,
     Nullable<LocationCategoryModel>? selectedSubcategory,
     Nullable<String>? errorMessage,
@@ -45,6 +58,11 @@ class SelectedLocationCategoryState extends Equatable {
     bool? areFiltersLoading,
     String? searchQuery,
     List<LocationModel>? filteredLocations,
+    int? currentPage,
+    bool? hasMorePages,
+    bool? isLoadingMore,
+    int? totalLocations,
+    int? radiusKm,
   }) {
     return SelectedLocationCategoryState(
       isLoading: isLoading ?? this.isLoading,
@@ -53,6 +71,7 @@ class SelectedLocationCategoryState extends Equatable {
       errorMessage:
           errorMessage != null ? errorMessage.value : this.errorMessage,
       locations: locations ?? this.locations,
+      mapVenues: mapVenues ?? this.mapVenues,
       subCategories: subCategories ?? this.subCategories,
       selectedSubcategory:
           selectedSubcategory != null
@@ -64,6 +83,11 @@ class SelectedLocationCategoryState extends Equatable {
       areFiltersLoading: areFiltersLoading ?? this.areFiltersLoading,
       searchQuery: searchQuery ?? this.searchQuery,
       filteredLocations: filteredLocations ?? this.filteredLocations,
+      currentPage: currentPage ?? this.currentPage,
+      hasMorePages: hasMorePages ?? this.hasMorePages,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      totalLocations: totalLocations ?? this.totalLocations,
+      radiusKm: radiusKm ?? this.radiusKm,
     );
   }
 
@@ -74,6 +98,7 @@ class SelectedLocationCategoryState extends Equatable {
     isError,
     errorMessage,
     locations,
+    mapVenues,
     subCategories,
     selectedSubcategory,
     vectorMapStyle,
@@ -82,5 +107,10 @@ class SelectedLocationCategoryState extends Equatable {
     areFiltersLoading,
     searchQuery,
     filteredLocations,
+    currentPage,
+    hasMorePages,
+    isLoadingMore,
+    totalLocations,
+    radiusKm,
   ];
 }

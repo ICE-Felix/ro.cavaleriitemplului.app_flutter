@@ -185,7 +185,7 @@ final routes = GoRouter(
               (context, state) => NoTransitionPage(
                 key: state.pageKey,
                 child: SelectedLocationCategoryPage(
-                  locationId: state.pathParameters['id']!,
+                  categoryId: state.pathParameters['id']!,
                 ),
               ),
         ),

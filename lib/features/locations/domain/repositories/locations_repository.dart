@@ -15,6 +15,12 @@ abstract class LocationsRepository {
   Future<List<LocationModel>> getAllLoactionsForCategoryWithFilters(
     String categoryId, {
     List<String>? attributeFilters,
+    double? locationLatitude,
+    double? locationLongitude,
+    bool? orderByDistance,
+    int? radiusKm,
+    int? page,
+    int? limit,
   });
 }
 
@@ -68,7 +74,7 @@ class LocationsRepositoryImpl implements LocationsRepository {
   ) async {
     try {
       return await remoteDataSource.getAllLoactionsForCategory(categoryId);
-    } on ServerException catch (e,str) {
+    } on ServerException catch (e) {
       throw ServerException(message: e.message);
     } on AuthException catch (e) {
       throw AuthException(message: e.message);
@@ -120,7 +126,7 @@ class LocationsRepositoryImpl implements LocationsRepository {
 
   @override
   Future<Map<String, List<AttributeFilterOption>>>
-  getVenueAttributeFilters() async {
+      getVenueAttributeFilters() async {
     try {
       return await remoteDataSource.getVenueAttributeFilters();
     } on ServerException catch (e) {
@@ -136,11 +142,23 @@ class LocationsRepositoryImpl implements LocationsRepository {
   Future<List<LocationModel>> getAllLoactionsForCategoryWithFilters(
     String categoryId, {
     List<String>? attributeFilters,
+    double? locationLatitude,
+    double? locationLongitude,
+    bool? orderByDistance,
+    int? radiusKm,
+    int? page,
+    int? limit,
   }) async {
     try {
       return await remoteDataSource.getAllLoactionsForCategoryWithFilters(
         categoryId,
         attributeFilters: attributeFilters,
+        locationLatitude: locationLatitude,
+        locationLongitude: locationLongitude,
+        orderByDistance: orderByDistance,
+        radiusKm: radiusKm,
+        page: page,
+        limit: limit,
       );
     } on ServerException catch (e) {
       throw ServerException(message: e.message);

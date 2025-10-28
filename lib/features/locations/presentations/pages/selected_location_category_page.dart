@@ -9,9 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:app/core/widgets/permission_wrapper.dart';
 
 class SelectedLocationCategoryPage extends StatelessWidget {
-  const SelectedLocationCategoryPage({super.key, required this.locationId});
+  const SelectedLocationCategoryPage({super.key, required this.categoryId});
 
-  final String locationId;
+  final String categoryId;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class SelectedLocationCategoryPage extends StatelessWidget {
           BlocProvider<SelectedLocationCategoryCubit>(
             create: (context) {
               final cubit = SelectedLocationCategoryCubit(
-                parentCategoryId: locationId,
+                parentCategoryId: categoryId,
               );
               Future.delayed(Duration.zero, () async {
                 await cubit.initialize();
@@ -54,6 +54,8 @@ class _SelectedLocationPageViewState extends State<SelectedLocationPageView>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
   }
+
+  // Removed: handled by cubit.initialize once location is available
 
   @override
   void dispose() {
@@ -242,7 +244,6 @@ class _SelectedLocationPageViewState extends State<SelectedLocationPageView>
                                   ),
                                   child: LocationMapWidget(
                                     style: categoryState.vectorMapStyle!,
-                                    locations: categoryState.locations,
                                     currentLocation:
                                         locationState.currentLocation,
                                     isLocationLoading: locationState.isLoading,
