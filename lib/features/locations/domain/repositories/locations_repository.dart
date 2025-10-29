@@ -22,6 +22,11 @@ abstract class LocationsRepository {
     int? page,
     int? limit,
   });
+  Future<List<LocationModel>> searchAllLocations({
+    String? query,
+    int? page,
+    int? limit,
+  });
 }
 
 class LocationsRepositoryImpl implements LocationsRepository {
@@ -126,7 +131,7 @@ class LocationsRepositoryImpl implements LocationsRepository {
 
   @override
   Future<Map<String, List<AttributeFilterOption>>>
-      getVenueAttributeFilters() async {
+  getVenueAttributeFilters() async {
     try {
       return await remoteDataSource.getVenueAttributeFilters();
     } on ServerException catch (e) {
@@ -157,6 +162,27 @@ class LocationsRepositoryImpl implements LocationsRepository {
         locationLongitude: locationLongitude,
         orderByDistance: orderByDistance,
         radiusKm: radiusKm,
+        page: page,
+        limit: limit,
+      );
+    } on ServerException catch (e) {
+      throw ServerException(message: e.message);
+    } on AuthException catch (e) {
+      throw AuthException(message: e.message);
+    } catch (e) {
+      throw ServerException(message: 'Unexpected error occurred: $e');
+    }
+  }
+
+  @override
+  Future<List<LocationModel>> searchAllLocations({
+    String? query,
+    int? page,
+    int? limit,
+  }) async {
+    try {
+      return await remoteDataSource.searchAllLocations(
+        query: query,
         page: page,
         limit: limit,
       );

@@ -107,6 +107,7 @@
   "locations": {
     "title": "Locations",
     "searchLocations": "Search locations",
+    "tryDifferentKeywordsDescription": "Try different keywords or check spelling",
     "filters": "Filters",
     "range": "Range",
     "rangeDescription": "Set the maximum distance to search for locations",

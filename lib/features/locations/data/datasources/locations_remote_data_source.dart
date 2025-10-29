@@ -39,6 +39,11 @@ abstract class LocationsRemoteDataSource {
     int? page,
     int? limit,
   });
+  Future<List<LocationModel>> searchAllLocations({
+    String? query,
+    int? page,
+    int? limit,
+  });
 }
 
 class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
@@ -173,7 +178,7 @@ class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
 
   @override
   Future<Map<String, List<AttributeFilterOption>>>
-      getVenueAttributeFilters() async {
+  getVenueAttributeFilters() async {
     try {
       final response = await dio.get('/venue_attributes_filters');
       if (response['success'] != true) {
@@ -188,13 +193,14 @@ class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
 
       data.forEach((key, value) {
         if (value is List) {
-          result[key] = value
-              .map(
-                (e) => AttributeFilterOption.fromJson(
-                  e as Map<String, dynamic>,
-                ),
-              )
-              .toList();
+          result[key] =
+              value
+                  .map(
+                    (e) => AttributeFilterOption.fromJson(
+                      e as Map<String, dynamic>,
+                    ),
+                  )
+                  .toList();
         }
       });
 
@@ -239,6 +245,47 @@ class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
 
       if (radiusKm != null) {
         queryParameters['radius_km'] = radiusKm;
+      }
+
+      if (page != null) {
+        queryParameters['page'] = page;
+      }
+
+      if (limit != null) {
+        queryParameters['limit'] = limit;
+      }
+
+      final response = await dio.get(
+        '/venues',
+        queryParameters: queryParameters,
+      );
+      if (response['success'] != true) {
+        throw ServerException(
+          message:
+              'API returned error: ${response['error'] ?? 'Unknown error'}',
+        );
+      }
+      final List<dynamic> data = response['data'] as List<dynamic>;
+      return data
+          .map((e) => LocationModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      if (e is AuthException || e is ServerException) rethrow;
+      throw ServerException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<List<LocationModel>> searchAllLocations({
+    String? query,
+    int? page,
+    int? limit,
+  }) async {
+    try {
+      final Map<String, dynamic> queryParameters = {};
+
+      if (query != null && query.isNotEmpty) {
+        queryParameters['search'] = query;
       }
 
       if (page != null) {

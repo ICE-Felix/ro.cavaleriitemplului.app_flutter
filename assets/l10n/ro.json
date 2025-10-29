@@ -106,6 +106,7 @@
   "locations": {
     "title": "Locatii",
     "searchLocations": "Cauta locatii",
+    "tryDifferentKeywordsDescription": "Incearca sa cauti altceva sau verifica ortografia",
     "filters": "Filtre",
     "range": "Raza",
     "rangeDescription": "Seteaza distanta maxima pentru cautarea locatiilor",

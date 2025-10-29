@@ -6,6 +6,7 @@ import 'package:app/features/events/presentation/events.dart';
 import 'package:app/features/events/presentation/events_details.dart';
 import 'package:app/features/locations/presentations/pages/locations_categories_page.dart';
 import 'package:app/features/locations/presentations/pages/locations_details_page.dart';
+import 'package:app/features/locations/presentations/pages/search_locations_page.dart';
 import 'package:app/features/locations/presentations/pages/selected_location_category_page.dart';
 import 'package:app/features/news/presentation/pages/news_detail_page.dart';
 import 'package:app/features/news/presentation/pages/saved_articles_page.dart';
@@ -62,7 +63,6 @@ final routes = GoRouter(
           name: AppRoutesNames.forgotPassword.name,
           builder: (context, state) => const ForgotPasswordPage(),
         ),
-
         GoRoute(
           path: '${AppRoutesNames.paymentWebView.path}/:url',
           name: AppRoutesNames.paymentWebView.name,
@@ -73,7 +73,6 @@ final routes = GoRouter(
         ),
       ],
     ),
-
     ShellRoute(
       pageBuilder: (context, state, child) {
         return NoTransitionPage(
@@ -84,7 +83,6 @@ final routes = GoRouter(
           ),
         );
       },
-
       routes: [
         // News route
         GoRoute(
@@ -177,6 +175,17 @@ final routes = GoRouter(
                 key: state.pageKey,
                 child: const LocationsCategoriesPage(),
               ),
+          routes: [
+            GoRoute(
+              path: AppRoutesNames.searchLocations.path,
+              name: AppRoutesNames.searchLocations.name,
+              pageBuilder:
+                  (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    child: const SearchLocationsPage(),
+                  ),
+            ),
+          ],
         ),
         GoRoute(
           path: '${AppRoutesNames.selectedLocationCategory.path}/:id',

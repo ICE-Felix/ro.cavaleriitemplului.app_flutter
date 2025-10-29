@@ -2,11 +2,11 @@ import 'package:app/core/banners/domain/entities/banner_entity.dart';
 import 'package:app/core/banners/presentation/cubit/banners_cubit.dart';
 import 'package:app/core/banners/widgets/banner_widget.dart';
 import 'package:app/core/navigation/routes_name.dart';
-import 'package:app/core/widgets/app_search_bar.dart';
 import 'package:app/core/widgets/custom_top_bar/custom_top_bar.dart';
 import 'package:app/features/locations/presentations/cubit/locations_cubit.dart';
 import 'package:app/features/locations/presentations/widgets/location_category_card.dart';
 import 'package:app/features/locations/presentations/widgets/locations_banner.dart';
+import 'package:app/features/locations/presentations/widgets/locations_button_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -59,14 +59,11 @@ class LocationsCategoriesPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Search Section
-                    Container(
+                    LocationsButtonSearchBar(
+                      onTap: () {
+                        context.pushNamed(AppRoutesNames.searchLocations.name);
+                      },
                       margin: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-                      child: AppSearchBar(
-                        hintText: 'Search locations',
-                        onChanged:
-                            (q) =>
-                                context.read<LocationsCubit>().changeQuery(q),
-                      ),
                     ),
 
                     // Banner Section

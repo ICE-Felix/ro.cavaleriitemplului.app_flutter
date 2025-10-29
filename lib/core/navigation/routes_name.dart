@@ -16,6 +16,7 @@ enum AppRoutesNames {
   cart(name: 'cart', path: '/cart'),
   checkout(name: 'checkout', path: 'checkout'),
   locations(name: 'locations', path: '/locations'),
+  searchLocations(name: 'search_locations', path: 'search_locations'),
   selectedLocationCategory(
     name: 'selected_location_category',
     path: '/locations',
