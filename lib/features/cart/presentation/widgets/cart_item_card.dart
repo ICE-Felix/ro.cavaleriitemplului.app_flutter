@@ -23,8 +23,7 @@ class CartItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final product = item.product;
-    final hasImage = product.images.isNotEmpty;
+    final hasImage = item.imageUrl;
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -50,11 +49,11 @@ class CartItemCard extends StatelessWidget {
                   color: Colors.grey.shade200,
                 ),
                 child:
-                    hasImage
+                    item.imageUrl != null
                         ? ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
-                            product.images.first.src,
+                            item.imageUrl!,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Icon(
@@ -85,7 +84,7 @@ class CartItemCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            product.name,
+                            item.name,
                             style: AppTextStyles.bodyLarge.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -110,10 +109,10 @@ class CartItemCard extends StatelessWidget {
                     // Price Row
                     Row(
                       children: [
-                        if (product.onSale &&
-                            product.salePrice != product.regularPrice) ...[
+                        if (item.onSale &&
+                            item.salePrice != item.regularPrice) ...[
                           Text(
-                            '\$${product.regularPrice}',
+                            '\$${item.regularPrice}',
                             style: AppTextStyles.bodyMedium.copyWith(
                               decoration: TextDecoration.lineThrough,
                               color: Colors.grey.shade600,
@@ -121,7 +120,7 @@ class CartItemCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            '${product.salePrice} RON',
+                            '${item.salePrice} RON',
                             style: AppTextStyles.bodyLarge.copyWith(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold,
@@ -129,7 +128,7 @@ class CartItemCard extends StatelessWidget {
                           ),
                         ] else
                           Text(
-                            '${product.price} RON',
+                            '${item.price} RON',
                             style: AppTextStyles.bodyLarge.copyWith(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold,

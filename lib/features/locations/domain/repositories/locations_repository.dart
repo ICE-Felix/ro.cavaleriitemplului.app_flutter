@@ -2,6 +2,7 @@ import 'package:app/core/error/exceptions.dart';
 import 'package:app/features/locations/data/datasources/locations_remote_data_source.dart';
 import 'package:app/features/locations/data/models/location_category_model.dart';
 import 'package:app/features/locations/data/models/location_model.dart';
+import 'package:app/features/locations/data/models/venue_product_model.dart';
 
 abstract class LocationsRepository {
   Future<List<LocationModel>> getAllLocations();
@@ -27,6 +28,7 @@ abstract class LocationsRepository {
     int? page,
     int? limit,
   });
+  Future<List<VenueProductModel>> getVenueProducts(String venueId);
 }
 
 class LocationsRepositoryImpl implements LocationsRepository {
@@ -186,6 +188,19 @@ class LocationsRepositoryImpl implements LocationsRepository {
         page: page,
         limit: limit,
       );
+    } on ServerException catch (e) {
+      throw ServerException(message: e.message);
+    } on AuthException catch (e) {
+      throw AuthException(message: e.message);
+    } catch (e) {
+      throw ServerException(message: 'Unexpected error occurred: $e');
+    }
+  }
+
+  @override
+  Future<List<VenueProductModel>> getVenueProducts(String venueId) async {
+    try {
+      return await remoteDataSource.getVenueProducts(venueId);
     } on ServerException catch (e) {
       throw ServerException(message: e.message);
     } on AuthException catch (e) {

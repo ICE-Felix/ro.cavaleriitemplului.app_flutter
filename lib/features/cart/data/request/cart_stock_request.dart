@@ -7,7 +7,7 @@ class CartStockRequest {
 
   static fromCart(CartModel cart) {
     final products = cart.items.map((item) => CartStockEntry(
-          productId: item.product.id,
+          productId: item.id,
           quantity: item.quantity,
         )).toList();
     return CartStockRequest(products: products);

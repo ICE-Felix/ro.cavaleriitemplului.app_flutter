@@ -65,14 +65,14 @@ class CartPageView extends StatelessWidget {
                     return CartItemCard(
                       item: item,
                       stockInfo: state.cartStock?.getProductStockInfo(
-                        item.product.id,
+                        item.id,
                       ),
                       onRemove: () {
                         _showRemoveConfirmation(
                           context,
-                          item.product.name,
+                          item.name,
                           () => context.read<CartCubit>().removeProduct(
-                            item.product.id,
+                            item.id,
                             onSuccess: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -94,12 +94,12 @@ class CartPageView extends StatelessWidget {
                       },
                       onIncrease: () {
                         context.read<CartCubit>().increaseQuantity(
-                          item.product.id,
+                          item.id,
                         );
                       },
                       onDecrease: () {
                         context.read<CartCubit>().decreaseQuantity(
-                          item.product.id,
+                          item.id,
                         );
                       },
                     );

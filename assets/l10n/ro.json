@@ -123,6 +123,9 @@
     "attributes": "Atribute",
     "accessibility": "Accesibilitate",
     "features": "Caracteristici",
-    "services": "Servicii"
+    "services": "Servicii",
+    "venue_products": "Produse Venue",
+    "no_products_available": "Nu sunt produse disponibile",
+    "no_products_description": "Acest venue nu are produse disponibile momentan."
   }
 } 

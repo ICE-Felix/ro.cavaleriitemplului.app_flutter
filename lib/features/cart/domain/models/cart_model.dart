@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:equatable/equatable.dart';
-import 'package:app/features/shop/domain/entities/product_entity.dart';
 import 'cart_item_model.dart';
 
 class CartModel extends Equatable {
@@ -52,22 +51,23 @@ class CartModel extends Equatable {
     );
   }
 
-  CartModel addProduct(ProductEntity product, {int quantity = 1}) {
+  CartModel addItem(CartItemModel item) {
     final updatedItems = List<CartItemModel>.from(items);
 
-    // Check if product already exists in cart
+    // Check if item already exists in cart (by id and product type)
     final existingIndex = updatedItems.indexWhere(
-      (item) => item.product.id == product.id,
+      (cartItem) =>
+          cartItem.id == item.id && cartItem.productType == item.productType,
     );
 
     if (existingIndex == -1) {
       // Add new item
-      updatedItems.add(CartItemModel(product: product, quantity: quantity));
+      updatedItems.add(item);
     } else {
       // Update existing item quantity
       final existingItem = updatedItems[existingIndex];
       updatedItems[existingIndex] = existingItem.copyWith(
-        quantity: existingItem.quantity + quantity,
+        quantity: existingItem.quantity + item.quantity,
       );
     }
 
@@ -77,9 +77,15 @@ class CartModel extends Equatable {
     );
   }
 
-  CartModel removeProduct(int productId) {
+  CartModel removeItem(int itemId, {String? productType}) {
     final updatedItems =
-        items.where((item) => item.product.id != productId).toList();
+        items
+            .where(
+              (item) =>
+                  item.id != itemId ||
+                  (productType != null && item.productType != productType),
+            )
+            .toList();
 
     return copyWith(
       items: updatedItems,
@@ -87,14 +93,19 @@ class CartModel extends Equatable {
     );
   }
 
-  CartModel updateProductQuantity(int productId, int newQuantity) {
+  CartModel updateItemQuantity(
+    int itemId,
+    int newQuantity, {
+    String? productType,
+  }) {
     if (newQuantity <= 0) {
-      return removeProduct(productId);
+      return removeItem(itemId, productType: productType);
     }
 
     final updatedItems =
         items.map((item) {
-          if (item.product.id == productId) {
+          if (item.id == itemId &&
+              (productType == null || item.productType == productType)) {
             return item.copyWith(quantity: newQuantity);
           }
           return item;
@@ -106,10 +117,11 @@ class CartModel extends Equatable {
     );
   }
 
-  CartModel increaseProductQuantity(int productId) {
+  CartModel increaseItemQuantity(int itemId, {String? productType}) {
     final updatedItems =
         items.map((item) {
-          if (item.product.id == productId) {
+          if (item.id == itemId &&
+              (productType == null || item.productType == productType)) {
             return item.increaseQuantity();
           }
           return item;
@@ -121,11 +133,12 @@ class CartModel extends Equatable {
     );
   }
 
-  CartModel decreaseProductQuantity(int productId) {
+  CartModel decreaseItemQuantity(int itemId, {String? productType}) {
     final updatedItems =
         items
             .map((item) {
-              if (item.product.id == productId) {
+              if (item.id == itemId &&
+                  (productType == null || item.productType == productType)) {
                 final updatedItem = item.decreaseQuantity();
                 // If quantity becomes 0, remove the item
                 return updatedItem.quantity > 0 ? updatedItem : null;
@@ -151,9 +164,13 @@ class CartModel extends Equatable {
     return items.fold(0.0, (sum, item) => sum + item.totalPrice);
   }
 
-  CartItemModel? getItem(int productId) {
+  CartItemModel? getItem(int itemId, {String? productType}) {
     try {
-      return items.firstWhere((item) => item.product.id == productId);
+      return items.firstWhere(
+        (item) =>
+            item.id == itemId &&
+            (productType == null || item.productType == productType),
+      );
     } catch (e) {
       return null;
     }

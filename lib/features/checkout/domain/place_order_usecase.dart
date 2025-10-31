@@ -78,7 +78,7 @@ class PlaceOrderUsecase extends UseCase<String, OrderParams> {
             paramas.lineItems
                 .map(
                   (item) => LineItem(
-                    productId: item.product.id,
+                    productId: item.id,
                     quantity: item.quantity,
                   ),
                 )

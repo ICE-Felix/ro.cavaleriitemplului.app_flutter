@@ -91,25 +91,17 @@ class ProductDetailPage extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  product.stockStatus == 'instock'
-                      ? Icons.check_circle
-                      : Icons.cancel,
-                  color:
-                      product.stockStatus == 'instock'
-                          ? Colors.green
-                          : Colors.red,
+                  product.isAvailable ? Icons.check_circle : Icons.cancel,
+                  color: product.isAvailable ? Colors.green : Colors.red,
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  product.stockStatus == 'instock'
+                  product.isAvailable
                       ? 'In Stock' // TODO: Use localized string
                       : 'Out of Stock', // TODO: Use localized string
                   style: TextStyle(
                     fontSize: 16,
-                    color:
-                        product.stockStatus == 'instock'
-                            ? Colors.green
-                            : Colors.red,
+                    color: product.isAvailable ? Colors.green : Colors.red,
                   ),
                 ),
               ],
@@ -180,10 +172,10 @@ class ProductDetailPage extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed:
-                    product.stockStatus == 'instock'
+                    product.isAvailable
                         ? () {
                           sl<CartCubit>().addProduct(
-                            product,
+                            product.toCartModel(),
                             onSuccess: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(

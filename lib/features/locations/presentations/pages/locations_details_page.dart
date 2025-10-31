@@ -7,6 +7,7 @@ import 'package:app/features/locations/presentations/widgets/location_details/de
 import 'package:app/features/locations/presentations/widgets/location_details/contact_info_widget.dart';
 import 'package:app/features/locations/presentations/widgets/location_details/action_buttons_widget.dart';
 import 'package:app/features/locations/presentations/widgets/location_details/location_attributes_widget.dart';
+import 'package:app/features/locations/presentations/widgets/location_details/venue_products_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,8 +19,8 @@ class LocationsDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<LocationDetailsCubit>(
-      create:
-          (context) => LocationDetailsCubit()..getLocationDetails(locationId),
+      create: (context) =>
+          LocationDetailsCubit()..getLocationDetails(locationId),
       child: LocationsDetailsPageView(locationId: locationId),
     );
   }
@@ -51,8 +52,8 @@ class LocationsDetailsPageView extends StatelessWidget {
               errorMessage: state.errorMessage,
               onRetry: () {
                 context.read<LocationDetailsCubit>().getLocationDetails(
-                  locationId,
-                );
+                      locationId,
+                    );
               },
             );
           }
@@ -65,8 +66,10 @@ class LocationsDetailsPageView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Location Image
-                ImageGallery(images: state.location?.images ?? [],featureImage: state.location?.imageFeaturedUrl),
-              
+                ImageGallery(
+                    images: state.location?.images ?? [],
+                    featureImage: state.location?.imageFeaturedUrl),
+
                 // Location Info
                 LocationInfoWidget(location: state.location!),
                 const SizedBox(height: 20),
@@ -88,6 +91,10 @@ class LocationsDetailsPageView extends StatelessWidget {
 
                 // Action Buttons
                 ActionButtonsWidget(location: state.location!),
+                const SizedBox(height: 24),
+
+                // Venue Products
+                VenueProductsWidget(venueId: locationId),
               ],
             ),
           );

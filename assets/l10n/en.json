@@ -124,6 +124,9 @@
     "attributes": "Attributes",
     "accessibility": "Accessibility",
     "features": "Features",
-    "services": "Services"
+    "services": "Services",
+    "venue_products": "Venue Products",
+    "no_products_available": "No products available",
+    "no_products_description": "This venue doesn't have any products available at the moment."
   }
 } 

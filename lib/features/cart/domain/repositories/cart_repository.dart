@@ -1,16 +1,16 @@
 import 'package:app/features/cart/data/datasource/cart_stock_datasource.dart';
 import 'package:app/features/cart/data/request/cart_stock_request.dart';
 import 'package:app/features/cart/data/services/cart_service.dart';
+import 'package:app/features/cart/domain/models/cart_item_model.dart';
 import 'package:app/features/cart/domain/models/cart_model.dart';
 import 'package:app/features/cart/domain/models/cart_stock_response_model.dart';
-import 'package:app/features/shop/domain/entities/product_entity.dart';
 
 /// Abstract repository defining cart operations
 abstract class CartRepository {
   Future<CartModel> getCart();
   Future<bool> saveCart(CartModel cart);
   Future<bool> clearCart();
-  Future<CartModel> addProductToCart(ProductEntity product, {int quantity = 1});
+  Future<CartModel> addProductToCart(CartItemModel item);
   Future<CartModel> removeProductFromCart(int productId);
   Future<CartModel> updateProductQuantity(int productId, int quantity);
   Future<CartModel> increaseProductQuantity(int productId);
@@ -43,12 +43,9 @@ class CartRepositoryImpl implements CartRepository {
   }
 
   @override
-  Future<CartModel> addProductToCart(
-    ProductEntity product, {
-    int quantity = 1,
-  }) async {
+  Future<CartModel> addProductToCart(CartItemModel item) async {
     final currentCart = await getCart();
-    final updatedCart = currentCart.addProduct(product, quantity: quantity);
+    final updatedCart = currentCart.addItem(item);
 
     await saveCart(updatedCart);
     return updatedCart;
@@ -57,7 +54,7 @@ class CartRepositoryImpl implements CartRepository {
   @override
   Future<CartModel> removeProductFromCart(int productId) async {
     final currentCart = await getCart();
-    final updatedCart = currentCart.removeProduct(productId);
+    final updatedCart = currentCart.removeItem(productId);
 
     await saveCart(updatedCart);
     return updatedCart;
@@ -66,7 +63,7 @@ class CartRepositoryImpl implements CartRepository {
   @override
   Future<CartModel> updateProductQuantity(int productId, int quantity) async {
     final currentCart = await getCart();
-    final updatedCart = currentCart.updateProductQuantity(productId, quantity);
+    final updatedCart = currentCart.updateItemQuantity(productId, quantity);
 
     await saveCart(updatedCart);
     return updatedCart;
@@ -75,7 +72,7 @@ class CartRepositoryImpl implements CartRepository {
   @override
   Future<CartModel> increaseProductQuantity(int productId) async {
     final currentCart = await getCart();
-    final updatedCart = currentCart.increaseProductQuantity(productId);
+    final updatedCart = currentCart.increaseItemQuantity(productId);
 
     await saveCart(updatedCart);
     return updatedCart;
@@ -84,7 +81,7 @@ class CartRepositoryImpl implements CartRepository {
   @override
   Future<CartModel> decreaseProductQuantity(int productId) async {
     final currentCart = await getCart();
-    final updatedCart = currentCart.decreaseProductQuantity(productId);
+    final updatedCart = currentCart.decreaseItemQuantity(productId);
 
     await saveCart(updatedCart);
     return updatedCart;

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:app/features/shop/domain/entities/product_category_entity.dart';
+import 'package:app/features/cart/domain/models/cart_item_model.dart';
 
 class ProductEntity extends Equatable {
   final int id;
@@ -33,6 +34,8 @@ class ProductEntity extends Equatable {
   final String priceHtml;
   final List<int> relatedIds;
 
+  bool get isAvailable => stockStatus == 'instock';
+
   const ProductEntity({
     required this.id,
     required this.name,
@@ -65,6 +68,22 @@ class ProductEntity extends Equatable {
     required this.priceHtml,
     required this.relatedIds,
   });
+
+  /// Convert ProductEntity to CartItemModel
+  CartItemModel toCartModel({int quantity = 1}) {
+    return CartItemModel(
+      id: id,
+      name: name,
+      imageUrl: images.isNotEmpty ? images.first.src : null,
+      price: price,
+      regularPrice: regularPrice,
+      salePrice: salePrice,
+      onSale: onSale,
+      sku: sku,
+      quantity: quantity,
+      productType: 'product',
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -134,4 +153,3 @@ class ProductBrandEntity extends Equatable {
   @override
   List<Object> get props => [id, name, slug];
 }
- 

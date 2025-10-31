@@ -1,88 +1,84 @@
 import 'package:equatable/equatable.dart';
-import 'package:app/features/shop/domain/entities/product_entity.dart';
 
 class CartItemModel extends Equatable {
-  final ProductEntity product;
+  final int id;
+  final String name;
+  final String? imageUrl;
+  final String price;
+  final String regularPrice;
+  final String salePrice;
+  final bool onSale;
+  final String sku;
   final int quantity;
+  final String
+  productType; // We put here what we want, to know where was this product added from
 
-  const CartItemModel({required this.product, required this.quantity});
+  const CartItemModel({
+    required this.id,
+    required this.name,
+    this.imageUrl,
+    required this.price,
+    required this.regularPrice,
+    required this.salePrice,
+    required this.onSale,
+    required this.sku,
+    required this.quantity,
+    this.productType = 'product',
+  });
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
     return CartItemModel(
-      product: ProductEntity(
-        id: json['product']['id'] as int,
-        name: json['product']['name'] as String,
-        slug: json['product']['slug'] as String,
-        permalink: json['product']['permalink'] as String,
-        dateCreated: json['product']['dateCreated'] as String,
-        dateModified: json['product']['dateModified'] as String,
-        type: json['product']['type'] as String,
-        status: json['product']['status'] as String,
-        featured: json['product']['featured'] as bool,
-        catalogVisibility: json['product']['catalogVisibility'] as String,
-        description: json['product']['description'] as String,
-        shortDescription: json['product']['shortDescription'] as String,
-        sku: json['product']['sku'] as String,
-        price: json['product']['price'] as String,
-        regularPrice: json['product']['regularPrice'] as String,
-        salePrice: json['product']['salePrice'] as String,
-        onSale: json['product']['onSale'] as bool,
-        purchasable: json['product']['purchasable'] as bool,
-        totalSales: json['product']['totalSales'] as int,
-        virtual: json['product']['virtual'] as bool,
-        downloadable: json['product']['downloadable'] as bool,
-        manageStock: json['product']['manageStock'] as bool,
-        stockQuantity: json['product']['stockQuantity'] as int?,
-        stockStatus: json['product']['stockStatus'] as String,
-        hasOptions: json['product']['hasOptions'] as bool,
-        images: [], // Simplified for cart storage
-        categories: [], // Simplified for cart storage
-        brands: [], // Simplified for cart storage
-        priceHtml: json['product']['priceHtml'] as String,
-        relatedIds: [], // Simplified for cart storage
-      ),
+      id: json['id'] as int,
+      name: json['name'] as String,
+      imageUrl: json['imageUrl'] as String?,
+      price: json['price'] as String,
+      regularPrice: json['regularPrice'] as String? ?? json['price'] as String,
+      salePrice: json['salePrice'] as String? ?? '',
+      onSale: json['onSale'] as bool? ?? false,
+      sku: json['sku'] as String,
       quantity: json['quantity'] as int,
+      productType: json['productType'] as String? ?? 'product',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'product': {
-        'id': product.id,
-        'name': product.name,
-        'slug': product.slug,
-        'permalink': product.permalink,
-        'dateCreated': product.dateCreated,
-        'dateModified': product.dateModified,
-        'type': product.type,
-        'status': product.status,
-        'featured': product.featured,
-        'catalogVisibility': product.catalogVisibility,
-        'description': product.description,
-        'shortDescription': product.shortDescription,
-        'sku': product.sku,
-        'price': product.price,
-        'regularPrice': product.regularPrice,
-        'salePrice': product.salePrice,
-        'onSale': product.onSale,
-        'purchasable': product.purchasable,
-        'totalSales': product.totalSales,
-        'virtual': product.virtual,
-        'downloadable': product.downloadable,
-        'manageStock': product.manageStock,
-        'stockQuantity': product.stockQuantity,
-        'stockStatus': product.stockStatus,
-        'hasOptions': product.hasOptions,
-        'priceHtml': product.priceHtml,
-      },
+      'id': id,
+      'name': name,
+      'imageUrl': imageUrl,
+      'price': price,
+      'regularPrice': regularPrice,
+      'salePrice': salePrice,
+      'onSale': onSale,
+      'sku': sku,
       'quantity': quantity,
+      'productType': productType,
     };
   }
 
-  CartItemModel copyWith({ProductEntity? product, int? quantity}) {
+  CartItemModel copyWith({
+    int? id,
+    String? name,
+    String? imageUrl,
+    String? price,
+    String? regularPrice,
+    String? salePrice,
+    bool? onSale,
+    String? sku,
+    int? quantity,
+    String? productType,
+  }) {
     return CartItemModel(
-      product: product ?? this.product,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      imageUrl: imageUrl ?? this.imageUrl,
+      price: price ?? this.price,
+      regularPrice: regularPrice ?? this.regularPrice,
+      salePrice: salePrice ?? this.salePrice,
+      onSale: onSale ?? this.onSale,
+      sku: sku ?? this.sku,
       quantity: quantity ?? this.quantity,
+      productType: productType ?? this.productType,
     );
   }
 
@@ -96,10 +92,21 @@ class CartItemModel extends Equatable {
   }
 
   double get totalPrice {
-    final price = double.tryParse(product.price) ?? 0.0;
-    return price * quantity;
+    final priceValue = double.tryParse(price) ?? 0.0;
+    return priceValue * quantity;
   }
 
   @override
-  List<Object?> get props => [product, quantity];
+  List<Object?> get props => [
+    id,
+    name,
+    imageUrl,
+    price,
+    regularPrice,
+    salePrice,
+    onSale,
+    sku,
+    quantity,
+    productType,
+  ];
 }

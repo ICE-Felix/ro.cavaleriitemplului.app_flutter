@@ -2,10 +2,10 @@ import 'dart:ui';
 
 import 'package:app/core/service_locator.dart';
 import 'package:app/features/cart/data/request/cart_stock_request.dart';
+import 'package:app/features/cart/domain/models/cart_item_model.dart';
 import 'package:app/features/cart/domain/models/cart_model.dart';
 import 'package:app/features/cart/domain/models/cart_stock_response_model.dart';
 import 'package:app/features/cart/domain/repositories/cart_repository.dart';
-import 'package:app/features/shop/domain/entities/product_entity.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,16 +42,12 @@ class CartCubit extends Cubit<CartState> {
   }
 
   Future<void> addProduct(
-    ProductEntity product, {
-    int quantity = 1,
+    CartItemModel item, {
     VoidCallback? onSuccess,
     VoidCallback? onError,
   }) async {
     try {
-      final updatedCart = await sl.get<CartRepository>().addProductToCart(
-        product,
-        quantity: quantity,
-      );
+      final updatedCart = await sl.get<CartRepository>().addProductToCart(item);
       final cartStock = await sl.get<CartRepository>().verifyStock(
         CartStockRequest.fromCart(updatedCart),
       );

@@ -2,6 +2,7 @@ import 'package:app/core/error/exceptions.dart';
 import 'package:app/core/network/dio_client.dart';
 import 'package:app/features/locations/data/models/location_category_model.dart';
 import 'package:app/features/locations/data/models/location_model.dart';
+import 'package:app/features/locations/data/models/venue_product_model.dart';
 
 class AttributeFilterOption {
   final String value;
@@ -44,6 +45,7 @@ abstract class LocationsRemoteDataSource {
     int? page,
     int? limit,
   });
+  Future<List<VenueProductModel>> getVenueProducts(String venueId);
 }
 
 class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
@@ -309,6 +311,31 @@ class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
       final List<dynamic> data = response['data'] as List<dynamic>;
       return data
           .map((e) => LocationModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      if (e is AuthException || e is ServerException) rethrow;
+      throw ServerException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<List<VenueProductModel>> getVenueProducts(String venueId) async {
+    try {
+      final response = await dio.get(
+        '/venue_products',
+        queryParameters: {'venue_id': venueId},
+      );
+
+      if (response['success'] != true) {
+        throw ServerException(
+          message:
+              'API returned error: ${response['error'] ?? 'Unknown error'}',
+        );
+      }
+
+      final List<dynamic> data = response['data'] as List<dynamic>;
+      return data
+          .map((e) => VenueProductModel.fromJson(e as Map<String, dynamic>))
           .toList();
     } catch (e) {
       if (e is AuthException || e is ServerException) rethrow;
