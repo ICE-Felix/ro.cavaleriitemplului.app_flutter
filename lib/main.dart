@@ -41,7 +41,15 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   // Initialize dependency injection
   await initServiceLocator();
-  await sl<FirebaseMessagingService>().initialize();
+
+  try {
+    debugPrint('🔥 Starting Firebase Messaging Service initialization...');
+    await sl<FirebaseMessagingService>().initialize();
+    debugPrint('✅ Firebase Messaging Service initialization completed');
+  } catch (e, stackTrace) {
+    debugPrint('❌ Error initializing Firebase Messaging Service: $e');
+    debugPrint('Stack trace: $stackTrace');
+  }
 
   runApp(const MyApp());
 }
