@@ -50,6 +50,9 @@ class FirebaseMessagingService {
 
       _isInitialized = true;
       debugPrint('Firebase Messaging Service initialized successfully');
+
+      // Subscribe to the "all" topic for broadcast notifications
+      await subscribeToTopic('all');
     } catch (e) {
       debugPrint('Error initializing Firebase Messaging Service: $e');
       rethrow;
