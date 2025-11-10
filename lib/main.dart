@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
       ],
       child: LocalizationProvider(
         child: MaterialApp.router(
-          title: 'Mommy HAI',
+          title: 'R.L. 126 C.T.',
           theme: AppTheme.lightTheme,
           themeMode: ThemeMode.light,
           routerConfig: routes,

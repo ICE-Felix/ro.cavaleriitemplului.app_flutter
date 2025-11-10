@@ -34,7 +34,7 @@ class ImagePlaceholderWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
-                'MOMMY HAI',
+                'R.L. 126 C.T.',
                 style: AppTextStyles.headlineSmall.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

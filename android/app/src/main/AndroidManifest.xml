@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
-        android:label="Mommy HAI"
+        android:label="R.L. 126 C.T."
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

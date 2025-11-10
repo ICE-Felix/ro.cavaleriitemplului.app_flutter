@@ -77,7 +77,7 @@ class NewsCardWidget extends StatelessWidget {
                               errorBuilder: (context, error, stackTrace) {
                                 // Fallback if logo asset fails to load
                                 return Text(
-                                  'MOMMY HAI',
+                                  'R.L. 126 C.T.',
                                   style: TextStyle(
                                     color: colorScheme.onPrimary,
                                     fontWeight: FontWeight.bold,

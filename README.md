@@ -1,6 +1,6 @@
-# Mommy HAI
+# R.L. 126 C.T.
 
-An AI-powered parenting companion app built with Flutter, featuring clean architecture and modern design patterns.
+An app built with Flutter, featuring clean architecture and modern design patterns.
 
 ## 🚀 Features
 

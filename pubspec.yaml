@@ -1,5 +1,5 @@
 name: app
-description: "A new Flutter project."
+description: "R.L. 126 C.T."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -123,6 +123,6 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/appicons/Assets.xcassets/AppIcon.appiconset/1024.png"
+  image_path: "assets/images/logo/logo.png"
   min_sdk_android: 21
   remove_alpha_ios: true

@@ -524,9 +524,9 @@ ${news.title}
 
 ${news.summary}
 
-Intră pe Mommy Hai ca să citești acest articol!
+Intră pe R.L. 126 C.T. ca să citești acest articol!
 
-#MommyHai #Parenting #Copii
+#RL126CT #CavaleriTemplului
 ''';
 
     Share.share(shareText, subject: news.title);
