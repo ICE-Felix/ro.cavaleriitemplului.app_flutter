@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/service_locator.dart';
+import '../../../../core/style/app_colors.dart';
 import '../../../../core/style/app_text_styles.dart';
 import '../../../../core/localization/app_localization.dart';
 import '../../domain/entities/bookmark_entity.dart';
@@ -89,7 +90,7 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: colorScheme.primaryContainer.withOpacity(0.3),
+                color: colorScheme.primaryContainer.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(50),
               ),
               child: FaIcon(
@@ -145,7 +146,7 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 1,
       clipBehavior: Clip.hardEdge,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: () => _openArticle(bookmark),
         child: Container(
@@ -161,15 +162,15 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
                   gradient:
                       bookmark.imageUrl.isNotEmpty
                           ? null
-                          : const LinearGradient(
+                          : LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Color(0xFF4A148C), // Dark purple
-                              Color(0xFF6A1B9A), // Slightly lighter purple
+                              AppColors.primary,
+                              AppColors.primary.withValues(alpha: 0.8),
                             ],
                           ),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 clipBehavior: Clip.hardEdge,
                 child:
@@ -230,7 +231,7 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
                             ),
                             decoration: BoxDecoration(
                               color: colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               bookmark.category,
@@ -280,10 +281,11 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
         height: 24,
         fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
+          final colorScheme = Theme.of(context).colorScheme;
           return Text(
             context.getString(label: 'appName'),
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
               fontSize: 8,
             ),

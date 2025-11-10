@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/service_locator.dart';
+import '../../../../core/style/app_colors.dart';
 import '../../../../core/widgets/custom_top_bar.dart';
 import '../../../../core/style/app_text_styles.dart';
 import '../../../../core/localization/app_localization.dart';
@@ -81,7 +82,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: colorScheme.surface.withOpacity(0.8),
+                            color: colorScheme.surface.withValues(alpha: 0.8),
                           ),
                           child: LogoTopBar(
                             isTransparent: true,
@@ -154,8 +155,8 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: colorScheme.primaryContainer
-                                        .withOpacity(0.8),
-                                    borderRadius: BorderRadius.circular(16),
+                                        .withValues(alpha: 0.8),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
                                     state.news.category.toUpperCase(),
@@ -329,7 +330,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                                                       colorScheme
                                                           .surfaceContainerHighest,
                                                   borderRadius:
-                                                      BorderRadius.circular(16),
+                                                      BorderRadius.circular(12),
                                                 ),
                                                 child: Text(
                                                   tag,
@@ -359,7 +360,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
                                       color: colorScheme.surfaceContainerHighest
-                                          .withOpacity(0.5),
+                                          .withValues(alpha: 0.5),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Row(
@@ -416,7 +417,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                                           ),
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
-                                              8,
+                                              12,
                                             ),
                                           ),
                                         ),
@@ -455,12 +456,12 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                                                       : FontAwesomeIcons
                                                           .bookmark,
                                                   size: 16,
-                                                  color: Colors.white,
+                                                  color: colorScheme.onPrimary,
                                                 ),
                                         label: Text(
                                           _isBookmarked ? 'Salvat' : 'Salvează',
-                                          style: const TextStyle(
-                                            color: Colors.white,
+                                          style: TextStyle(
+                                            color: colorScheme.onPrimary,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -470,18 +471,16 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                                           ),
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
-                                              8,
+                                              12,
                                             ),
                                           ),
                                           backgroundColor:
                                               _isBookmarked
-                                                  ? const Color(
-                                                    0xFF4A148C,
-                                                  ) // Dark purple for saved
+                                                  ? AppColors.primary
                                                   : Theme.of(
                                                     context,
                                                   ).colorScheme.primary,
-                                          foregroundColor: Colors.white,
+                                          foregroundColor: colorScheme.onPrimary,
                                           elevation: _isBookmarked ? 2 : 1,
                                         ),
                                       ),

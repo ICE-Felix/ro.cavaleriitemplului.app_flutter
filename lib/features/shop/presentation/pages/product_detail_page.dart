@@ -1,4 +1,5 @@
 import 'package:app/core/service_locator.dart';
+import 'package:app/core/style/app_colors.dart';
 import 'package:app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:app/core/widgets/custom_top_bar.dart';
@@ -33,16 +34,16 @@ class ProductDetailPage extends StatelessWidget {
                     return Container(
                       margin: const EdgeInsets.symmetric(horizontal: 8.0),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12.0),
-                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(16.0),
+                        color: AppColors.inputFill,
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12.0),
+                        borderRadius: BorderRadius.circular(16.0),
                         child: Image.network(
                           product.images[index].src,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
-                            return _buildPlaceholder();
+                            return _buildPlaceholder(context);
                           },
                         ),
                       ),
@@ -54,10 +55,10 @@ class ProductDetailPage extends StatelessWidget {
               Container(
                 height: 300,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(16.0),
+                  color: AppColors.inputFill,
                 ),
-                child: _buildPlaceholder(),
+                child: _buildPlaceholder(context),
               ),
             const SizedBox(height: 24),
 
@@ -71,16 +72,19 @@ class ProductDetailPage extends StatelessWidget {
             // Price
             Row(
               children: [
-                const Text(
+                Text(
                   'Price: ', // TODO: Use localized string
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
                 ),
                 Text(
                   '${product.price} lei',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green,
+                    color: AppColors.success,
                   ),
                 ),
               ],
@@ -92,7 +96,7 @@ class ProductDetailPage extends StatelessWidget {
               children: [
                 Icon(
                   product.isAvailable ? Icons.check_circle : Icons.cancel,
-                  color: product.isAvailable ? Colors.green : Colors.red,
+                  color: product.isAvailable ? AppColors.success : AppColors.error,
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -101,7 +105,7 @@ class ProductDetailPage extends StatelessWidget {
                       : 'Out of Stock', // TODO: Use localized string
                   style: TextStyle(
                     fontSize: 16,
-                    color: product.isAvailable ? Colors.green : Colors.red,
+                    color: product.isAvailable ? AppColors.success : AppColors.error,
                   ),
                 ),
               ],
@@ -122,7 +126,7 @@ class ProductDetailPage extends StatelessWidget {
                     product.categories.map((category) {
                       return Chip(
                         label: Text(category.name),
-                        backgroundColor: Colors.blue.shade100,
+                        backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                       );
                     }).toList(),
               ),
@@ -143,7 +147,7 @@ class ProductDetailPage extends StatelessWidget {
                     product.brands.map((brand) {
                       return Chip(
                         label: Text(brand.name),
-                        backgroundColor: Colors.orange.shade100,
+                        backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
                       );
                     }).toList(),
               ),
@@ -208,14 +212,18 @@ class ProductDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.0),
-        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(16.0),
+        color: AppColors.inputFill,
       ),
-      child: const Center(
-        child: Icon(Icons.shopping_bag, size: 64, color: Colors.grey),
+      child: Center(
+        child: Icon(
+          Icons.shopping_bag,
+          size: 64,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+        ),
       ),
     );
   }

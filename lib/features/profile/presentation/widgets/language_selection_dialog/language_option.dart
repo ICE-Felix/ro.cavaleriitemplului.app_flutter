@@ -30,11 +30,11 @@ class LanguageOption extends StatelessWidget {
             border: Border.all(
               color: isSelected
                   ? Theme.of(context).primaryColor
-                  : Theme.of(context).dividerColor.withOpacity(0.2),
+                  : Theme.of(context).dividerColor.withValues(alpha: 0.2),
               width: isSelected ? 2 : 1,
             ),
             color: isSelected
-                ? Theme.of(context).primaryColor.withOpacity(0.05)
+                ? Theme.of(context).primaryColor.withValues(alpha: 0.05)
                 : Colors.transparent,
           ),
           child: Row(
@@ -45,7 +45,7 @@ class LanguageOption extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8.0),
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 ),
                 child: Center(
                   child: Text(flag, style: const TextStyle(fontSize: 20)),
@@ -73,7 +73,7 @@ class LanguageOption extends StatelessWidget {
                             .textTheme
                             .bodySmall
                             ?.color
-                            ?.withOpacity(0.6),
+                            ?.withValues(alpha: 0.6),
                         fontSize: 13,
                       ),
                     ),
@@ -89,7 +89,11 @@ class LanguageOption extends StatelessWidget {
                     color: Theme.of(context).primaryColor,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.check, color: Colors.white, size: 16),
+                  child: Icon(
+                    Icons.check,
+                    color: Theme.of(context).colorScheme.surface,
+                    size: 16,
+                  ),
                 )
               else
                 Container(
@@ -98,7 +102,7 @@ class LanguageOption extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: Theme.of(context).dividerColor.withOpacity(0.3),
+                      color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
                       width: 2,
                     ),
                   ),

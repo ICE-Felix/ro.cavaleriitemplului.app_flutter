@@ -90,7 +90,7 @@ class NavigationMenu extends StatelessWidget {
         currentIndex: _getCurrentIndex(),
         onTap: (index) => _onItemTapped(context, index),
         selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
+        unselectedItemColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
         showSelectedLabels: true,
         showUnselectedLabels: true,
         items: [

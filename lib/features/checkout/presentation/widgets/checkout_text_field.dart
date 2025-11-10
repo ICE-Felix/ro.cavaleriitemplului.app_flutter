@@ -34,7 +34,7 @@ class CheckoutTextField extends StatelessWidget {
             if (isRequired)
               Text(
                 ' *',
-                style: AppTextStyles.bodyMedium.copyWith(color: Colors.red),
+                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.error),
               ),
           ],
         ),
@@ -45,15 +45,15 @@ class CheckoutTextField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColors.primary),
             ),
             contentPadding: const EdgeInsets.symmetric(

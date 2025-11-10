@@ -47,9 +47,9 @@ class _ProductFiltersModalState extends State<ProductFiltersModal> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),
@@ -59,9 +59,9 @@ class _ProductFiltersModalState extends State<ProductFiltersModal> {
           // Header
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: Colors.grey, width: 0.5),
+                bottom: BorderSide(color: AppColors.border, width: 0.5),
               ),
             ),
             child: Row(
@@ -91,10 +91,10 @@ class _ProductFiltersModalState extends State<ProductFiltersModal> {
                 // Left sidebar - Filter categories
                 Container(
                   width: 150,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF5F5F5),
+                  decoration: BoxDecoration(
+                    color: AppColors.inputFill,
                     border: Border(
-                      right: BorderSide(color: Colors.grey, width: 0.5),
+                      right: BorderSide(color: AppColors.border, width: 0.5),
                     ),
                   ),
                   child: Column(
@@ -157,8 +157,8 @@ class _ProductFiltersModalState extends State<ProductFiltersModal> {
           // Bottom buttons
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
             ),
             child: Row(
               children: [
@@ -173,12 +173,12 @@ class _ProductFiltersModalState extends State<ProductFiltersModal> {
                     },
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      side: BorderSide(color: AppColors.primary),
+                      side: const BorderSide(color: AppColors.primary),
                     ),
                     child: Text(
                       context.getString(label: 'shop.clearFilters') ??
                           'Sterge filtre',
-                      style: TextStyle(color: AppColors.primary),
+                      style: const TextStyle(color: AppColors.primary),
                     ),
                   ),
                 ),

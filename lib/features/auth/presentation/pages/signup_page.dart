@@ -67,12 +67,12 @@ class _SignupPageState extends State<SignupPage> {
               SnackBar(
                 content: Row(
                   children: [
-                    const Icon(Icons.error_outline, color: Colors.white),
+                    Icon(Icons.error_outline, color: Theme.of(context).colorScheme.onError),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         state.message,
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onError),
                       ),
                     ),
                   ],
@@ -81,12 +81,12 @@ class _SignupPageState extends State<SignupPage> {
                 duration: const Duration(seconds: 4),
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 margin: const EdgeInsets.all(8),
                 action: SnackBarAction(
                   label: context.getString(label: 'dismiss'),
-                  textColor: Colors.white,
+                  textColor: Theme.of(context).colorScheme.onError,
                   onPressed: () {
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   },
@@ -99,21 +99,21 @@ class _SignupPageState extends State<SignupPage> {
               SnackBar(
                 content: Row(
                   children: [
-                    const Icon(Icons.check_circle_outline, color: Colors.white),
+                    Icon(Icons.check_circle_outline, color: Theme.of(context).colorScheme.onPrimary),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         context.getString(label: 'accountCreatedSuccessfully'),
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
                   ],
                 ),
-                backgroundColor: Colors.green,
+                backgroundColor: AppColors.success,
                 duration: const Duration(seconds: 2),
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 margin: const EdgeInsets.all(8),
               ),
@@ -146,7 +146,7 @@ class _SignupPageState extends State<SignupPage> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.2),
+                            color: AppColors.primary.withValues(alpha: 0.2),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -160,7 +160,7 @@ class _SignupPageState extends State<SignupPage> {
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.1),
+                                color: AppColors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: const Icon(
@@ -186,7 +186,7 @@ class _SignupPageState extends State<SignupPage> {
                       textAlign: TextAlign.center,
                       style: Theme.of(
                         context,
-                      ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                      ).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                     ),
                     const SizedBox(height: 32),
                     CustomTextField(

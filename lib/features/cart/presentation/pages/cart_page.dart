@@ -160,7 +160,9 @@ class CartPageView extends StatelessWidget {
                 Navigator.of(dialogContext).pop();
                 onConfirm();
               },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.error,
+              ),
               child: const Text('Remove'),
             ),
           ],
@@ -191,7 +193,9 @@ class CartPageView extends StatelessWidget {
                 Navigator.of(dialogContext).pop();
                 onConfirm();
               },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.error,
+              ),
               child: const Text('Clear All'),
             ),
           ],

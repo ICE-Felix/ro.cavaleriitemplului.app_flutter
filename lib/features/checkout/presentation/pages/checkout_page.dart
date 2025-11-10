@@ -30,8 +30,8 @@ class CheckoutPageView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Checkout'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
         centerTitle: true,
       ),
@@ -49,7 +49,7 @@ class CheckoutPageView extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.red,
+                backgroundColor: AppColors.error,
                 action: SnackBarAction(
                   label: 'Dismiss',
                   textColor: Colors.white,
@@ -170,7 +170,7 @@ class CheckoutPageView extends StatelessWidget {
                   Navigator.of(context).pop();
                   context.read<CheckoutCubit>().clearCheckout();
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
                 child: const Text('Clear All'),
               ),
             ],
@@ -211,20 +211,22 @@ class _CheckoutSummaryCard extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color:
-                    isComplete ? Colors.green.shade50 : Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(8),
+                    isComplete
+                        ? AppColors.success.withValues(alpha: 0.1)
+                        : AppColors.warning.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color:
                       isComplete
-                          ? Colors.green.shade200
-                          : Colors.orange.shade200,
+                          ? AppColors.success.withValues(alpha: 0.3)
+                          : AppColors.warning.withValues(alpha: 0.3),
                 ),
               ),
               child: Row(
                 children: [
                   Icon(
                     isComplete ? Icons.check_circle : Icons.warning,
-                    color: isComplete ? Colors.green : Colors.orange,
+                    color: isComplete ? AppColors.success : AppColors.warning,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -235,8 +237,8 @@ class _CheckoutSummaryCard extends StatelessWidget {
                       style: AppTextStyles.bodyMedium.copyWith(
                         color:
                             isComplete
-                                ? Colors.green.shade700
-                                : Colors.orange.shade700,
+                                ? AppColors.success
+                                : AppColors.warning,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -254,8 +256,8 @@ class _CheckoutSummaryCard extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: onClearCheckout,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
+                      foregroundColor: AppColors.error,
+                      side: const BorderSide(color: AppColors.error),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: const Text('Clear All'),
@@ -270,7 +272,7 @@ class _CheckoutSummaryCard extends StatelessWidget {
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      disabledBackgroundColor: Colors.grey.shade300,
+                      disabledBackgroundColor: AppColors.inputFill,
                     ),
                     child: const Text('Place Order'),
                   ),

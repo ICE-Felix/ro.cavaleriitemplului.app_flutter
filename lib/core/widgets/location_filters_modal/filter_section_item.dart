@@ -25,7 +25,7 @@ class FilterSectionItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.1)
+              ? AppColors.primary.withValues(alpha: 0.1)
               : Colors.transparent,
           border: isSelected
               ? Border(left: BorderSide(color: AppColors.primary, width: 3))
@@ -41,7 +41,9 @@ class FilterSectionItem extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                      color: isSelected ? AppColors.primary : Colors.black87,
+                      color: isSelected
+                          ? AppColors.primary
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.87),
                     ),
                   ),
                   if (selectedCount > 0)
@@ -49,7 +51,9 @@ class FilterSectionItem extends StatelessWidget {
                       '$selectedCount selected',
                       style: TextStyle(
                         fontSize: 12,
-                        color: isSelected ? AppColors.primary : Colors.grey[600],
+                        color: isSelected
+                            ? AppColors.primary
+                            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                 ],

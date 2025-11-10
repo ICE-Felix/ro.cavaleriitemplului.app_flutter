@@ -32,10 +32,10 @@ class EventDetailPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline,
                       size: 64,
-                      color: Colors.red,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -84,7 +84,7 @@ class EventDetailPage extends StatelessWidget {
                             context,
                           ).textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -96,8 +96,8 @@ class EventDetailPage extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Theme.of(
                               context,
-                            ).primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
+                            ).primaryColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             event.eventTypeName,
@@ -129,7 +129,7 @@ class EventDetailPage extends StatelessWidget {
                               "body": Style(
                                 fontSize: FontSize(16),
                                 lineHeight: LineHeight(1.6),
-                                color: Colors.black87,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 margin: Margins.zero,
                                 padding: HtmlPaddings.zero,
                               ),
@@ -150,7 +150,7 @@ class EventDetailPage extends StatelessWidget {
                               "blockquote": Style(
                                 border: Border(
                                   left: BorderSide(
-                                    color: Colors.grey.shade400,
+                                    color: Theme.of(context).colorScheme.outlineVariant,
                                     width: 4,
                                   ),
                                 ),
@@ -256,7 +256,7 @@ class EventDetailPage extends StatelessWidget {
                               "body": Style(
                                 fontSize: FontSize(16),
                                 lineHeight: LineHeight(1.6),
-                                color: Colors.black87,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 margin: Margins.zero,
                                 padding: HtmlPaddings.zero,
                               ),
@@ -286,7 +286,7 @@ class EventDetailPage extends StatelessWidget {
                               "body": Style(
                                 fontSize: FontSize(16),
                                 lineHeight: LineHeight(1.6),
-                                color: Colors.black87,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 margin: Margins.zero,
                                 padding: HtmlPaddings.zero,
                               ),
@@ -356,8 +356,8 @@ class _EventHeroSection extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Theme.of(context).primaryColor.withOpacity(0.8),
-            Theme.of(context).primaryColor.withOpacity(0.6),
+            Theme.of(context).primaryColor.withValues(alpha: 0.8),
+            Theme.of(context).primaryColor.withValues(alpha: 0.6),
           ],
         ),
       ),
@@ -380,7 +380,7 @@ class _EventHeroSection extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.3),
+                          Colors.black.withValues(alpha: 0.3),
                         ],
                       ),
                     ),
@@ -396,7 +396,11 @@ class _DefaultHeroContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Icon(Icons.event, size: 80, color: Colors.white.withOpacity(0.8)),
+      child: Icon(
+        Icons.event,
+        size: 80,
+        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
+      ),
     );
   }
 }
@@ -413,11 +417,11 @@ class _SectionContainer extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.08),
             spreadRadius: 0,
             blurRadius: 10,
             offset: const Offset(0, 4),
@@ -442,8 +446,8 @@ class _SectionHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, size: 20, color: Theme.of(context).primaryColor),
         ),
@@ -452,7 +456,7 @@ class _SectionHeader extends StatelessWidget {
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],
@@ -488,9 +492,11 @@ class _InfoItem extends StatelessWidget {
       width: (MediaQuery.of(context).size.width - 80) / 2,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outlineVariant,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -504,7 +510,7 @@ class _InfoItem extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -514,10 +520,10 @@ class _InfoItem extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -585,17 +591,19 @@ class _ContactItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outlineVariant,
+        ),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, size: 18, color: Theme.of(context).primaryColor),
           ),
@@ -608,7 +616,7 @@ class _ContactItem extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -621,14 +629,18 @@ class _ContactItem extends StatelessWidget {
                     color:
                         isClickable
                             ? Theme.of(context).primaryColor
-                            : Colors.black87,
+                            : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],
             ),
           ),
           if (isClickable)
-            Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 14,
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
         ],
       ),
     );

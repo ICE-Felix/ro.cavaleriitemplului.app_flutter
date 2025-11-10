@@ -16,15 +16,15 @@ class ProfileHeader extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             Theme.of(context).primaryColor,
-            Theme.of(context).primaryColor.withOpacity(0.7),
+            Theme.of(context).primaryColor.withValues(alpha: 0.7),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).primaryColor.withOpacity(0.2),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -56,13 +56,13 @@ class _UserAvatar extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: Colors.white.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.3),
             width: _avatarBorderWidth,
           ),
         ),
         child: CircleAvatar(
           radius: _avatarRadius,
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           child: Icon(
             Icons.person_rounded,
             size: _iconSize,
@@ -90,7 +90,7 @@ class _UserEmail extends StatelessWidget {
           child: Text(
             state.userEmail,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
             ),

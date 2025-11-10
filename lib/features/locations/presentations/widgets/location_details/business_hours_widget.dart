@@ -25,14 +25,14 @@ class BusinessHoursWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color:
                       location.isCurrentlyOpen
-                          ? Colors.green.shade100
-                          : Colors.red.shade100,
+                          ? AppColors.success.withValues(alpha: 0.1)
+                          : AppColors.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(25),
                   border: Border.all(
                     color:
                         location.isCurrentlyOpen
-                            ? Colors.green.shade200
-                            : Colors.red.shade200,
+                            ? AppColors.success.withValues(alpha: 0.2)
+                            : AppColors.error.withValues(alpha: 0.2),
                     width: 1,
                   ),
                 ),
@@ -46,8 +46,8 @@ class BusinessHoursWidget extends StatelessWidget {
                       size: 16,
                       color:
                           location.isCurrentlyOpen
-                              ? Colors.green.shade700
-                              : Colors.red.shade700,
+                              ? AppColors.success
+                              : AppColors.error,
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -55,8 +55,8 @@ class BusinessHoursWidget extends StatelessWidget {
                       style: TextStyle(
                         color:
                             location.isCurrentlyOpen
-                                ? Colors.green.shade700
-                                : Colors.red.shade700,
+                                ? AppColors.success
+                                : AppColors.error,
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                       ),
@@ -74,9 +74,9 @@ class BusinessHoursWidget extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: AppColors.inputFill,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.grey.shade200, width: 1),
+                    border: Border.all(color: AppColors.border, width: 1),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -84,7 +84,7 @@ class BusinessHoursWidget extends StatelessWidget {
                       Text(
                         'Open today:',
                         style: TextStyle(
-                          color: Colors.grey.shade700,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           fontWeight: FontWeight.w500,
                           fontSize: 12,
                         ),
@@ -94,14 +94,14 @@ class BusinessHoursWidget extends StatelessWidget {
                       Icon(
                         Icons.access_time,
                         size: 14,
-                        color: Colors.grey.shade600,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           location.todayHoursFormatted,
                           style: TextStyle(
-                            color: Colors.grey.shade700,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
                           ),
@@ -160,12 +160,12 @@ class _CompactBusinessHoursDisplay extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200, width: 1),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.03),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -182,7 +182,7 @@ class _CompactBusinessHoursDisplay extends StatelessWidget {
                 'Weekly Schedule',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade800,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                 ),
               ),
             ],
@@ -198,14 +198,14 @@ class _CompactBusinessHoursDisplay extends StatelessWidget {
               decoration: BoxDecoration(
                 color:
                     pattern == 'Closed'
-                        ? Colors.red.shade50
-                        : Colors.green.shade50,
+                        ? AppColors.error.withValues(alpha: 0.1)
+                        : AppColors.success.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color:
                       pattern == 'Closed'
-                          ? Colors.red.shade200
-                          : Colors.green.shade200,
+                          ? AppColors.error.withValues(alpha: 0.2)
+                          : AppColors.success.withValues(alpha: 0.2),
                   width: 0.5,
                 ),
               ),
@@ -219,8 +219,8 @@ class _CompactBusinessHoursDisplay extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color:
                             pattern == 'Closed'
-                                ? Colors.red.shade700
-                                : Colors.green.shade700,
+                                ? AppColors.error
+                                : AppColors.success,
                         fontSize: 11,
                       ),
                     ),
@@ -233,8 +233,8 @@ class _CompactBusinessHoursDisplay extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color:
                             pattern == 'Closed'
-                                ? Colors.red.shade600
-                                : Colors.green.shade600,
+                                ? AppColors.error.withValues(alpha: 0.8)
+                                : AppColors.success.withValues(alpha: 0.8),
                         fontWeight: FontWeight.w500,
                         fontSize: 11,
                       ),

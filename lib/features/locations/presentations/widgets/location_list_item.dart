@@ -42,11 +42,11 @@ class LocationListItem extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -79,7 +79,7 @@ class LocationListItem extends StatelessWidget {
                             loadingBuilder: (context, child, loadingProgress) {
                               if (loadingProgress == null) return child;
                               return Container(
-                                color: AppColors.primary.withOpacity(0.1),
+                                color: AppColors.primary.withValues(alpha: 0.1),
                                 child: const Center(
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
@@ -117,7 +117,7 @@ class LocationListItem extends StatelessWidget {
                       location.name,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade800,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -129,7 +129,7 @@ class LocationListItem extends StatelessWidget {
                       Text(
                         location.address!,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey.shade600,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           height: 1.3,
                         ),
                         maxLines: 2,
@@ -149,14 +149,14 @@ class LocationListItem extends StatelessWidget {
                           decoration: BoxDecoration(
                             color:
                                 location.isCurrentlyOpen
-                                    ? Colors.green.shade100
-                                    : Colors.red.shade100,
+                                    ? AppColors.success.withValues(alpha: 0.1)
+                                    : AppColors.error.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color:
                                   location.isCurrentlyOpen
-                                      ? Colors.green.shade300
-                                      : Colors.red.shade300,
+                                      ? AppColors.success.withValues(alpha: 0.3)
+                                      : AppColors.error.withValues(alpha: 0.3),
                               width: 1,
                             ),
                           ),
@@ -170,8 +170,8 @@ class LocationListItem extends StatelessWidget {
                                 size: 12,
                                 color:
                                     location.isCurrentlyOpen
-                                        ? Colors.green.shade700
-                                        : Colors.red.shade700,
+                                        ? AppColors.success
+                                        : AppColors.error,
                               ),
                               const SizedBox(width: 4),
                               Text(
@@ -179,8 +179,8 @@ class LocationListItem extends StatelessWidget {
                                 style: TextStyle(
                                   color:
                                       location.isCurrentlyOpen
-                                          ? Colors.green.shade700
-                                          : Colors.red.shade700,
+                                          ? AppColors.success
+                                          : AppColors.error,
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -198,10 +198,10 @@ class LocationListItem extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
+                              color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: AppColors.primary.withOpacity(0.3),
+                                color: AppColors.primary.withValues(alpha: 0.3),
                                 width: 1,
                               ),
                             ),
@@ -235,7 +235,7 @@ class LocationListItem extends StatelessWidget {
               const SizedBox(width: 8),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Colors.grey.shade400,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                 size: 16,
               ),
             ],

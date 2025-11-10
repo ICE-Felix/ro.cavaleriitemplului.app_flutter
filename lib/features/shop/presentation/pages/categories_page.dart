@@ -2,6 +2,7 @@ import 'package:app/core/banners/domain/entities/banner_entity.dart';
 import 'package:app/core/banners/presentation/cubit/banners_cubit.dart';
 import 'package:app/core/banners/widgets/banner_widget.dart';
 import 'package:app/core/navigation/routes_name.dart';
+import 'package:app/core/style/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:app/core/widgets/custom_top_bar.dart';
@@ -79,17 +80,17 @@ class _CategoriesPageViewState extends State<_CategoriesPageView> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.category_outlined,
                               size: 64,
-                              color: Colors.grey,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                             ),
                             const SizedBox(height: 16),
-                            const Text(
+                            Text(
                               'No categories available', // TODO: Use localized string
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.grey,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -137,17 +138,17 @@ class _CategoriesPageViewState extends State<_CategoriesPageView> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.error_outline,
                             size: 64,
-                            color: Colors.red,
+                            color: AppColors.error,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             state.message,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
-                              color: Colors.red,
+                              color: AppColors.error,
                             ),
                             textAlign: TextAlign.center,
                           ),

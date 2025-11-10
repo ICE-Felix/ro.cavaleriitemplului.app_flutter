@@ -29,7 +29,7 @@ class CartItemCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: stockInfo?.available == false ? Colors.red : Colors.grey,
+          color: stockInfo?.available == false ? AppColors.error : AppColors.border,
           width: 1,
         ),
       ),
@@ -46,7 +46,7 @@ class CartItemCard extends StatelessWidget {
                 height: 80,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.shade200,
+                  color: AppColors.inputFill,
                 ),
                 child:
                     item.imageUrl != null
@@ -58,14 +58,14 @@ class CartItemCard extends StatelessWidget {
                             errorBuilder: (context, error, stackTrace) {
                               return Icon(
                                 Icons.image_not_supported,
-                                color: Colors.grey.shade400,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                               );
                             },
                           ),
                         )
                         : Icon(
                           Icons.shopping_bag_outlined,
-                          color: Colors.grey.shade400,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                           size: 32,
                         ),
               ),
@@ -96,7 +96,7 @@ class CartItemCard extends StatelessWidget {
                         IconButton(
                           onPressed: onRemove,
                           icon: const Icon(Icons.delete_outline),
-                          color: Colors.red.shade400,
+                          color: AppColors.error,
                           tooltip: 'Remove from cart',
                           constraints: const BoxConstraints(),
                           padding: EdgeInsets.zero,
@@ -115,7 +115,7 @@ class CartItemCard extends StatelessWidget {
                             '\$${item.regularPrice}',
                             style: AppTextStyles.bodyMedium.copyWith(
                               decoration: TextDecoration.lineThrough,
-                              color: Colors.grey.shade600,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -168,7 +168,7 @@ class CartItemCard extends StatelessWidget {
                               padding: const EdgeInsets.all(8.0),
                               child: Icon(
                                 Icons.info,
-                                color: Colors.red.shade400,
+                                color: AppColors.error,
                               ),
                             ),
                           ),

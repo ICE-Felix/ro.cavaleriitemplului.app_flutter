@@ -34,8 +34,8 @@ class ProfileMenuItem extends StatelessWidget {
                 decoration: BoxDecoration(
                   color:
                       isDestructive
-                          ? Theme.of(context).colorScheme.error.withOpacity(0.1)
-                          : Theme.of(context).primaryColor.withOpacity(0.1),
+                          ? Theme.of(context).colorScheme.error.withValues(alpha: 0.1)
+                          : Theme.of(context).primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: Icon(
@@ -70,7 +70,7 @@ class ProfileMenuItem extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(
                           context,
-                        ).textTheme.bodySmall?.color?.withOpacity(0.6),
+                        ).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
                         fontSize: 13,
                       ),
                     ),
@@ -82,7 +82,7 @@ class ProfileMenuItem extends StatelessWidget {
                 Icons.chevron_right_rounded,
                 color: Theme.of(
                   context,
-                ).textTheme.bodySmall?.color?.withOpacity(0.4),
+                ).textTheme.bodySmall?.color?.withValues(alpha: 0.4),
                 size: 20,
               ),
             ],

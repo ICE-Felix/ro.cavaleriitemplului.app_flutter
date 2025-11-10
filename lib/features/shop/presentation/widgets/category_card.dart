@@ -26,13 +26,13 @@ class CategoryCard extends StatelessWidget {
                 // height: 120,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
-                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(12.0),
+                  color: AppColors.inputFill,
                 ),
                 child:
                     category.image != null
                         ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(12.0),
                           child: Image.network(
                             category.image!,
                             fit: BoxFit.cover,
@@ -69,7 +69,7 @@ class CategoryCard extends StatelessWidget {
   Widget _buildPlaceholder() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(12.0),
         color: AppColors.primary,
       ),
       child: Center(

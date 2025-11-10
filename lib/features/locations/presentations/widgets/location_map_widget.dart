@@ -1,3 +1,4 @@
+import 'package:app/core/style/app_colors.dart';
 import 'package:app/core/utils/map_utils.dart';
 import 'package:app/features/locations/data/models/location_model.dart';
 import 'package:app/features/locations/presentations/cubit/selected_location_category/selected_location_category_cubit.dart';
@@ -46,16 +47,22 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
     }
 
     if (widget.currentLocation == null) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.location_off, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
+            Icon(
+              Icons.location_off,
+              size: 64,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+            ),
+            const SizedBox(height: 16),
             Text(
               'Unable to get current location',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
             ),
           ],
         ),
@@ -97,10 +104,13 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: Theme.of(context).colorScheme.primary,
-                      border: Border.all(color: Colors.white, width: 2),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.surface,
+                        width: 2,
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -109,8 +119,8 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
                     child: Center(
                       child: Text(
                         markers.length.toString(),
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -135,7 +145,11 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
         point: widget.currentLocation!,
         width: 40,
         height: 40,
-        child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+        child: Icon(
+          Icons.location_on,
+          color: AppColors.error,
+          size: 40,
+        ),
       ),
     );
 
@@ -151,27 +165,34 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
             point: LatLng(lat, lng),
             width: 30,
             height: 30,
-            child: GestureDetector(
-              onTap: () => _showLocationPopup(context, location),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
+            child: Builder(
+              builder: (context) {
+                return GestureDetector(
+                  onTap: () => _showLocationPopup(context, location),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.surface,
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.location_on,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
+                    child: Icon(
+                      Icons.location_on,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      size: 20,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         );
@@ -230,7 +251,7 @@ class _LocationMapWidgetState extends State<LocationMapWidget> {
     showDialog(
       context: context,
       builder:
-          (context) => Dialog(
+          (dialogContext) => Dialog(
             backgroundColor: Colors.transparent,
             child: LocationPopupWidget(location: location),
           ),

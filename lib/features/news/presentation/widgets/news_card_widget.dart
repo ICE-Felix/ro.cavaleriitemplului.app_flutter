@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/style/app_colors.dart';
 import '../../domain/entities/news_entity.dart';
 
 class NewsCardWidget extends StatelessWidget {
@@ -48,7 +49,7 @@ class NewsCardWidget extends StatelessWidget {
               // Image
               if (news.imageUrl.isNotEmpty) ...[
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                   child: AspectRatio(
                     aspectRatio: 16 / 9,
                     child: Image.network(
@@ -63,10 +64,8 @@ class NewsCardWidget extends StatelessWidget {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [
-                                const Color(0xFF4A148C), // Dark purple
-                                const Color(
-                                  0xFF6A1B9A,
-                                ), // Slightly lighter purple
+                                AppColors.primary,
+                                AppColors.primary.withValues(alpha: 0.8),
                               ],
                             ),
                           ),
@@ -80,7 +79,7 @@ class NewsCardWidget extends StatelessWidget {
                                 return Text(
                                   'MOMMY HAI',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: colorScheme.onPrimary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 12,
                                   ),

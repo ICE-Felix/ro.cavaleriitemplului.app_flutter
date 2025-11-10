@@ -1,0 +1,272 @@
+# Flutter Clean Architecture Project Rules
+
+## Core Principles
+- **YAGNI**: Add nothing without a concrete caller or usage
+- **Separation of Concerns**: UI, state, domain, and data stay isolated
+- **TDD when possible**: Add/adjust tests alongside changes
+- **Immutability by default**: Use `final`, prefer `const` widgets
+- **Small, local changes only**: No sweeping refactors unless asked
+- **Always fix lint/analyzer warnings** before presenting code
+- **Use core components**: Prefer `MPTextFormField` over custom `TextFormField`
+
+## Architecture
+
+### Directory Structure
+```
+lib/
+├── core/                    # shared primitives
+│   ├── widgets/            # reusable UI (MPTextFormField, MPErrorWidget, etc.)
+│   ├── utils/              # validation (FormValidator), helpers
+│   ├── navigation/         # AppRouter, NavigationService, route guards
+│   ├── bloc/              # BaseBloc, error handling patterns
+│   ├── domain/            # base entities, failures, models
+│   ├── theme/             # AppTheme, brand colors
+│   └── di.dart            # dependency injection
+└── features/
+    └── <feature>/
+        ├── presentation/   # widgets, pages, bloc/
+        ├── domain/        # entities, VOs, usecases, repo contracts
+        └── data/          # models, datasources, repo impls
+```
+
+### Import Boundaries
+- **Presentation** → may import: its own `presentation`, its feature `domain`, and `core` (widgets, utils, navigation)
+- **Domain** → may import: `core` (domain entities, failures) only
+- **Data** → may import: its feature `domain` (for interfaces) and `core` (domain entities, failures)
+- **Never** import Data from Presentation
+
+```dart
+// ✅ Presentation depends on Domain contracts
+import '../../domain/usecases/get_user_profile.dart';
+import '../../../core/widgets/forms/mp_text_form_field.dart';
+
+// ❌ Presentation depends on Data impl
+// import '../../data/repositories/user_repo_impl.dart';
+```
+
+## Core Components
+
+### Forms
+- Use `MPTextFormField`, `MPDropdownField`, `MPNumberFormField` from `core/widgets/forms/`
+- Use `FormValidator`, `ValidationRules` from `core/utils/validation/`
+
+```dart
+// ✅ Use core components
+MPTextFormField(
+  controller: _emailController,
+  label: 'Email',
+  validator: FormValidator.validateEmailField,
+)
+```
+
+### UI States
+- **Loading**: Use `MPLoadingWidget`, `MPButtonLoading`
+- **Errors**: Use `MPErrorWidget`, `MPEmptyStateWidget`
+- **Snackbars**: Use `MPErrorSnackBar.showFromFailure()`
+
+### Navigation
+- **Declarative**: Use `context.go()`, `context.push()` with `AppRouter`
+- **Programmatic**: Use `NavigationService` for complex navigation
+- **Route guards**: `RouteGuards.requireAuth()`, `RouteGuards.requireAdmin()`
+- **Never use**: `Navigator.pushReplacement()` with GoRouter
+
+```dart
+// ✅ Correct navigation
+context.go(AppRouter.home);
+NavigationService.goProfile(userId: '123');
+
+// ❌ Don't use imperative navigation
+// Navigator.pushReplacement(context, MaterialPageRoute(...));
+```
+
+## State Management (BLoC)
+
+### Structure
+- `presentation/bloc/<feature>_bloc.dart` (or cubit), plus `..._event.dart`, `..._state.dart`
+- States immutable (copyWith); events expressive
+- Extend `BaseBloc` from `core/bloc/` for common functionality
+
+### Base Patterns
+- Use `BaseState`, `BaseError`, `BaseLoading` from `core/bloc/`
+- Use `BlocErrorHandler` mixin for consistent error handling
+- Use `handleAsyncOperation` for async operations with error handling
+
+```dart
+class UserBloc extends BaseBloc<UserEvent, UserState> {
+  UserBloc() : super(UserInitial()) {
+    on<UserLoadRequested>(_onLoadRequested);
+  }
+
+  Future<void> _onLoadRequested(
+    UserLoadRequested event,
+    Emitter<UserState> emit,
+  ) async {
+    await handleAsyncOperation(
+      _userRepository.getUsers(),
+      emit,
+      (users) => UserLoaded(users),
+      (failure) => UserError(failure),
+    );
+  }
+}
+```
+
+## Dependency Injection
+
+### Location
+- `lib/core/di/di.dart` is the central container
+- Each feature exposes `register<Feature>Module(container)` from `core/di/<feature>_module.dart`
+
+### Registration
+- Register **repositories to domain interfaces**
+- Register datasources, use cases with clear lifecycle (factory/singleton)
+- UI (Widgets/BLoCs) get dependencies from DI or factories
+
+```dart
+// lib/core/di/user_module.dart
+void registerUserModule(GetIt it) {
+  it.registerLazySingleton<UserRemoteDataSource>(() => UserRemoteHttp(it()));
+  it.registerLazySingleton<UserRepo>(() => UserRepoImpl(it()));
+  it.registerFactory(() => GetUserProfile(it()));
+}
+```
+
+## Data Layer
+
+### Repositories
+- Define repo interfaces in `domain/repositories`
+- Implement in `data/repositories`, depending on datasources
+
+### Datasources
+- Split by concern: `remote`, `local`, `cache`
+- Keep methods IO-focused
+
+### Mapping
+- Models convert to entities
+- Do not leak models to domain/presentation
+
+```dart
+abstract class UserRepo { Future<Either<Failure, User>> get(String id); }
+
+class UserRepoImpl implements UserRepo {
+  final UserRemoteDataSource remote;
+  UserRepoImpl(this.remote);
+
+  @override
+  Future<Either<Failure, User>> get(String id) async =>
+    (await remote.fetch(id)).map((m) => m.toEntity());
+}
+```
+
+## Theming & UI
+
+### Theme Tokens
+- Tokens live in `lib/core/theme/**` (colors, text styles, spacings)
+- Widgets use tokens (e.g., `AppTheme.mpPrimaryBlue`) not ad-hoc literals
+- Use `AppTheme` constants for consistent branding
+
+### Brand Colors
+- Primary: `AppTheme.mpPrimaryBlue` (#003366)
+- Accent: `AppTheme.mpAccentOrange` (#EA650D)
+- Use consistent border radius (15px for forms, 12px for buttons)
+- Use consistent shadows and elevation
+
+### UI Patterns
+- Prefer composition over inheritance
+- Extract reusable components to `core/widgets/`
+- Use `MPButtonLoading` for buttons with loading states
+- Use `MPEmptyStateWidget` for empty data states
+
+## Testing (TDD)
+
+### Target
+- Prioritize **Domain** and **BLoC** unit tests
+- Data integration tests second
+
+### Conventions
+- Mirror source paths: `test/features/<feature>/domain/..._test.dart`
+- Use Given/When/Then comments
+- Mock IO boundaries
+
+```dart
+test('returns user when id exists', () async {
+  // Given
+  when(() => repo.get('42')).thenAnswer((_) async => Right(user));
+  // When
+  final result = await usecase('42');
+  // Then
+  expect(result, Right(user));
+});
+```
+
+## Code Quality
+
+### Dart Style
+- Use `final` by default; prefer `const` widgets/ctors
+- Short methods; extract private helpers
+- Avoid `dynamic`; use explicit types at boundaries
+- Use explicit return types
+
+### Error Handling
+- Use a consistent `Result/Either` type (in `core/functional/**`) for fallible flows
+- No swallowed exceptions; map to domain `Failure`
+
+### Quality Gates
+- Run `dart analyze` and resolve all warnings
+- Apply `dart fix --apply` where safe and review diffs
+- Ensure `dart format .` has no changes before finalizing
+
+## File Protection
+
+### Never Modify or Commit
+- `taskmaster/**`
+- Generated artifacts: `**/*.g.dart`, `**/*.freezed.dart`, `.dart_tool/**`, `build/**`
+- IDE settings unless requested: `.vscode/**`, `.idea/**`
+- Core component demo files: `lib/core/widgets/demo/**`
+
+### Core Components Protection
+- Core components in `lib/core/` are stable and reusable
+- Only modify core components when adding new functionality or fixing bugs
+- Always test core components with demo page before changes
+
+### Edit Boundaries
+- Only touch files tied to the current change
+- Avoid ripple edits across features
+- When updating core components, update demo page and documentation
+
+## Commit Guidelines
+
+### Format
+- One logical change per commit with imperative, scoped message
+- Examples:
+  - `feat(profile): add GetUserProfile use case and bloc wiring`
+  - `fix(auth): handle null token on refresh flow`
+  - `chore: register user module in DI`
+
+### Before Committing
+- Fix all lint/analyzer warnings
+- Run tests
+- Format code with `dart format .`
+- Exclude ignored paths
+
+## Examples Summary
+
+### ✅ DO
+- Use core components: `MPTextFormField`, `MPErrorWidget`, `MPLoadingWidget`
+- Use `FormValidator` for validation
+- Use `NavigationService` and `context.go()` for navigation
+- Use `BaseBloc` and `handleAsyncOperation` for state management
+- Use `AppTheme` constants for colors and spacing
+- Write tests with Given/When/Then structure
+- Keep changes minimal and localized
+- Fix all analyzer warnings
+
+### ❌ DON'T
+- Import Data layer from Presentation
+- Use `Navigator.pushReplacement()` with GoRouter
+- Add magic numbers instead of theme constants
+- Create custom form fields instead of using core components
+- Modify `taskmaster/**` or generated files
+- Make sweeping refactors without being asked
+- Swallow exceptions without mapping to `Failure`
+- Commit code with lint/analyzer warnings

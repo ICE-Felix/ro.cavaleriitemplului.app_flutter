@@ -48,9 +48,9 @@ class _LocationFiltersModalState extends State<LocationFiltersModal> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),
@@ -120,8 +120,13 @@ class _ModalHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey, width: 0.5)),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+            width: 0.5,
+          ),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -161,9 +166,14 @@ class _FilterSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 150,
-      decoration: const BoxDecoration(
-        color: Color(0xFFF5F5F5),
-        border: Border(right: BorderSide(color: Colors.grey, width: 0.5)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        border: Border(
+          right: BorderSide(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+            width: 0.5,
+          ),
+        ),
       ),
       child: Column(
         children: [
@@ -192,7 +202,7 @@ class _FilterSidebar extends StatelessWidget {
               isSelected: selectedFilterSection == sectionKey,
               onTap: () => onSectionSelected(sectionKey),
             );
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -266,8 +276,13 @@ class _ModalFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+            width: 0.5,
+          ),
+        ),
       ),
       child: Row(
         children: [
@@ -277,6 +292,9 @@ class _ModalFooter extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 side: BorderSide(color: AppColors.primary),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               child: Text(
                 context.getString(label: 'locations.clearFilters'),
@@ -292,6 +310,9 @@ class _ModalFooter extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               child: Text(
                 totalSelectedFilters > 0
@@ -299,7 +320,7 @@ class _ModalFooter extends StatelessWidget {
                         .getString(label: 'locations.viewResults')
                         .replaceAll('{count}', totalSelectedFilters.toString())
                     : context.getString(label: 'locations.viewAllResults'),
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
               ),
             ),
           ),
@@ -330,7 +351,10 @@ class _RangeFilterWidget extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           context.getString(label: 'locations.rangeDescription'),
-          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          style: TextStyle(
+            fontSize: 14,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
         ),
         const SizedBox(height: 24),
         Row(
@@ -351,7 +375,7 @@ class _RangeFilterWidget extends StatelessWidget {
                 max: MapUtils.maxRadiusFilterValue.toDouble(),
                 divisions: MapUtils.radiusFilterDivisions, // 5km increments (100/5 = 20)
                 activeColor: AppColors.primary,
-                inactiveColor: Colors.grey[300],
+                inactiveColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
                 onChanged: (value) {
                   onRadiusChanged(value.round());
                 },
@@ -365,11 +389,17 @@ class _RangeFilterWidget extends StatelessWidget {
           children: [
             Text(
               '0km',
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
             ),
             Text(
               '100km',
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
             ),
           ],
         ),

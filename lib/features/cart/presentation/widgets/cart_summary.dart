@@ -22,10 +22,10 @@ class CartSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.shade200,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
             offset: const Offset(0, -2),
             blurRadius: 4,
           ),
@@ -59,7 +59,7 @@ class CartSummary extends StatelessWidget {
                 Text(
                   'FREE',
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: Colors.green,
+                    color: AppColors.success,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -99,12 +99,12 @@ class CartSummary extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: onClearCart,
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.red.shade400),
+                        side: BorderSide(color: AppColors.error),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                       child: Text(
                         'Clear Cart',
-                        style: TextStyle(color: Colors.red.shade400),
+                        style: TextStyle(color: AppColors.error),
                       ),
                     ),
                   ),
