@@ -1,4 +1,4 @@
-package com.mommyhai.app.mobile
+package ro.cavaleriitemplului.app
 
 import io.flutter.embedding.android.FlutterActivity
 
