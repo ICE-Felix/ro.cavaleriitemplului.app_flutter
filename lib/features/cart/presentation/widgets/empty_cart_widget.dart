@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app/core/style/app_colors.dart';
 import 'package:app/core/style/app_text_styles.dart';
+import 'package:app/core/localization/localization_inherited_widget.dart';
 
 class EmptyCartWidget extends StatelessWidget {
   final VoidCallback? onContinueShopping;
@@ -34,7 +35,7 @@ class EmptyCartWidget extends StatelessWidget {
 
             // Title
             Text(
-              'Your cart is empty',
+              context.getString(label: 'cart.emptyTitle'),
               style: AppTextStyles.titleLarge.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -45,7 +46,7 @@ class EmptyCartWidget extends StatelessWidget {
 
             // Subtitle
             Text(
-              'Looks like you haven\'t added anything to your cart yet.\nStart shopping to fill it up!',
+              context.getString(label: 'cart.emptyMessage'),
               style: AppTextStyles.bodyMedium.copyWith(
                 color: Colors.grey.shade600,
               ),
@@ -66,7 +67,7 @@ class EmptyCartWidget extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Continue Shopping',
+                  context.getString(label: 'cart.continueShopping'),
                   style: AppTextStyles.bodyLarge.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,

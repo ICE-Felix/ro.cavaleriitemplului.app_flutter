@@ -1,5 +1,4 @@
-import 'package:app/core/service_locator.dart';
-import 'package:app/features/shop/data/datasources/shop_remote_data_source.dart';
+import 'package:app/features/shop/data/mock/mock_products.dart';
 import 'package:app/features/shop/domain/entities/product_entity.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -18,13 +17,22 @@ class SearchProductsCubit extends Cubit<SearchProductsState> {
       return;
     }
     emit(state.copyWith(isLoading: true));
-    final results = await sl.get<ShopRemoteDataSource>().filterProducts(
-      query: query,
-    );
+
+    // Simulate network delay for realistic behavior
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    // Search across all mock products
+    final results = MockProducts.searchProducts(query);
+
     emit(state.copyWith(products: results, isLoading: false));
   }
 
   void clearSearch() {
-    emit(state.copyWith(products: [], isLoading: false, isError: false));
+    emit(state.copyWith(
+      products: [],
+      searchQuery: '',
+      isLoading: false,
+      isError: false,
+    ));
   }
 }

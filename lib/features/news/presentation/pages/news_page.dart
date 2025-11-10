@@ -105,7 +105,7 @@ class _NewsPageState extends State<NewsPage> {
             // Handle notification tap
           },
           onLogoTap: () {
-            print('Logo tapped!');
+            // Handle logo tap
           },
           customActions: [
             // Language switcher button
@@ -280,7 +280,7 @@ class _NewsPageState extends State<NewsPage> {
                           right: 0,
                           child: LinearProgressIndicator(
                             color: AppColors.primary,
-                            backgroundColor: AppColors.primary.withOpacity(0.1),
+                            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                           ),
                         ),
                     ],
@@ -303,8 +303,7 @@ class _NewsPageState extends State<NewsPage> {
     final theme = Theme.of(context);
 
     return GestureDetector(
-      onTap:
-          () => _onCategorySelected(categoryName == 'All' ? null : categoryId),
+      onTap: () => _onCategorySelected(categoryId),
       child: Container(
         margin: const EdgeInsets.only(right: 12),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -318,7 +317,7 @@ class _NewsPageState extends State<NewsPage> {
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.3),
+                color: AppColors.primary.withValues(alpha: 0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),

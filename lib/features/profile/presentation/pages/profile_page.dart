@@ -3,6 +3,7 @@ import 'package:app/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:app/features/profile/presentation/widgets/profile_header.dart';
 import 'package:app/features/profile/presentation/widgets/profile_settings_section.dart';
 import 'package:app/features/profile/presentation/widgets/profile_account_section.dart';
+import 'package:app/core/localization/localization_inherited_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -46,11 +47,11 @@ class ProfilePage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Error: ${state.error}'),
+                    Text('${context.getString(label: 'error')}: ${state.error}'),
                     ElevatedButton(
                       onPressed:
                           () => context.read<ProfileCubit>().initialize(),
-                      child: const Text('Retry'),
+                      child: Text(context.getString(label: 'retry')),
                     ),
                   ],
                 ),

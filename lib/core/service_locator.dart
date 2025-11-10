@@ -2,13 +2,16 @@ import 'package:app/core/banners/data/datasources/banners_remote_data_source.dar
 import 'package:app/core/banners/domain/repositories/banners_repository.dart';
 import 'package:app/core/banners/domain/repositories/banners_repository_impl.dart';
 import 'package:app/features/cart/data/datasource/cart_stock_datasource.dart';
+import 'package:app/features/cart/data/datasource/mock_cart_stock_datasource.dart';
 import 'package:app/features/checkout/data/order_datasource.dart';
 import 'package:app/features/checkout/data/order_datasource_supabase.dart';
 import 'package:app/features/checkout/domain/repository/order_repository.dart';
 import 'package:app/features/checkout/domain/service/checkout_service.dart';
 import 'package:app/features/events/data/events_datasource.dart';
 import 'package:app/features/events/data/events_datasource_supabase.dart';
+import 'package:app/features/events/data/mock/mock_events_datasource.dart';
 import 'package:app/features/events/domain/repository/events_repository.dart';
+import 'package:app/features/events/domain/repository/events_repository_mock.dart';
 import 'package:app/features/events/domain/repository/events_repository_supabase.dart';
 import 'package:app/features/locations/data/datasources/locations_remote_data_source.dart';
 import 'package:app/features/locations/domain/repositories/locations_repository.dart';
@@ -51,6 +54,7 @@ import '../features/news/presentation/bloc/news_bloc.dart';
 // Revista feature imports
 import '../features/revista/data/datasources/revista_remote_data_source.dart';
 import '../features/revista/data/repositories/revista_repository_impl.dart';
+import '../features/revista/data/repositories/revista_repository_mock.dart';
 import '../features/revista/domain/repositories/revista_repository.dart';
 import '../features/revista/presentation/bloc/revista_bloc.dart';
 import '../features/revista/presentation/bloc/revista_details_bloc.dart';
@@ -83,6 +87,10 @@ import '../features/members/data/datasources/members_remote_data_source.dart';
 import '../features/members/data/datasources/members_local_data_source.dart';
 import '../features/members/domain/repositories/members_repository.dart';
 import '../features/members/presentation/bloc/members_bloc.dart';
+// Support feature imports
+import '../features/support/data/datasources/support_remote_data_source.dart';
+import '../features/support/domain/repositories/support_repository.dart';
+import '../features/support/presentation/bloc/support_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -147,9 +155,9 @@ Future<void> initServiceLocator() async {
 
   // Cart service
   sl.registerLazySingleton<CartService>(() => CartServiceImpl());
-  // Cart Stock Datasource
+  // Cart Stock Datasource - Using Mock for development
   sl.registerLazySingleton<CartStockDatasource>(
-    () => CartStockDatasourceImpl(dio: sl<DioClient>()),
+    () => MockCartStockDatasource(), // Changed from CartStockDatasourceImpl
   );
   sl.registerLazySingleton<CartRepository>(
     () => CartRepositoryImpl(sl<CartService>(), sl<CartStockDatasource>()),
@@ -194,11 +202,13 @@ Future<void> initServiceLocator() async {
     () => RevistaRemoteDataSourceImpl(),
   );
 
-  // Revista repository
+  // Revista repository - Using Mock for development
   sl.registerLazySingleton<RevistaRepository>(
-    () => RevistaRepositoryImpl(
-      remoteDataSource: sl<RevistaRemoteDataSource>(),
-    ),
+    () => RevistaRepositoryMock(),
+    // Uncomment to use real Supabase implementation:
+    // () => RevistaRepositoryImpl(
+    //   remoteDataSource: sl<RevistaRemoteDataSource>(),
+    // ),
   );
 
   //! Use cases
@@ -268,13 +278,7 @@ Future<void> initServiceLocator() async {
   );
 
   // News BLoC
-  sl.registerFactory(
-    () => NewsBloc(
-      getNewsUseCase: sl<GetNewsUseCase>(),
-      searchNewsUseCase: sl<SearchNewsUseCase>(),
-      getCategoriesUseCase: sl<news_categories.GetCategoriesUseCase>(),
-    ),
-  );
+  sl.registerFactory(() => NewsBloc());
 
   // Revista BLoCs
   sl.registerFactory(
@@ -337,13 +341,19 @@ Future<void> initServiceLocator() async {
 
   //Event data sources
   sl.registerLazySingleton<EventsDatasource>(
-    () => EventsDatasourceSupabase(dio: sl<DioClient>()),
+    () => MockEventsDatasource(),
+    // Uncomment to use Supabase:
+    // () => EventsDatasourceSupabase(dio: sl<DioClient>()),
   );
   sl.registerLazySingleton<EventsRepository>(
-    () => EventsRepositorySupabase(
-      networkInfo: sl<NetworkInfo>(),
+    () => EventsRepositoryMock(
       eventsDatasource: sl<EventsDatasource>(),
     ),
+    // Uncomment to use Supabase:
+    // () => EventsRepositorySupabase(
+    //   networkInfo: sl<NetworkInfo>(),
+    //   eventsDatasource: sl<EventsDatasource>(),
+    // ),
   );
 
   // Notification BLoC
@@ -388,5 +398,22 @@ Future<void> initServiceLocator() async {
   // Members BLoC
   sl.registerFactory(
     () => MembersBloc(repository: sl<MembersRepository>()),
+  );
+
+  // Support data sources
+  sl.registerLazySingleton<SupportRemoteDataSource>(
+    () => SupportRemoteDataSourceImpl(),
+  );
+
+  // Support repositories
+  sl.registerLazySingleton<SupportRepository>(
+    () => SupportRepositoryImpl(
+      remoteDataSource: sl<SupportRemoteDataSource>(),
+    ),
+  );
+
+  // Support BLoC
+  sl.registerFactory(
+    () => SupportBloc(repository: sl<SupportRepository>()),
   );
 }

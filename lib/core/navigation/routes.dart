@@ -30,6 +30,7 @@ import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/history/presentation/pages/history_page.dart';
 import '../../features/members/presentation/pages/members_page.dart';
+import '../../features/support/presentation/pages/support_page.dart';
 
 final routes = GoRouter(
   initialLocation: AppRoutesNames.intro.path,
@@ -296,6 +297,18 @@ final routes = GoRouter(
                 key: state.pageKey,
                 restorationId: 'members_page',
                 child: const MembersPage(),
+              ),
+        ),
+
+        // Support route
+        GoRoute(
+          path: AppRoutesNames.support.path,
+          name: AppRoutesNames.support.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                restorationId: 'support_page',
+                child: const SupportPage(),
               ),
         ),
 

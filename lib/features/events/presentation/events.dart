@@ -4,6 +4,7 @@ import 'package:app/core/widgets/custom_top_bar.dart';
 import 'package:app/core/widgets/category_horizontal_slider.dart';
 import 'package:app/features/events/presentation/bloc/events_bloc.dart';
 import 'package:app/features/events/presentation/widgets/events_list.dart';
+import 'package:app/features/events/presentation/widgets/events_calendar.dart';
 import 'package:app/features/events/domain/model/events_type.dart';
 
 class EventsPage extends StatelessWidget {
@@ -76,19 +77,24 @@ class _EventsPageContentState extends State<_EventsPageContent> {
                       Visibility(
                         visible: !state.isCalendarMinimized,
                         child: Container(
-                          // height: 400,
                           padding: const EdgeInsets.all(8),
-                          child: CalendarDatePicker(
-                            initialDate: state.selectedDate,
+                          child: EventsCalendar(
+                            selectedDate: state.selectedDate,
                             firstDate: DateTime.now().subtract(
                               const Duration(days: 365),
                             ),
                             lastDate: DateTime.now().add(
                               const Duration(days: 365),
                             ),
+                            allEvents: state.allMonthEvents,
                             onDateChanged: (DateTime selectedDate) {
                               context.read<EventsBloc>().add(
                                 SelectDateEvent(selectedDate),
+                              );
+                            },
+                            onMonthChanged: (DateTime month) {
+                              context.read<EventsBloc>().add(
+                                LoadMonthEventsEvent(month),
                               );
                             },
                           ),

@@ -41,6 +41,9 @@ enum AppRoutesNames {
   //Members
   members(name: 'members', path: '/members'),
 
+  //Support
+  support(name: 'support', path: '/support'),
+
   paymentWebView(name: 'payment_webview', path: 'payment_webview');
 
   final String name;

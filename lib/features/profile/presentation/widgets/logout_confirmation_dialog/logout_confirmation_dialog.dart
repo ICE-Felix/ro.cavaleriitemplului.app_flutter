@@ -4,7 +4,12 @@ import 'package:app/features/profile/presentation/widgets/logout_confirmation_di
 import 'package:app/features/profile/presentation/widgets/logout_confirmation_dialog/action_buttons.dart';
 
 class LogoutConfirmationDialog extends StatelessWidget {
-  const LogoutConfirmationDialog({super.key});
+  const LogoutConfirmationDialog({
+    super.key,
+    required this.onLogout,
+  });
+
+  final VoidCallback onLogout;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +29,7 @@ class LogoutConfirmationDialog extends StatelessWidget {
             const SizedBox(height: 24),
             const WarningSection(),
             const SizedBox(height: 24),
-            const ActionButtons(),
+            ActionButtons(onLogout: onLogout),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:app/core/navigation/routes_name.dart';
+import 'package:app/core/localization/localization_inherited_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +30,7 @@ class CartPageView extends StatelessWidget {
     return Scaffold(
       appBar: CustomTopBar(
         context: context,
-        title: 'Shopping Cart',
+        title: context.getString(label: 'cart.title'),
         showBackButton: true,
         showNotificationButton: true,
         onNotificationTap: () {
@@ -75,16 +76,16 @@ class CartPageView extends StatelessWidget {
                             item.id,
                             onSuccess: () {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Product removed from cart'),
+                                SnackBar(
+                                  content: Text(context.getString(label: 'cart.productRemoved')),
                                 ),
                               );
                             },
                             onError: () {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   content: Text(
-                                    'Product not removed from cart',
+                                    context.getString(label: 'cart.productNotRemoved'),
                                   ),
                                 ),
                               );
@@ -146,14 +147,14 @@ class CartPageView extends StatelessWidget {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Remove Item'),
+          title: Text(context.getString(label: 'cart.removeItem')),
           content: Text(
-            'Are you sure you want to remove "$productName" from your cart?',
+            context.getString(label: 'cart.removeItemConfirm').replaceAll('{productName}', productName),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: Text(context.getString(label: 'cart.cancel')),
             ),
             TextButton(
               onPressed: () {
@@ -163,7 +164,7 @@ class CartPageView extends StatelessWidget {
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.error,
               ),
-              child: const Text('Remove'),
+              child: Text(context.getString(label: 'cart.remove')),
             ),
           ],
         );
@@ -179,14 +180,14 @@ class CartPageView extends StatelessWidget {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Clear Cart'),
-          content: const Text(
-            'Are you sure you want to remove all items from your cart?',
+          title: Text(context.getString(label: 'cart.clearCart')),
+          content: Text(
+            context.getString(label: 'cart.clearCartConfirm'),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: Text(context.getString(label: 'cart.cancel')),
             ),
             TextButton(
               onPressed: () {
@@ -196,7 +197,7 @@ class CartPageView extends StatelessWidget {
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.error,
               ),
-              child: const Text('Clear All'),
+              child: Text(context.getString(label: 'cart.clearAll')),
             ),
           ],
         );
@@ -209,12 +210,12 @@ class CartPageView extends StatelessWidget {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Checkout Error'),
+          title: Text(context.getString(label: 'cart.checkoutError')),
           content: Text(errorMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('OK'),
+              child: Text(context.getString(label: 'cart.ok')),
             ),
           ],
         );

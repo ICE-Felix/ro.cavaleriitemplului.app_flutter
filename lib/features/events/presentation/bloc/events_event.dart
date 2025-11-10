@@ -51,3 +51,12 @@ class LoadEventsForDateEvent extends EventsEvent {
 class LoadMoreEventsEvent extends EventsEvent {
   const LoadMoreEventsEvent();
 }
+
+class LoadMonthEventsEvent extends EventsEvent {
+  final DateTime month;
+
+  const LoadMonthEventsEvent(this.month);
+
+  @override
+  List<Object?> get props => [month];
+}

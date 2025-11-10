@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:app/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:app/features/profile/presentation/widgets/language_selection_dialog/language_option.dart';
+import 'package:app/core/localization/localization_inherited_widget.dart';
 
 class LanguageOptionsWidget extends StatelessWidget {
   const LanguageOptionsWidget({
@@ -21,11 +22,11 @@ class LanguageOptionsWidget extends StatelessWidget {
           flag: '🇺🇸',
           title: 'English',
           subtitle: 'English',
-          isSelected: true, // TODO: Make this dynamic based on current language
+          isSelected: false,
           onTap: () => _changeLanguage(
             context,
             englishLocale,
-            'Language changed to English',
+            context.getString(label: 'cart.languageChanged'),
           ),
         ),
         const SizedBox(height: 12),
@@ -33,11 +34,11 @@ class LanguageOptionsWidget extends StatelessWidget {
           flag: '🇷🇴',
           title: 'Română',
           subtitle: 'Romanian',
-          isSelected: false, // TODO: Make this dynamic based on current language
+          isSelected: true,
           onTap: () => _changeLanguage(
             context,
             romanianLocale,
-            'Limba schimbată în română',
+            context.getString(label: 'cart.languageChanged'),
           ),
         ),
       ],

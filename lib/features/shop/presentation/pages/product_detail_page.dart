@@ -73,14 +73,14 @@ class ProductDetailPage extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Price: ', // TODO: Use localized string
+                  'Preț: ',
                   style: TextStyle(
                     fontSize: 16,
                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
                 Text(
-                  '${product.price} lei',
+                  '${product.price} Lei',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -101,8 +101,8 @@ class ProductDetailPage extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   product.isAvailable
-                      ? 'In Stock' // TODO: Use localized string
-                      : 'Out of Stock', // TODO: Use localized string
+                      ? 'În stoc'
+                      : 'Stoc epuizat',
                   style: TextStyle(
                     fontSize: 16,
                     color: product.isAvailable ? AppColors.success : AppColors.error,
@@ -115,7 +115,7 @@ class ProductDetailPage extends StatelessWidget {
             // Categories
             if (product.categories.isNotEmpty) ...[
               const Text(
-                'Categories:', // TODO: Use localized string
+                'Categorii:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -136,7 +136,7 @@ class ProductDetailPage extends StatelessWidget {
             // Brands
             if (product.brands.isNotEmpty) ...[
               const Text(
-                'Brands:', // TODO: Use localized string
+                'Mărci:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -157,7 +157,7 @@ class ProductDetailPage extends StatelessWidget {
             // Description
             if (product.description.isNotEmpty) ...[
               const Text(
-                'Description:', // TODO: Use localized string
+                'Descriere:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -183,14 +183,14 @@ class ProductDetailPage extends StatelessWidget {
                             onSuccess: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Product added to cart'),
+                                  content: Text('Produs adăugat în coș'),
                                 ),
                               );
                             },
                             onError: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Product not added to cart'),
+                                  content: Text('Produsul nu a putut fi adăugat în coș'),
                                 ),
                               );
                             },
@@ -201,7 +201,7 @@ class ProductDetailPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: const Text(
-                  'Add to Cart', // TODO: Use localized string
+                  'Adaugă în coș',
                   style: TextStyle(fontSize: 16),
                 ),
               ),

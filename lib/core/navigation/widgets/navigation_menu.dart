@@ -20,14 +20,12 @@ class NavigationMenu extends StatelessWidget {
       return 0;
     } else if (currentLocation == '/news') {
       return 1;
-    } else if (currentLocation == '/locations') {
-      return 2;
     } else if (currentLocation == '/shop') {
-      return 3;
+      return 2;
     } else if (currentLocation == '/events') {
-      return 4;
+      return 3;
     } else if (currentLocation == '/profile') {
-      return 5;
+      return 4;
     }
     // Default to dashboard
     return -1;
@@ -38,14 +36,12 @@ class NavigationMenu extends StatelessWidget {
       return 0;
     } else if (currentLocation.startsWith('/news')) {
       return 1;
-    } else if (currentLocation.startsWith('/locations')) {
-      return 2;
     } else if (currentLocation.startsWith('/shop')) {
-      return 3;
+      return 2;
     } else if (currentLocation.startsWith('/events')) {
-      return 4;
+      return 3;
     } else if (currentLocation.startsWith('/profile')) {
-      return 5;
+      return 4;
     }
     // Default to dashboard
     return 0;
@@ -66,25 +62,20 @@ class NavigationMenu extends StatelessWidget {
         }
         break;
       case 2:
-        if (_canNavigate() != 2) {
-          context.go(AppRoutesNames.locations.path);
-        }
-        break;
-      case 3:
         // Shop
-        if (_canNavigate() != 3) {
+        if (_canNavigate() != 2) {
           context.go(AppRoutesNames.shop.path);
         }
         break;
-      case 4:
+      case 3:
         // Events
-        if (_canNavigate() != 4) {
+        if (_canNavigate() != 3) {
           context.go(AppRoutesNames.events.path);
         }
         break;
-      case 5:
+      case 4:
         // Profile
-        if (_canNavigate() != 5) {
+        if (_canNavigate() != 4) {
           context.go(AppRoutesNames.profile.path);
         }
         break;
@@ -113,15 +104,17 @@ class NavigationMenu extends StatelessWidget {
             label: parentContext.getString(label: 'bottomNavigation.news'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.location_on),
-            label: parentContext.getString(label: 'bottomNavigation.locations'),
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag),
             label: parentContext.getString(label: 'bottomNavigation.shop'),
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event),
+            label: parentContext.getString(label: 'bottomNavigation.events'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: parentContext.getString(label: 'bottomNavigation.profile'),
+          ),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:app/features/profile/presentation/widgets/language_selection_dialog/language_selection_dialog.dart';
+import 'package:app/core/localization/localization_inherited_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:app/features/profile/presentation/widgets/profile_menu_item.dart';
@@ -9,25 +10,31 @@ class ProfileSettingsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _ProfileSection(
-      title: 'Settings',
+      title: context.getString(label: 'profile.settings'),
       items: [
         ProfileMenuItem(
           icon: FontAwesomeIcons.language,
-          title: 'Language',
-          subtitle: 'Change app language',
+          title: context.getString(label: 'profile.language'),
+          subtitle: context.getString(label: 'profile.changeLanguage'),
           onTap: () => _showLanguageDialog(context),
         ),
         ProfileMenuItem(
           icon: FontAwesomeIcons.bell,
-          title: 'Notifications',
-          subtitle: 'Manage notification preferences',
-          onTap: () => _showComingSoonMessage(context, 'Notifications'),
+          title: context.getString(label: 'profile.notifications'),
+          subtitle: context.getString(label: 'profile.manageNotifications'),
+          onTap: () => _showComingSoonMessage(
+            context,
+            context.getString(label: 'profile.notifications'),
+          ),
         ),
         ProfileMenuItem(
           icon: FontAwesomeIcons.locationDot,
-          title: 'Location',
-          subtitle: 'Location and privacy settings',
-          onTap: () => _showComingSoonMessage(context, 'Location Settings'),
+          title: context.getString(label: 'profile.location'),
+          subtitle: context.getString(label: 'profile.locationSettings'),
+          onTap: () => _showComingSoonMessage(
+            context,
+            context.getString(label: 'profile.location'),
+          ),
         ),
       ],
     );
@@ -46,7 +53,7 @@ class ProfileSettingsSection extends StatelessWidget {
   void _showComingSoonMessage(BuildContext context, String feature) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$feature - Coming Soon'),
+        content: Text('$feature - ${context.getString(label: 'comingSoon')}'),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),

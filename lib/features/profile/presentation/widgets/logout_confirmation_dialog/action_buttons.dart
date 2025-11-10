@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:app/features/profile/presentation/cubit/profile_cubit.dart';
 
 class ActionButtons extends StatelessWidget {
-  const ActionButtons({super.key});
+  const ActionButtons({
+    super.key,
+    required this.onLogout,
+  });
+
+  final VoidCallback onLogout;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +44,7 @@ class ActionButtons extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _performLogout(context);
+              onLogout();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
@@ -62,24 +65,6 @@ class ActionButtons extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  void _performLogout(BuildContext context) {
-    context.read<ProfileCubit>().logout();
-    _showSuccessMessage(context, 'Logged out successfully');
-  }
-
-  void _showSuccessMessage(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
     );
   }
 }

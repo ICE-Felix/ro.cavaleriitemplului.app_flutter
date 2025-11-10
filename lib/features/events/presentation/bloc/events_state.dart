@@ -6,6 +6,7 @@ class EventsState extends Equatable {
   final DateTime selectedDate;
   final bool isCalendarMinimized;
   final List<Event> events;
+  final List<Event> allMonthEvents;
   final List<EventType> eventTypes;
   final EventsStatus status;
   final String message;
@@ -18,6 +19,7 @@ class EventsState extends Equatable {
     required this.selectedDate,
     this.isCalendarMinimized = false,
     this.events = const [],
+    this.allMonthEvents = const [],
     this.eventTypes = const [],
     this.status = EventsStatus.init,
     this.message = '',
@@ -31,6 +33,7 @@ class EventsState extends Equatable {
     DateTime? selectedDate,
     bool? isCalendarMinimized,
     List<Event>? events,
+    List<Event>? allMonthEvents,
     List<EventType>? eventTypes,
     EventsStatus? status,
     String? message,
@@ -43,6 +46,7 @@ class EventsState extends Equatable {
       selectedDate: selectedDate ?? this.selectedDate,
       isCalendarMinimized: isCalendarMinimized ?? this.isCalendarMinimized,
       events: events ?? this.events,
+      allMonthEvents: allMonthEvents ?? this.allMonthEvents,
       eventTypes: eventTypes ?? this.eventTypes,
       status: status ?? this.status,
       message: message ?? this.message,
@@ -61,6 +65,7 @@ class EventsState extends Equatable {
     selectedDate,
     isCalendarMinimized,
     events,
+    allMonthEvents,
     eventTypes,
     status,
     message,

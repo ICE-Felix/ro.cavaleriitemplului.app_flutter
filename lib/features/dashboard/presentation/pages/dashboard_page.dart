@@ -55,7 +55,7 @@ class _DashboardPageState extends State<DashboardPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: Text(
-                'Frate Cavalier',
+                'Frate Ucenic',
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(color: AppColors.onBackground),
@@ -161,11 +161,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _DashboardSmallCard(
-                    title: 'Locații',
-                    icon: FontAwesomeIcons.mapLocationDot,
+                    title: 'Suport',
+                    icon: FontAwesomeIcons.headset,
                     iconColor: AppColors.success,
                     onTap: () {
-                      context.pushNamed(AppRoutesNames.locations.name);
+                      context.pushNamed(AppRoutesNames.support.name);
                     },
                   ),
                 ),

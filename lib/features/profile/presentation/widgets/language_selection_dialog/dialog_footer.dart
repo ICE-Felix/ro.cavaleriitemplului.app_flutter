@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app/core/localization/localization_inherited_widget.dart';
 
 class DialogFooter extends StatelessWidget {
   const DialogFooter({super.key});
@@ -19,7 +20,7 @@ class DialogFooter extends StatelessWidget {
           ),
         ),
         child: Text(
-          'Cancel',
+          context.getString(label: 'cart.cancel'),
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             color: Theme.of(context)
                 .textTheme

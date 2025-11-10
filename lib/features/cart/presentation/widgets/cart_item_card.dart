@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:app/features/cart/domain/models/cart_item_model.dart';
 import 'package:app/core/style/app_colors.dart';
 import 'package:app/core/style/app_text_styles.dart';
+import 'package:app/core/localization/localization_inherited_widget.dart';
 import 'quantity_controls.dart';
 
 class CartItemCard extends StatelessWidget {
@@ -97,7 +98,7 @@ class CartItemCard extends StatelessWidget {
                           onPressed: onRemove,
                           icon: const Icon(Icons.delete_outline),
                           color: AppColors.error,
-                          tooltip: 'Remove from cart',
+                          tooltip: context.getString(label: 'cart.removeFromCart'),
                           constraints: const BoxConstraints(),
                           padding: EdgeInsets.zero,
                         ),
@@ -161,8 +162,9 @@ class CartItemCard extends StatelessWidget {
                         if (stockInfo?.available == false) Spacer(),
                         if (stockInfo?.available == false)
                           Tooltip(
-                            message:
-                                '${stockInfo?.error}. Only ${stockInfo?.availableQuantity} left in stock.',
+                            message: context.getString(label: 'cart.stockError')
+                                .replaceAll('{error}', '${stockInfo?.error}')
+                                .replaceAll('{availableQuantity}', '${stockInfo?.availableQuantity}'),
                             triggerMode: TooltipTriggerMode.tap,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),

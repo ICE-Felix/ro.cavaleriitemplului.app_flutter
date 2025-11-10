@@ -3,6 +3,8 @@ import 'package:app/features/events/presentation/cubit/event_details/event_detai
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:intl/intl.dart';
 
 class EventDetailPage extends StatelessWidget {
   final String id;
@@ -88,25 +90,35 @@ class EventDetailPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).primaryColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            event.eventTypeName,
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                event.eventTypeName,
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
                             ),
-                          ),
+                            const Spacer(),
+                            // Bookmark Button
+                            _BookmarkButton(eventId: event.id),
+                            const SizedBox(width: 8),
+                            // Share Button
+                            _ShareButton(event: event),
+                          ],
                         ),
                       ],
                     ),
@@ -643,6 +655,118 @@ class _ContactItem extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+// Share Button Widget
+class _ShareButton extends StatelessWidget {
+  final dynamic event;
+
+  const _ShareButton({required this.event});
+
+  void _shareEvent(BuildContext context) {
+    final startDate = DateTime.parse(event.start);
+    final dateFormat = DateFormat('d MMMM yyyy, HH:mm', 'ro_RO');
+
+    final shareText = '''
+${event.title}
+
+📅 Data: ${dateFormat.format(startDate)}
+📍 Locație: ${event.venueName}
+${event.address}
+
+${event.description.replaceAll(RegExp(r'<[^>]*>'), '').trim()}
+
+Detalii: R.L. 126 Cavalerii Templului
+''';
+
+    Share.share(
+      shareText,
+      subject: event.title,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () => _shareEvent(context),
+      icon: const Icon(Icons.share),
+      style: IconButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+      ),
+      tooltip: 'Distribuie eveniment',
+    );
+  }
+}
+
+// Bookmark Button Widget with local state management
+class _BookmarkButton extends StatefulWidget {
+  final String eventId;
+
+  const _BookmarkButton({required this.eventId});
+
+  @override
+  State<_BookmarkButton> createState() => _BookmarkButtonState();
+}
+
+class _BookmarkButtonState extends State<_BookmarkButton> {
+  bool _isSaved = false;
+  final Set<String> _savedEvents = {}; // In a real app, this would be persisted
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedStatus();
+  }
+
+  Future<void> _loadSavedStatus() async {
+    // In a real app, load from SharedPreferences or database
+    setState(() {
+      _isSaved = _savedEvents.contains(widget.eventId);
+    });
+  }
+
+  Future<void> _toggleSaved() async {
+    setState(() {
+      if (_isSaved) {
+        _savedEvents.remove(widget.eventId);
+        _isSaved = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Eveniment eliminat din salvate'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        _savedEvents.add(widget.eventId);
+        _isSaved = true;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Eveniment salvat'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    });
+    // In a real app, persist to SharedPreferences or database
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: _toggleSaved,
+      icon: Icon(_isSaved ? Icons.bookmark : Icons.bookmark_border),
+      style: IconButton.styleFrom(
+        backgroundColor: _isSaved
+            ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
+            : Theme.of(context).colorScheme.surfaceContainerHighest,
+        foregroundColor: _isSaved
+            ? Theme.of(context).primaryColor
+            : Theme.of(context).colorScheme.onSurface,
+      ),
+      tooltip: _isSaved ? 'Elimină din salvate' : 'Salvează eveniment',
     );
   }
 }

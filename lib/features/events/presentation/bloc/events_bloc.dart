@@ -18,6 +18,7 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
     on<LoadEventsEvent>(_onLoadEvents);
     on<LoadEventsForDateEvent>(_onLoadEventsForDate);
     on<LoadMoreEventsEvent>(_onLoadMoreEvents);
+    on<LoadMonthEventsEvent>(_onLoadMonthEvents);
   }
 
   Future<void> _onInitEvents(
@@ -54,6 +55,9 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
             selectedEventTypeId: Nullable(value: null),
           ),
         );
+
+        // Load month events for calendar markers
+        add(LoadMonthEventsEvent(today));
       } else {
         // No event types available
         emit(
@@ -64,7 +68,7 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
           ),
         );
       }
-    } on ServerException catch (e, stackTrace) {
+    } on ServerException catch (e) {
       emit(state.copyWith(status: EventsStatus.error, message: e.message));
     } on AuthException catch (e) {
       emit(state.copyWith(status: EventsStatus.error, message: e.message));
@@ -195,6 +199,36 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
           message: 'An unexpected error occurred: $e',
         ),
       );
+    }
+  }
+
+  Future<void> _onLoadMonthEvents(
+    LoadMonthEventsEvent event,
+    Emitter<EventsState> emit,
+  ) async {
+    // Get the first and last day of the month
+    final firstDayOfMonth = DateTime(event.month.year, event.month.month, 1);
+    final lastDayOfMonth = DateTime(event.month.year, event.month.month + 1, 0);
+
+    // Format dates for API call
+    final startDate =
+        '${firstDayOfMonth.year}-${firstDayOfMonth.month.toString().padLeft(2, '0')}-${firstDayOfMonth.day.toString().padLeft(2, '0')}';
+    final endDate =
+        '${lastDayOfMonth.year}-${lastDayOfMonth.month.toString().padLeft(2, '0')}-${lastDayOfMonth.day.toString().padLeft(2, '0')}';
+
+    try {
+      // Load all events for the month (without pagination)
+      final result = await sl<EventsRepository>().getEventsSearch(
+        eventTypeId: null, // Load all event types for calendar markers
+        page: 1,
+        date: startDate,
+      );
+
+      // Update only the allMonthEvents field
+      emit(state.copyWith(allMonthEvents: result.events));
+    } catch (e) {
+      // Silently fail for month events to not disrupt the main flow
+      // The calendar will just show no markers if this fails
     }
   }
 }
