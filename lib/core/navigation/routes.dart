@@ -25,19 +25,15 @@ import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/intro/presentation/pages/intro_page.dart';
 import '../../features/news/presentation/pages/news_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 
 final routes = GoRouter(
-  initialLocation: AppRoutesNames.intro.path,
+  initialLocation: AppRoutesNames.dashboard.path,
   restorationScopeId: 'app',
   redirect: (context, state) {
-    // If we're at the root and not authenticated, stay at intro
-    if (state.matchedLocation == AppRoutesNames.intro.path) {
-      return null;
-    }
-
-    // If we're navigating to main sections, ensure proper routing
+    // If we're at the root, redirect to dashboard
     if (state.matchedLocation == '/') {
-      return AppRoutesNames.news.path;
+      return AppRoutesNames.dashboard.path;
     }
 
     return null;
@@ -84,6 +80,18 @@ final routes = GoRouter(
         );
       },
       routes: [
+        // Dashboard route
+        GoRoute(
+          path: AppRoutesNames.dashboard.path,
+          name: AppRoutesNames.dashboard.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                restorationId: 'dashboard_page',
+                child: const DashboardPage(),
+              ),
+        ),
+
         // News route
         GoRoute(
           path: AppRoutesNames.news.path,

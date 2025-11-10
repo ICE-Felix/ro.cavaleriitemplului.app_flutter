@@ -16,65 +16,75 @@ class NavigationMenu extends StatelessWidget {
   });
 
   int _canNavigate() {
-    if (currentLocation == '/news') {
+    if (currentLocation == '/dashboard') {
       return 0;
-    } else if (currentLocation == '/locations') {
+    } else if (currentLocation == '/news') {
       return 1;
-    } else if (currentLocation == '/shop') {
+    } else if (currentLocation == '/locations') {
       return 2;
-    } else if (currentLocation == '/events') {
+    } else if (currentLocation == '/shop') {
       return 3;
-    } else if (currentLocation == '/profile') {
+    } else if (currentLocation == '/events') {
       return 4;
+    } else if (currentLocation == '/profile') {
+      return 5;
     }
-    // Default to news
+    // Default to dashboard
     return -1;
   }
 
   int _getCurrentIndex() {
-    if (currentLocation.startsWith('/news')) {
+    if (currentLocation.startsWith('/dashboard')) {
       return 0;
-    } else if (currentLocation.startsWith('/locations')) {
+    } else if (currentLocation.startsWith('/news')) {
       return 1;
-    } else if (currentLocation.startsWith('/shop')) {
+    } else if (currentLocation.startsWith('/locations')) {
       return 2;
-    } else if (currentLocation.startsWith('/events')) {
+    } else if (currentLocation.startsWith('/shop')) {
       return 3;
-    } else if (currentLocation.startsWith('/profile')) {
+    } else if (currentLocation.startsWith('/events')) {
       return 4;
+    } else if (currentLocation.startsWith('/profile')) {
+      return 5;
     }
-    // Default to news
+    // Default to dashboard
     return 0;
   }
 
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
       case 0:
-        // News
+        // Dashboard
         if (_canNavigate() != 0) {
-          context.go(AppRoutesNames.news.path);
+          context.go(AppRoutesNames.dashboard.path);
         }
         break;
       case 1:
+        // News
         if (_canNavigate() != 1) {
-          context.go(AppRoutesNames.locations.path);
+          context.go(AppRoutesNames.news.path);
         }
         break;
       case 2:
-        // Shop
         if (_canNavigate() != 2) {
-          context.go(AppRoutesNames.shop.path);
+          context.go(AppRoutesNames.locations.path);
         }
         break;
       case 3:
-        // Events
+        // Shop
         if (_canNavigate() != 3) {
-          context.go(AppRoutesNames.events.path);
+          context.go(AppRoutesNames.shop.path);
         }
         break;
       case 4:
-        // Profile
+        // Events
         if (_canNavigate() != 4) {
+          context.go(AppRoutesNames.events.path);
+        }
+        break;
+      case 5:
+        // Profile
+        if (_canNavigate() != 5) {
           context.go(AppRoutesNames.profile.path);
         }
         break;
@@ -94,6 +104,10 @@ class NavigationMenu extends StatelessWidget {
         showSelectedLabels: true,
         showUnselectedLabels: true,
         items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: 'Acasă',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.newspaper),
             label: parentContext.getString(label: 'bottomNavigation.news'),

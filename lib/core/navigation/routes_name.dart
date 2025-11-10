@@ -1,5 +1,6 @@
 enum AppRoutesNames {
   intro(name: 'intro', path: '/'),
+  dashboard(name: 'dashboard', path: '/dashboard'),
   //Auth
   login(name: 'login', path: 'login'),
   register(name: 'register', path: 'register'),
