@@ -5,9 +5,14 @@ import '../../../../core/navigation/routes_name.dart';
 import 'package:go_router/go_router.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,35 +20,48 @@ class DashboardPage extends StatelessWidget {
       appBar: CustomTopBar.withCart(
         context: context,
         showLogo: true,
-        logoHeight: 90,
-        logoWidth: 140,
-        logoPadding: const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
+        logoHeight: 200,
+        logoWidth: 0,
+        centerTitle: false,
+        titleWidget: Text(
+          'R.L. 126 C.T.',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         showNotificationButton: true,
         onNotificationTap: () {
           // Handle notification tap
         },
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Welcome greeting
-            Text(
-              'Bine ai revenit,',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Text(
+                'Bine ai revenit,',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Frate Cavalier',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppColors.onBackground,
-                  ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Text(
+                'Frate Cavalier',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(color: AppColors.onBackground),
+              ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
             // Dashboard Cards Grid
             _DashboardCard(
@@ -53,7 +71,7 @@ class DashboardPage extends StatelessWidget {
               iconColor: AppColors.primary,
               onTap: () {
                 // Navigate to history section
-                context.pushNamed(AppRoutesNames.news.name);
+                context.pushNamed(AppRoutesNames.history.name);
               },
             ),
             const SizedBox(height: 16),
@@ -66,7 +84,7 @@ class DashboardPage extends StatelessWidget {
               badge: 'NOU',
               onTap: () {
                 // Navigate to magazine
-                context.pushNamed(AppRoutesNames.news.name);
+                context.pushNamed(AppRoutesNames.revistas.name);
               },
             ),
             const SizedBox(height: 16),
@@ -96,7 +114,7 @@ class DashboardPage extends StatelessWidget {
                 context.pushNamed(AppRoutesNames.news.name);
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
             // Additional sections
             Row(
@@ -108,7 +126,7 @@ class DashboardPage extends StatelessWidget {
                     iconColor: AppColors.primary,
                     onTap: () {
                       // Navigate to members
-                      context.pushNamed(AppRoutesNames.profile.name);
+                      context.pushNamed(AppRoutesNames.members.name);
                     },
                   ),
                 ),
@@ -119,14 +137,14 @@ class DashboardPage extends StatelessWidget {
                     icon: FontAwesomeIcons.book,
                     iconColor: AppColors.secondary,
                     onTap: () {
-                      // Navigate to library
-                      context.pushNamed(AppRoutesNames.news.name);
+                      // Navigate to library (revistas)
+                      context.pushNamed(AppRoutesNames.revistas.name);
                     },
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
             Row(
               children: [
@@ -153,7 +171,7 @@ class DashboardPage extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -196,10 +214,7 @@ class _DashboardCard extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppColors.border,
-              width: 1,
-            ),
+            border: Border.all(color: AppColors.border, width: 1),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,11 +229,7 @@ class _DashboardCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
-                      child: FaIcon(
-                        icon,
-                        size: 24,
-                        color: iconColor,
-                      ),
+                      child: FaIcon(icon, size: 24, color: iconColor),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -226,9 +237,9 @@ class _DashboardCard extends StatelessWidget {
                     child: Text(
                       title,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                          ),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                   if (badge != null)
@@ -244,9 +255,9 @@ class _DashboardCard extends StatelessWidget {
                       child: Text(
                         badge!,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                 ],
@@ -255,8 +266,8 @@ class _DashboardCard extends StatelessWidget {
               Text(
                 description,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.onBackground.withValues(alpha: 0.7),
-                    ),
+                  color: AppColors.onBackground.withValues(alpha: 0.7),
+                ),
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: 12),
@@ -273,19 +284,23 @@ class _DashboardCard extends StatelessWidget {
                       ),
                       child: Text(
                         subtitle!,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: iconColor,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelMedium?.copyWith(
+                          color: iconColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     if (subtitleInfo != null) ...[
                       const SizedBox(width: 8),
                       Text(
                         subtitleInfo!,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: AppColors.onBackground.withValues(alpha: 0.6),
-                            ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelMedium?.copyWith(
+                          color: AppColors.onBackground.withValues(alpha: 0.6),
+                        ),
                       ),
                     ],
                   ],
@@ -298,9 +313,9 @@ class _DashboardCard extends StatelessWidget {
                   Text(
                     'Vezi detalii',
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: AppColors.secondary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      color: AppColors.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(width: 4),
                   FaIcon(
@@ -345,10 +360,7 @@ class _DashboardSmallCard extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppColors.border,
-              width: 1,
-            ),
+            border: Border.all(color: AppColors.border, width: 1),
           ),
           child: Column(
             children: [
@@ -359,21 +371,15 @@ class _DashboardSmallCard extends StatelessWidget {
                   color: iconColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Center(
-                  child: FaIcon(
-                    icon,
-                    size: 28,
-                    color: iconColor,
-                  ),
-                ),
+                child: Center(child: FaIcon(icon, size: 28, color: iconColor)),
               ),
               const SizedBox(height: 12),
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],

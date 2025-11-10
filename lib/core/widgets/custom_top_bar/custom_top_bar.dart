@@ -90,6 +90,7 @@ class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
   factory CustomTopBar.withCart({
     required BuildContext context,
     String? title,
+    Widget? titleWidget,
     bool showLogo = false,
     String? logoPath,
     double logoHeight = 52,
@@ -97,6 +98,7 @@ class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
     EdgeInsets? logoPadding,
     bool showBackButton = false,
     bool showNotificationButton = true,
+    bool centerTitle = true,
     int notificationCount = 0,
     VoidCallback? onNotificationTap,
     VoidCallback? onLogoTap,
@@ -106,10 +108,12 @@ class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
     return CustomTopBar(
       context: context,
       title: title,
+      titleWidget: titleWidget,
       showCartButton: true,
       showProfileButton: false,
       showBackButton: showBackButton,
       showNotificationButton: showNotificationButton,
+      centerTitle: centerTitle,
       showLogo: showLogo,
       logoPath: logoPath,
       logoHeight: logoHeight,

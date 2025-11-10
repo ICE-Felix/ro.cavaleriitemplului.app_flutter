@@ -12,6 +12,8 @@ import 'core/cubit/location_cubit.dart';
 import 'features/auth/presentation/bloc/authentication_bloc.dart';
 import 'features/intro/presentation/bloc/intro_bloc.dart';
 import 'features/news/presentation/bloc/news_bloc.dart';
+import 'features/revista/presentation/bloc/revista_bloc.dart';
+import 'features/revista/presentation/bloc/revista_details_bloc.dart';
 import 'firebase_options.dart';
 import '../core/services/firebase_messaging_service.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
@@ -64,6 +66,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<AuthenticationBloc>()),
         BlocProvider(create: (context) => sl<IntroBloc>()),
         BlocProvider(create: (context) => sl<NewsBloc>()),
+        BlocProvider(create: (context) => sl<RevistaBloc>()),
+        BlocProvider(create: (context) => sl<RevistaDetailsBloc>()),
         BlocProvider(create: (context) => sl<NotificationBloc>()),
         BlocProvider(create: (context) => sl<LocationCubit>(), lazy: false),
         BlocProvider(

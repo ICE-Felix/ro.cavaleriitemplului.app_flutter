@@ -127,5 +127,31 @@
     "venue_products": "Produse Venue",
     "no_products_available": "Nu sunt produse disponibile",
     "no_products_description": "Acest venue nu are produse disponibile momentan."
+  },
+  "revista": "Revista",
+  "revistaDescription": "Răsfoiește și citește colecția noastră de reviste digitale",
+  "issueNumber": "Numărul {number}",
+  "pages": "pagini",
+  "revistasLoading": "Se încarcă revistele...",
+  "noRevistasAvailable": "Nu sunt reviste disponibile",
+  "loadingRevista": "Se încarcă revista...",
+  "loadingPdf": "Se încarcă PDF-ul...",
+  "pdfLoadError": "Eroare la încărcarea PDF-ului",
+  "noPdfAvailable": "PDF indisponibil",
+  "page": "Pagina",
+  "of": "din",
+  "error": "Eroare",
+  "members": {
+    "title": "Membri",
+    "importantMembers": "Importanți",
+    "allMembers": "Toți Membrii",
+    "favorites": "Favorite",
+    "noMembersFound": "Nu s-au găsit membri",
+    "noFavoritesFound": "Nu aveți membri favoriți încă",
+    "addFavoritesHint": "Apăsați pe inimă pentru a adăuga membri la favorite",
+    "errorLoadingMembers": "Eroare la încărcarea membrilor",
+    "call": "Apel",
+    "email": "Email",
+    "retry": "Încearcă din nou"
   }
 } 

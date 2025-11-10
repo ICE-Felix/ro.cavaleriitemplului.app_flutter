@@ -10,6 +10,8 @@ import 'package:app/features/locations/presentations/pages/search_locations_page
 import 'package:app/features/locations/presentations/pages/selected_location_category_page.dart';
 import 'package:app/features/news/presentation/pages/news_detail_page.dart';
 import 'package:app/features/news/presentation/pages/saved_articles_page.dart';
+import 'package:app/features/revista/presentation/pages/revistas_page.dart';
+import 'package:app/features/revista/presentation/pages/revista_details_page.dart';
 import 'package:app/features/shop/domain/entities/product_category_entity.dart';
 import 'package:app/features/shop/domain/entities/product_entity.dart';
 import 'package:app/features/shop/presentation/pages/categories_page.dart';
@@ -26,18 +28,12 @@ import '../../features/intro/presentation/pages/intro_page.dart';
 import '../../features/news/presentation/pages/news_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/history/presentation/pages/history_page.dart';
+import '../../features/members/presentation/pages/members_page.dart';
 
 final routes = GoRouter(
-  initialLocation: AppRoutesNames.dashboard.path,
+  initialLocation: AppRoutesNames.intro.path,
   restorationScopeId: 'app',
-  redirect: (context, state) {
-    // If we're at the root, redirect to dashboard
-    if (state.matchedLocation == '/') {
-      return AppRoutesNames.dashboard.path;
-    }
-
-    return null;
-  },
   routes: [
     GoRoute(
       path: AppRoutesNames.intro.path,
@@ -241,6 +237,32 @@ final routes = GoRouter(
           ],
         ),
 
+        // Revista route
+        GoRoute(
+          path: AppRoutesNames.revistas.path,
+          name: AppRoutesNames.revistas.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                restorationId: 'revistas_page',
+                child: const RevistasPage(),
+              ),
+          routes: [
+            GoRoute(
+              path: AppRoutesNames.revistaDetails.path,
+              name: AppRoutesNames.revistaDetails.name,
+              pageBuilder:
+                  (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    restorationId: 'revista_details_page',
+                    child: RevistaDetailsPage(
+                      revistaId: state.pathParameters['id']!,
+                    ),
+                  ),
+            ),
+          ],
+        ),
+
         // Profile route
         GoRoute(
           path: AppRoutesNames.profile.path,
@@ -250,6 +272,30 @@ final routes = GoRouter(
                 key: state.pageKey,
                 restorationId: 'profile_page',
                 child: const ProfilePage(),
+              ),
+        ),
+
+        // History route
+        GoRoute(
+          path: AppRoutesNames.history.path,
+          name: AppRoutesNames.history.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                restorationId: 'history_page',
+                child: const HistoryPage(),
+              ),
+        ),
+
+        // Members route
+        GoRoute(
+          path: AppRoutesNames.members.path,
+          name: AppRoutesNames.members.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                restorationId: 'members_page',
+                child: const MembersPage(),
               ),
         ),
 

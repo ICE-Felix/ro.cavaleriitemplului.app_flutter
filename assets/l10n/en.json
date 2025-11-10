@@ -128,5 +128,31 @@
     "venue_products": "Venue Products",
     "no_products_available": "No products available",
     "no_products_description": "This venue doesn't have any products available at the moment."
+  },
+  "revista": "Magazine",
+  "revistaDescription": "Browse and read our digital magazine collection",
+  "issueNumber": "Issue {number}",
+  "pages": "pages",
+  "revistasLoading": "Loading magazines...",
+  "noRevistasAvailable": "No magazines available",
+  "loadingRevista": "Loading magazine...",
+  "loadingPdf": "Loading PDF...",
+  "pdfLoadError": "Failed to load PDF",
+  "noPdfAvailable": "No PDF available",
+  "page": "Page",
+  "of": "of",
+  "error": "Error",
+  "members": {
+    "title": "Members",
+    "importantMembers": "Important",
+    "allMembers": "All Members",
+    "favorites": "Favorites",
+    "noMembersFound": "No members found",
+    "noFavoritesFound": "No favorite members yet",
+    "addFavoritesHint": "Tap the heart icon to add members to favorites",
+    "errorLoadingMembers": "Error loading members",
+    "call": "Call",
+    "email": "Email",
+    "retry": "Retry"
   }
 } 

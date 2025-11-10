@@ -40,10 +40,10 @@ class IntroView extends StatelessWidget {
           BlocListener<AuthenticationBloc, AuthenticationState>(
             listener: (context, state) {
               if (state is AuthAuthenticated) {
-                // User is authenticated, navigate to news page
-                context.replaceNamed(AppRoutesNames.news.name);
+                // User is authenticated, navigate to dashboard
+                context.replaceNamed(AppRoutesNames.dashboard.name);
               } else if (state is AuthUnauthenticated) {
-                context.replaceNamed(AppRoutesNames.login.name);
+                context.replaceNamed(AppRoutesNames.dashboard.name);
               }
             },
           ),

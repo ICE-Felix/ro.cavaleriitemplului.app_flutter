@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class LocationsSearchBar extends StatelessWidget {
+class AppSearchBarV2 extends StatelessWidget {
   final TextEditingController controller;
   final bool autofocus;
   final String hintText;
@@ -9,11 +9,11 @@ class LocationsSearchBar extends StatelessWidget {
   final VoidCallback? onSubmitted;
   final EdgeInsetsGeometry? margin;
 
-  const LocationsSearchBar({
+  const AppSearchBarV2({
     super.key,
     required this.controller,
     this.autofocus = false,
-    this.hintText = 'Search locations...',
+    this.hintText = 'Search...',
     this.onChanged,
     this.onClear,
     this.onSubmitted,
@@ -27,6 +27,10 @@ class LocationsSearchBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),

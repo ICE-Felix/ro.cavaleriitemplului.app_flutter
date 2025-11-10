@@ -48,6 +48,12 @@ import '../features/news/domain/usecases/search_news_usecase.dart';
 import '../features/news/domain/usecases/get_categories_usecase.dart'
     as news_categories;
 import '../features/news/presentation/bloc/news_bloc.dart';
+// Revista feature imports
+import '../features/revista/data/datasources/revista_remote_data_source.dart';
+import '../features/revista/data/repositories/revista_repository_impl.dart';
+import '../features/revista/domain/repositories/revista_repository.dart';
+import '../features/revista/presentation/bloc/revista_bloc.dart';
+import '../features/revista/presentation/bloc/revista_details_bloc.dart';
 // Bookmark feature imports
 import '../features/news/data/datasources/bookmark_local_data_source.dart';
 import '../features/news/data/repositories/bookmark_repository_impl.dart';
@@ -72,6 +78,11 @@ import '../core/navigation/routes.dart';
 // Cart feature imports
 import '../features/cart/cart.dart';
 import '../features/checkout/checkout.dart';
+// Members feature imports
+import '../features/members/data/datasources/members_remote_data_source.dart';
+import '../features/members/data/datasources/members_local_data_source.dart';
+import '../features/members/domain/repositories/members_repository.dart';
+import '../features/members/presentation/bloc/members_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -178,6 +189,18 @@ Future<void> initServiceLocator() async {
         BookmarkRepositoryImpl(localDataSource: sl<BookmarkLocalDataSource>()),
   );
 
+  // Revista data sources
+  sl.registerLazySingleton<RevistaRemoteDataSource>(
+    () => RevistaRemoteDataSourceImpl(),
+  );
+
+  // Revista repository
+  sl.registerLazySingleton<RevistaRepository>(
+    () => RevistaRepositoryImpl(
+      remoteDataSource: sl<RevistaRemoteDataSource>(),
+    ),
+  );
+
   //! Use cases
   sl.registerLazySingleton(
     () => LoginUseCase(repository: sl<AuthRepository>()),
@@ -250,6 +273,19 @@ Future<void> initServiceLocator() async {
       getNewsUseCase: sl<GetNewsUseCase>(),
       searchNewsUseCase: sl<SearchNewsUseCase>(),
       getCategoriesUseCase: sl<news_categories.GetCategoriesUseCase>(),
+    ),
+  );
+
+  // Revista BLoCs
+  sl.registerFactory(
+    () => RevistaBloc(
+      repository: sl<RevistaRepository>(),
+    ),
+  );
+
+  sl.registerFactory(
+    () => RevistaDetailsBloc(
+      repository: sl<RevistaRepository>(),
     ),
   );
 
@@ -330,5 +366,27 @@ Future<void> initServiceLocator() async {
   );
   sl.registerLazySingleton<BannersRepository>(
     () => BannersRepositoryImpl(remoteDataSource: sl<BannersRemoteDataSource>()),
+  );
+
+  // Members data sources
+  sl.registerLazySingleton<MembersRemoteDataSource>(
+    () => MembersRemoteDataSourceImpl(),
+  );
+
+  sl.registerLazySingleton<MembersLocalDataSource>(
+    () => MembersLocalDataSourceImpl(sharedPreferences: sl<SharedPreferences>()),
+  );
+
+  // Members repositories
+  sl.registerLazySingleton<MembersRepository>(
+    () => MembersRepositoryImpl(
+      remoteDataSource: sl<MembersRemoteDataSource>(),
+      localDataSource: sl<MembersLocalDataSource>(),
+    ),
+  );
+
+  // Members BLoC
+  sl.registerFactory(
+    () => MembersBloc(repository: sl<MembersRepository>()),
   );
 }

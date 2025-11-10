@@ -28,8 +28,18 @@ enum AppRoutesNames {
   events(name: 'events', path: '/events'),
   eventDetails(name: 'event_details', path: 'event_details/:id'),
 
+  //Revista
+  revistas(name: 'revistas', path: '/revistas'),
+  revistaDetails(name: 'revista_details', path: 'revista_details/:id'),
+
   //Profile
   profile(name: 'profile', path: '/profile'),
+
+  //History
+  history(name: 'history', path: '/history'),
+
+  //Members
+  members(name: 'members', path: '/members'),
 
   paymentWebView(name: 'payment_webview', path: 'payment_webview');
 
