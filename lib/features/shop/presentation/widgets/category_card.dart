@@ -73,7 +73,18 @@ class CategoryCard extends StatelessWidget {
         color: AppColors.primary,
       ),
       child: Center(
-        child: Image.asset('assets/images/logo/logo.png', fit: BoxFit.cover),
+        child: Image.asset(
+          'assets/images/logo/logo.png',
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Fallback dacă logo-ul nu există
+            return Icon(
+              Icons.shopping_bag,
+              size: 40,
+              color: Colors.white,
+            );
+          },
+        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:app/features/shop/domain/entities/product_entity.dart';
 import 'package:app/features/shop/domain/entities/product_category_entity.dart';
 import 'package:app/features/shop/data/datasources/shop_remote_data_source.dart';
 import 'package:app/core/error/exceptions.dart';
+import 'package:flutter/foundation.dart';
 
 class ShopRepositoryImpl implements ShopRepository {
   final ShopRemoteDataSource remoteDataSource;
@@ -27,13 +28,40 @@ class ShopRepositoryImpl implements ShopRepository {
   @override
   Future<List<ProductCategoryEntity>> getParentCategories() async {
     try {
+      if (kDebugMode) {
+        print('📦 ShopRepository: Getting parent categories...');
+      }
+
       final categories = await remoteDataSource.getParentCategories();
-      return categories.map((category) => category.toEntity()).toList();
+
+      if (kDebugMode) {
+        print('📦 ShopRepository: Received ${categories.length} categories from datasource');
+      }
+
+      final entities = categories.map((category) => category.toEntity()).toList();
+
+      if (kDebugMode) {
+        print('✅ ShopRepository: Converted to ${entities.length} entities');
+        for (var entity in entities) {
+          print('   - ${entity.name} (id: ${entity.id})');
+        }
+      }
+
+      return entities;
     } on ServerException catch (e) {
+      if (kDebugMode) {
+        print('❌ ShopRepository: ServerException: ${e.message}');
+      }
       throw ServerException(message: e.message);
     } on AuthException catch (e) {
+      if (kDebugMode) {
+        print('❌ ShopRepository: AuthException: ${e.message}');
+      }
       throw AuthException(message: e.message);
     } catch (e) {
+      if (kDebugMode) {
+        print('❌ ShopRepository: Unexpected error: $e');
+      }
       throw ServerException(message: 'Unexpected error occurred: $e');
     }
   }

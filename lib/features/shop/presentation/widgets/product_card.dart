@@ -1,12 +1,24 @@
 import 'package:app/core/style/app_colors.dart';
 import 'package:app/features/shop/domain/entities/product_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:html/parser.dart' as html_parser;
 
 class ProductCard extends StatelessWidget {
   const ProductCard({super.key, required this.product, required this.onTap});
 
   final ProductEntity product;
   final VoidCallback onTap;
+
+  /// Strips HTML tags from a string and returns plain text
+  String _stripHtmlTags(String htmlText) {
+    if (htmlText.isEmpty) return '';
+
+    final document = html_parser.parse(htmlText);
+    final String parsedText = document.body?.text ?? '';
+
+    // Remove extra whitespace and newlines
+    return parsedText.replaceAll(RegExp(r'\s+'), ' ').trim();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +69,7 @@ class ProductCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            product.description,
+                            _stripHtmlTags(product.description),
                             style: Theme.of(context).textTheme.bodyMedium,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,

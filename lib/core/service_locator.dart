@@ -2,7 +2,6 @@ import 'package:app/core/banners/data/datasources/banners_remote_data_source.dar
 import 'package:app/core/banners/domain/repositories/banners_repository.dart';
 import 'package:app/core/banners/domain/repositories/banners_repository_impl.dart';
 import 'package:app/features/cart/data/datasource/cart_stock_datasource.dart';
-import 'package:app/features/cart/data/datasource/mock_cart_stock_datasource.dart';
 import 'package:app/features/checkout/data/order_datasource.dart';
 import 'package:app/features/checkout/data/order_datasource_supabase.dart';
 import 'package:app/features/checkout/domain/repository/order_repository.dart';
@@ -19,8 +18,11 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'database/database_helper.dart';
 import 'network/dio_client.dart';
+import 'network/woocommerce_api_client.dart';
 import 'network/network_info.dart';
 import 'network/supabase_client.dart';
 import 'localization/app_localization.dart';
@@ -110,6 +112,15 @@ Future<void> initServiceLocator() async {
     () => NetworkInfoImpl(sl<Connectivity>()),
   );
 
+  // WooCommerce API Client
+  sl.registerLazySingleton(
+    () => WooCommerceApiClient(
+      storeUrl: dotenv.get('WOOCOMMERCE_STORE_URL'),
+      consumerKey: dotenv.get('WOOCOMMERCE_CONSUMER_KEY'),
+      consumerSecret: dotenv.get('WOOCOMMERCE_CONSUMER_SECRET'),
+    ),
+  );
+
   // Initialize Supabase
   await SupabaseAuthClient.initialize();
 
@@ -155,9 +166,9 @@ Future<void> initServiceLocator() async {
 
   // Cart service
   sl.registerLazySingleton<CartService>(() => CartServiceImpl());
-  // Cart Stock Datasource - Using Mock for development
+  // Cart Stock Datasource - Using WooCommerce API
   sl.registerLazySingleton<CartStockDatasource>(
-    () => MockCartStockDatasource(), // Changed from CartStockDatasourceImpl
+    () => CartStockDatasourceImpl(wooCommerce: sl<WooCommerceApiClient>()),
   );
   sl.registerLazySingleton<CartRepository>(
     () => CartRepositoryImpl(sl<CartService>(), sl<CartStockDatasource>()),
@@ -295,7 +306,7 @@ Future<void> initServiceLocator() async {
 
   // Shop data sources
   sl.registerLazySingleton<ShopRemoteDataSource>(
-    () => ShopRemoteDataSourceImpl(dio: sl<DioClient>()),
+    () => ShopRemoteDataSourceImpl(wooCommerce: sl<WooCommerceApiClient>()),
   );
 
   // Shop repositories
