@@ -1,8 +1,10 @@
+import 'package:app/core/style/app_colors.dart';
 import 'package:app/core/widgets/custom_top_bar/custom_top_bar.dart';
 import 'package:app/features/events/presentation/cubit/event_details/event_details_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 
@@ -15,13 +17,15 @@ class EventDetailPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => EventDetailsCubit()..getEventDetails(id),
       child: Scaffold(
+        backgroundColor: AppColors.background,
         appBar: CustomTopBar.withCart(
           context: context,
           showBackButton: true,
-          showLogo: false,
-          onNotificationTap: () {
-            // Handle notification tap
-          },
+          showLogo: true,
+          logoHeight: 200,
+          logoWidth: 0,
+          centerTitle: false,
+          showNotificationButton: true,
         ),
         body: BlocBuilder<EventDetailsCubit, EventDetailsState>(
           builder: (context, state) {
@@ -37,16 +41,16 @@ class EventDetailPage extends StatelessWidget {
                     Icon(
                       Icons.error_outline,
                       size: 64,
-                      color: Theme.of(context).colorScheme.error,
+                      color: AppColors.error,
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Error loading event details',
+                      'Eroare la încărcarea detaliilor evenimentului',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      state.errorMessage ?? 'Unknown error occurred',
+                      state.errorMessage ?? 'A apărut o eroare necunoscută',
                       style: Theme.of(context).textTheme.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
@@ -55,7 +59,7 @@ class EventDetailPage extends StatelessWidget {
                       onPressed: () {
                         context.read<EventDetailsCubit>().getEventDetails(id);
                       },
-                      child: const Text('Retry'),
+                      child: const Text('Reîncearcă'),
                     ),
                   ],
                 ),
@@ -63,7 +67,7 @@ class EventDetailPage extends StatelessWidget {
             }
 
             if (state.event == null) {
-              return const Center(child: Text('No event found'));
+              return const Center(child: Text('Evenimentul nu a fost găsit'));
             }
 
             final event = state.event!;
@@ -86,7 +90,7 @@ class EventDetailPage extends StatelessWidget {
                             context,
                           ).textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
+                            color: AppColors.onBackground,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -98,15 +102,13 @@ class EventDetailPage extends StatelessWidget {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).primaryColor.withValues(alpha: 0.1),
+                                color: AppColors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 event.eventTypeName,
                                 style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
+                                  color: AppColors.primary,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
                                 ),
@@ -132,7 +134,7 @@ class EventDetailPage extends StatelessWidget {
                         children: [
                           _SectionHeader(
                             icon: Icons.description,
-                            title: 'Description',
+                            title: 'Descriere',
                           ),
                           const SizedBox(height: 12),
                           Html(
@@ -141,7 +143,7 @@ class EventDetailPage extends StatelessWidget {
                               "body": Style(
                                 fontSize: FontSize(16),
                                 lineHeight: LineHeight(1.6),
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: AppColors.onBackground,
                                 margin: Margins.zero,
                                 padding: HtmlPaddings.zero,
                               ),
@@ -156,13 +158,13 @@ class EventDetailPage extends StatelessWidget {
                               ),
                               "li": Style(margin: Margins.only(bottom: 4)),
                               "a": Style(
-                                color: Theme.of(context).primaryColor,
+                                color: AppColors.primary,
                                 textDecoration: TextDecoration.underline,
                               ),
                               "blockquote": Style(
                                 border: Border(
                                   left: BorderSide(
-                                    color: Theme.of(context).colorScheme.outlineVariant,
+                                    color: AppColors.border,
                                     width: 4,
                                   ),
                                 ),
@@ -183,50 +185,50 @@ class EventDetailPage extends StatelessWidget {
                       children: [
                         _SectionHeader(
                           icon: Icons.info_outline,
-                          title: 'Event Information',
+                          title: 'Informații Eveniment',
                         ),
                         const SizedBox(height: 16),
                         _InfoGrid(
                           children: [
                             _InfoItem(
                               icon: Icons.location_on,
-                              label: 'Venue',
+                              label: 'Locație',
                               value: event.venueName,
                             ),
                             _InfoItem(
                               icon: Icons.place,
-                              label: 'Address',
+                              label: 'Adresă',
                               value: event.address,
                             ),
                             _InfoItem(
                               icon: Icons.calendar_today,
-                              label: 'Start Date',
+                              label: 'Data început',
                               value: _formatDateTime(event.start),
                             ),
                             _InfoItem(
                               icon: Icons.event,
-                              label: 'End Date',
+                              label: 'Data sfârșit',
                               value: _formatDateTime(event.end),
                             ),
                             _InfoItem(
                               icon: Icons.schedule,
-                              label: 'Schedule',
+                              label: 'Program',
                               value: event.scheduleType,
                             ),
                             _InfoItem(
                               icon: Icons.attach_money,
-                              label: 'Price',
+                              label: 'Preț',
                               value: event.price,
                             ),
                             _InfoItem(
                               icon: Icons.people,
-                              label: 'Capacity',
+                              label: 'Capacitate',
                               value: event.capacity,
                             ),
                             if (event.age != null)
                               _InfoItem(
                                 icon: Icons.person,
-                                label: 'Age Requirement',
+                                label: 'Vârstă minimă',
                                 value: event.age!,
                               ),
                           ],
@@ -242,7 +244,7 @@ class EventDetailPage extends StatelessWidget {
                       children: [
                         _SectionHeader(
                           icon: Icons.contact_phone,
-                          title: 'Contact Information',
+                          title: 'Informații Contact',
                         ),
                         const SizedBox(height: 16),
                         _ContactInfo(
@@ -260,7 +262,7 @@ class EventDetailPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _SectionHeader(icon: Icons.list_alt, title: 'Agenda'),
+                          _SectionHeader(icon: Icons.list_alt, title: 'Agendă'),
                           const SizedBox(height: 12),
                           Html(
                             data: event.agenda,
@@ -268,7 +270,7 @@ class EventDetailPage extends StatelessWidget {
                               "body": Style(
                                 fontSize: FontSize(16),
                                 lineHeight: LineHeight(1.6),
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: AppColors.onBackground,
                                 margin: Margins.zero,
                                 padding: HtmlPaddings.zero,
                               ),
@@ -290,7 +292,7 @@ class EventDetailPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _SectionHeader(icon: Icons.palette, title: 'Theme'),
+                          _SectionHeader(icon: Icons.palette, title: 'Tematică'),
                           const SizedBox(height: 12),
                           Html(
                             data: event.theme,
@@ -298,7 +300,7 @@ class EventDetailPage extends StatelessWidget {
                               "body": Style(
                                 fontSize: FontSize(16),
                                 lineHeight: LineHeight(1.6),
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: AppColors.onBackground,
                                 margin: Margins.zero,
                                 padding: HtmlPaddings.zero,
                               ),
@@ -328,13 +330,13 @@ class EventDetailPage extends StatelessWidget {
     try {
       final dateTime = DateTime.parse(dateTimeString);
       final months = [
-        'Jan',
+        'Ian',
         'Feb',
         'Mar',
         'Apr',
-        'May',
-        'Jun',
-        'Jul',
+        'Mai',
+        'Iun',
+        'Iul',
         'Aug',
         'Sep',
         'Oct',
@@ -346,7 +348,7 @@ class EventDetailPage extends StatelessWidget {
       final hour = dateTime.hour.toString().padLeft(2, '0');
       final minute = dateTime.minute.toString().padLeft(2, '0');
 
-      return '$day $month ${dateTime.year} at $hour:$minute';
+      return '$day $month ${dateTime.year}, $hour:$minute';
     } catch (e) {
       return dateTimeString;
     }
@@ -368,8 +370,8 @@ class _EventHeroSection extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Theme.of(context).primaryColor.withValues(alpha: 0.8),
-            Theme.of(context).primaryColor.withValues(alpha: 0.6),
+            AppColors.primary.withValues(alpha: 0.8),
+            AppColors.primary.withValues(alpha: 0.6),
           ],
         ),
       ),
@@ -411,7 +413,7 @@ class _DefaultHeroContent extends StatelessWidget {
       child: Icon(
         Icons.event,
         size: 80,
-        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
+        color: Colors.white.withValues(alpha: 0.8),
       ),
     );
   }
@@ -429,11 +431,11 @@ class _SectionContainer extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: 0.05),
             spreadRadius: 0,
             blurRadius: 10,
             offset: const Offset(0, 4),
@@ -458,17 +460,17 @@ class _SectionHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, size: 20, color: Theme.of(context).primaryColor),
+          child: Icon(icon, size: 20, color: AppColors.primary),
         ),
         const SizedBox(width: 12),
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: AppColors.onBackground,
           ),
         ),
       ],
@@ -483,7 +485,34 @@ class _InfoGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(spacing: 16, runSpacing: 16, children: children);
+    final List<Widget> rows = [];
+    for (int i = 0; i < children.length; i += 2) {
+      if (i + 1 < children.length) {
+        rows.add(
+          Row(
+            children: [
+              Expanded(child: children[i]),
+              const SizedBox(width: 12),
+              Expanded(child: children[i + 1]),
+            ],
+          ),
+        );
+      } else {
+        rows.add(
+          Row(
+            children: [
+              Expanded(child: children[i]),
+              const SizedBox(width: 12),
+              const Expanded(child: SizedBox()),
+            ],
+          ),
+        );
+      }
+      if (i + 2 < children.length) {
+        rows.add(const SizedBox(height: 12));
+      }
+    }
+    return Column(children: rows);
   }
 }
 
@@ -501,13 +530,12 @@ class _InfoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: (MediaQuery.of(context).size.width - 80) / 2,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outlineVariant,
+          color: AppColors.border,
         ),
       ),
       child: Column(
@@ -515,14 +543,14 @@ class _InfoItem extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: Theme.of(context).primaryColor),
+              Icon(icon, size: 16, color: AppColors.primary),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: AppColors.onBackground.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -535,7 +563,7 @@ class _InfoItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: AppColors.onBackground,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -563,20 +591,20 @@ class _ContactInfo extends StatelessWidget {
       children: [
         _ContactItem(
           icon: Icons.person,
-          label: 'Contact Person',
+          label: 'Persoană de contact',
           value: contactPerson,
         ),
         const SizedBox(height: 12),
         _ContactItem(
           icon: Icons.phone,
-          label: 'Phone',
+          label: 'Telefon',
           value: phoneNo,
           isClickable: true,
         ),
         const SizedBox(height: 12),
         _ContactItem(
           icon: Icons.email,
-          label: 'Email',
+          label: 'E-mail',
           value: email,
           isClickable: true,
         ),
@@ -603,10 +631,10 @@ class _ContactItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outlineVariant,
+          color: AppColors.border,
         ),
       ),
       child: Row(
@@ -614,10 +642,10 @@ class _ContactItem extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, size: 18, color: Theme.of(context).primaryColor),
+            child: Icon(icon, size: 18, color: AppColors.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -628,7 +656,7 @@ class _ContactItem extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: AppColors.onBackground.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -640,8 +668,8 @@ class _ContactItem extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     color:
                         isClickable
-                            ? Theme.of(context).primaryColor
-                            : Theme.of(context).colorScheme.onSurface,
+                            ? AppColors.primary
+                            : AppColors.onBackground,
                   ),
                 ),
               ],
@@ -651,7 +679,7 @@ class _ContactItem extends StatelessWidget {
             Icon(
               Icons.arrow_forward_ios,
               size: 14,
-              color: Theme.of(context).colorScheme.outlineVariant,
+              color: AppColors.border,
             ),
         ],
       ),
@@ -693,8 +721,8 @@ Detalii: R.L. 126 Cavalerii Templului
       onPressed: () => _shareEvent(context),
       icon: const Icon(Icons.share),
       style: IconButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        backgroundColor: AppColors.inputFill,
+        foregroundColor: AppColors.onBackground,
       ),
       tooltip: 'Distribuie eveniment',
     );
@@ -760,11 +788,11 @@ class _BookmarkButtonState extends State<_BookmarkButton> {
       icon: Icon(_isSaved ? Icons.bookmark : Icons.bookmark_border),
       style: IconButton.styleFrom(
         backgroundColor: _isSaved
-            ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
-            : Theme.of(context).colorScheme.surfaceContainerHighest,
+            ? AppColors.primary.withValues(alpha: 0.1)
+            : AppColors.inputFill,
         foregroundColor: _isSaved
-            ? Theme.of(context).primaryColor
-            : Theme.of(context).colorScheme.onSurface,
+            ? AppColors.primary
+            : AppColors.onBackground,
       ),
       tooltip: _isSaved ? 'Elimină din salvate' : 'Salvează eveniment',
     );
