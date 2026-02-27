@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import '../../../../core/widgets/custom_top_bar/custom_top_bar.dart';
 import '../../../../core/style/app_colors.dart';
+import '../../../birthday/birthday_popup_dialog.dart';
+import '../../../birthday/birthday_popup_service.dart';
 import '../cubit/dashboard_cubit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -46,8 +49,36 @@ Color _mapColor(String name) {
   return colors[name] ?? AppColors.primary;
 }
 
-class _DashboardView extends StatelessWidget {
+class _DashboardView extends StatefulWidget {
   const _DashboardView();
+
+  @override
+  State<_DashboardView> createState() => _DashboardViewState();
+}
+
+class _DashboardViewState extends State<_DashboardView> {
+  bool _birthdayChecked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkBirthdays());
+  }
+
+  Future<void> _checkBirthdays() async {
+    if (_birthdayChecked) return;
+    _birthdayChecked = true;
+
+    final service = GetIt.instance<BirthdayPopupService>();
+    final members = await service.checkAndGetBirthdays();
+    if (members != null && members.isNotEmpty && mounted) {
+      BirthdayPopupDialog.show(
+        context,
+        members: members,
+        service: service,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

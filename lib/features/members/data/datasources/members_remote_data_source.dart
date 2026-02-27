@@ -9,6 +9,7 @@ abstract class MembersRemoteDataSource {
   Future<List<MemberModel>> getImportantMembers();
   Future<MemberModel> getMemberById(String id);
   Future<List<MemberModel>> searchMembers(String query);
+  Future<List<MemberModel>> getTodayBirthdays();
 }
 
 class MembersRemoteDataSourceImpl implements MembersRemoteDataSource {
@@ -74,6 +75,19 @@ class MembersRemoteDataSourceImpl implements MembersRemoteDataSource {
           .select()
           .or('name.ilike.%$query%,title.ilike.%$query%,position.ilike.%$query%')
           .order('order_display');
+
+      return (data as List)
+          .map((json) => MemberModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<List<MemberModel>> getTodayBirthdays() async {
+    try {
+      final data = await _client.rpc('get_today_birthdays');
 
       return (data as List)
           .map((json) => MemberModel.fromJson(json))

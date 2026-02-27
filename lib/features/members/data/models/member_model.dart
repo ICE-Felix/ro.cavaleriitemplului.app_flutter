@@ -9,6 +9,7 @@ class MemberModel {
   final String? imageUrl;
   final bool isImportant;
   final int orderDisplay;
+  final DateTime? birthday;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -23,6 +24,7 @@ class MemberModel {
     this.imageUrl,
     this.isImportant = false,
     this.orderDisplay = 0,
+    this.birthday,
     this.createdAt,
     this.updatedAt,
   });
@@ -39,6 +41,9 @@ class MemberModel {
       imageUrl: json['image_url'] as String?,
       isImportant: json['is_important'] as bool? ?? false,
       orderDisplay: json['order_display'] as int? ?? 0,
+      birthday: json['birthday'] != null
+          ? DateTime.parse(json['birthday'] as String)
+          : null,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : null,
@@ -60,6 +65,7 @@ class MemberModel {
       'image_url': imageUrl,
       'is_important': isImportant,
       'order_display': orderDisplay,
+      'birthday': birthday?.toIso8601String().split('T').first,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -76,6 +82,7 @@ class MemberModel {
     String? imageUrl,
     bool? isImportant,
     int? orderDisplay,
+    DateTime? birthday,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -90,6 +97,7 @@ class MemberModel {
       imageUrl: imageUrl ?? this.imageUrl,
       isImportant: isImportant ?? this.isImportant,
       orderDisplay: orderDisplay ?? this.orderDisplay,
+      birthday: birthday ?? this.birthday,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

@@ -11,6 +11,7 @@ abstract class MembersRepository {
   Future<List<MemberModel>> searchMembers(String query);
   Future<void> toggleFavorite(String memberId);
   Future<bool> isFavorite(String memberId);
+  Future<List<MemberModel>> getTodayBirthdays();
 }
 
 class MembersRepositoryImpl implements MembersRepository {
@@ -106,6 +107,19 @@ class MembersRepositoryImpl implements MembersRepository {
       return await localDataSource.isFavorite(memberId);
     } catch (e) {
       return false;
+    }
+  }
+
+  @override
+  Future<List<MemberModel>> getTodayBirthdays() async {
+    try {
+      return await remoteDataSource.getTodayBirthdays();
+    } on ServerException catch (e) {
+      throw ServerException(message: e.message);
+    } on AuthException catch (e) {
+      throw AuthException(message: e.message);
+    } catch (e) {
+      throw ServerException(message: 'Unexpected error occurred: $e');
     }
   }
 }

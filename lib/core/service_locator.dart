@@ -86,6 +86,8 @@ import '../features/members/data/datasources/members_remote_data_source.dart';
 import '../features/members/data/datasources/members_local_data_source.dart';
 import '../features/members/domain/repositories/members_repository.dart';
 import '../features/members/presentation/bloc/members_bloc.dart';
+// Birthday feature imports
+import '../features/birthday/birthday_popup_service.dart';
 // Support feature imports
 import '../features/support/data/datasources/support_remote_data_source.dart';
 import '../features/support/domain/repositories/support_repository.dart';
@@ -382,6 +384,14 @@ Future<void> initServiceLocator() async {
   // Members BLoC
   sl.registerFactory(
     () => MembersBloc(repository: sl<MembersRepository>()),
+  );
+
+  // Birthday popup service
+  sl.registerLazySingleton<BirthdayPopupService>(
+    () => BirthdayPopupService(
+      prefs: sl<SharedPreferences>(),
+      membersRepository: sl<MembersRepository>(),
+    ),
   );
 
   // Support data sources
