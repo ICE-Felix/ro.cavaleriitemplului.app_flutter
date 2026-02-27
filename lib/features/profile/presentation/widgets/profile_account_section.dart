@@ -20,10 +20,7 @@ class ProfileAccountSection extends StatelessWidget {
           icon: FontAwesomeIcons.shoppingBag,
           title: context.getString(label: 'profile.orders'),
           subtitle: context.getString(label: 'profile.viewOrders'),
-          onTap: () => _showComingSoonMessage(
-            context,
-            context.getString(label: 'profile.orders'),
-          ),
+          onTap: () => context.pushNamed(AppRoutesNames.orderHistory.name),
         ),
         ProfileMenuItem(
           icon: FontAwesomeIcons.rightFromBracket,

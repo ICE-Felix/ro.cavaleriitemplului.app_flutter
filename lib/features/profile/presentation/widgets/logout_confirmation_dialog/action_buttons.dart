@@ -26,7 +26,7 @@ class ActionButtons extends StatelessWidget {
               ),
             ),
             child: Text(
-              'Cancel',
+              'Anulează',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Theme.of(context)
                     .textTheme
@@ -56,7 +56,7 @@ class ActionButtons extends StatelessWidget {
               elevation: 0,
             ),
             child: Text(
-              'Logout',
+              'Deconectare',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:app/features/news/presentation/bloc/news_details_bloc.dart';
 import 'package:app/features/news/presentation/widgets/image_placeholder.dart';
 import 'package:flutter/material.dart';
@@ -62,6 +61,15 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
           (context) => sl<NewsDetailsBloc>()..add(GetNewsDetails(id: widget.id)),
       child: Scaffold(
         backgroundColor: colorScheme.surface,
+        appBar: CustomTopBar.withCart(
+          context: context,
+          showLogo: true,
+          logoHeight: 200,
+          logoWidth: 0,
+          centerTitle: false,
+          showBackButton: true,
+          showNotificationButton: true,
+        ),
         body: BlocBuilder<NewsDetailsBloc, NewsDetailsState>(
           builder: (context, state) {
             if (state is NewsDetailsLoading) {
@@ -69,37 +77,8 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
             } else if (state is NewsDetailsError) {
               return Center(child: Text('Error: ${state.message}'));
             } else if (state is NewsDetailsLoaded) {
-              return CustomScrollView(
-                slivers: [
-                  SliverAppBar(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    pinned: true,
-                    automaticallyImplyLeading: false,
-                    expandedHeight: 0,
-                    flexibleSpace: ClipRect(
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface.withValues(alpha: 0.8),
-                          ),
-                          child: LogoTopBar(
-                            isTransparent: true,
-                            hasBlur: false,
-                            // Blur handled here
-                            elevation: 0,
-                            onBackPressed: () => context.pop(),
-                            onSharePressed: () => _shareArticle(state.news),
-                            showShareButton: true,
-                            logoHeight: 40,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Column(
+              return SingleChildScrollView(
+                child: Column(
                       children: [
                         // Hero Image
                         Container(
@@ -501,11 +480,9 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                         ),
                       ],
                     ),
-                  ),
-                ],
-              );
+                  );
             }
-            return Container();
+            return const SizedBox.shrink();
           },
         ),
       ),

@@ -19,8 +19,11 @@ import 'package:app/features/shop/presentation/pages/products_page.dart';
 import 'package:app/features/shop/presentation/pages/product_detail_page.dart';
 import 'package:app/features/shop/presentation/pages/search_products_page.dart';
 import 'package:app/features/cart/presentation/pages/cart_page.dart';
-import 'package:app/features/checkout/presentation/pages/checkout_page.dart';
-import 'package:app/features/checkout/presentation/pages/payment_webview.dart';
+import 'package:app/features/orders/presentation/pages/place_order_page.dart';
+import 'package:app/features/orders/presentation/pages/order_success_page.dart';
+import 'package:app/features/orders/presentation/pages/order_history_page.dart';
+import 'package:app/features/orders/presentation/pages/order_detail_page.dart';
+import 'package:app/features/orders/domain/entities/order_entity.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/pages/login_page.dart';
@@ -31,6 +34,7 @@ import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/history/presentation/pages/history_page.dart';
 import '../../features/members/presentation/pages/members_page.dart';
 import '../../features/support/presentation/pages/support_page.dart';
+import '../../features/notifications/presentation/pages/notifications_page.dart';
 
 final routes = GoRouter(
   initialLocation: AppRoutesNames.intro.path,
@@ -55,14 +59,6 @@ final routes = GoRouter(
           path: AppRoutesNames.forgotPassword.path,
           name: AppRoutesNames.forgotPassword.name,
           builder: (context, state) => const ForgotPasswordPage(),
-        ),
-        GoRoute(
-          path: '${AppRoutesNames.paymentWebView.path}/:url',
-          name: AppRoutesNames.paymentWebView.name,
-          builder:
-              (context, state) => PaymentWebView(
-                url: Uri.decodeComponent(state.pathParameters['url']!),
-              ),
         ),
       ],
     ),
@@ -312,6 +308,18 @@ final routes = GoRouter(
               ),
         ),
 
+        // Notifications route
+        GoRoute(
+          path: AppRoutesNames.notifications.path,
+          name: AppRoutesNames.notifications.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                restorationId: 'notifications_page',
+                child: const NotificationsPage(),
+              ),
+        ),
+
         // Cart route
         GoRoute(
           path: AppRoutesNames.cart.path,
@@ -324,9 +332,37 @@ final routes = GoRouter(
               ),
           routes: [
             GoRoute(
-              path: AppRoutesNames.checkout.path,
-              name: AppRoutesNames.checkout.name,
-              builder: (context, state) => const CheckoutPage(),
+              path: AppRoutesNames.placeOrder.path,
+              name: AppRoutesNames.placeOrder.name,
+              builder: (context, state) => const PlaceOrderPage(),
+              routes: [
+                GoRoute(
+                  path: AppRoutesNames.orderSuccess.path,
+                  name: AppRoutesNames.orderSuccess.name,
+                  builder: (context, state) => const OrderSuccessPage(),
+                ),
+              ],
+            ),
+          ],
+        ),
+
+        // Order history route
+        GoRoute(
+          path: AppRoutesNames.orderHistory.path,
+          name: AppRoutesNames.orderHistory.name,
+          pageBuilder:
+              (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                restorationId: 'order_history_page',
+                child: const OrderHistoryPage(),
+              ),
+          routes: [
+            GoRoute(
+              path: AppRoutesNames.orderDetail.path,
+              name: AppRoutesNames.orderDetail.name,
+              builder: (context, state) => OrderDetailPage(
+                order: state.extra as OrderEntity,
+              ),
             ),
           ],
         ),

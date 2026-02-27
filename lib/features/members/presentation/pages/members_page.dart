@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../../core/service_locator.dart';
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/widgets/custom_top_bar/custom_top_bar.dart';
+import '../../../../core/widgets/app_search_bar_v2.dart';
 import '../bloc/members_bloc.dart';
 import '../bloc/members_event.dart';
 import '../bloc/members_state.dart';
@@ -19,6 +20,8 @@ class MembersPage extends StatefulWidget {
 class _MembersPageState extends State<MembersPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
 
   @override
   void initState() {
@@ -29,7 +32,29 @@ class _MembersPageState extends State<MembersPage>
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged(BuildContext blocContext, String query) {
+    if (query.isEmpty) {
+      setState(() => _isSearching = false);
+      _reloadCurrentTab(blocContext);
+    } else {
+      setState(() => _isSearching = true);
+      blocContext.read<MembersBloc>().add(SearchMembers(query));
+    }
+  }
+
+  void _reloadCurrentTab(BuildContext blocContext) {
+    final index = _tabController.index;
+    if (index == 0) {
+      blocContext.read<MembersBloc>().add(const LoadImportantMembers());
+    } else if (index == 1) {
+      blocContext.read<MembersBloc>().add(const LoadAllMembers());
+    } else {
+      blocContext.read<MembersBloc>().add(const LoadFavoriteMembers());
+    }
   }
 
   @override
@@ -41,71 +66,104 @@ class _MembersPageState extends State<MembersPage>
           backgroundColor: AppColors.background,
           appBar: CustomTopBar.withCart(
             context: context,
-            title: 'Members',
+            showLogo: true,
             showBackButton: true,
+            logoHeight: 200,
+            logoWidth: 0,
+            centerTitle: false,
             showNotificationButton: true,
-            onNotificationTap: () {
-              // Handle notification tap
-            },
           ),
           body: Column(
             children: [
               // Tab Bar
-              Container(
-                color: AppColors.surface,
-                child: TabBar(
-                  controller: _tabController,
-                  labelColor: AppColors.primary,
-                  unselectedLabelColor:
-                      AppColors.onBackground.withValues(alpha: 0.6),
-                  indicatorColor: AppColors.primary,
-                  indicatorWeight: 3,
-                  labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+              if (!_isSearching)
+                Container(
+                  color: AppColors.surface,
+                  child: TabBar(
+                    controller: _tabController,
+                    labelColor: AppColors.primary,
+                    unselectedLabelColor:
+                        AppColors.onBackground.withValues(alpha: 0.6),
+                    indicatorColor: AppColors.primary,
+                    indicatorWeight: 3,
+                    labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                    unselectedLabelStyle:
+                        Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.normal,
+                            ),
+                    onTap: (index) {
+                      if (index == 0) {
+                        context
+                            .read<MembersBloc>()
+                            .add(const LoadImportantMembers());
+                      } else if (index == 1) {
+                        context.read<MembersBloc>().add(const LoadAllMembers());
+                      } else {
+                        context
+                            .read<MembersBloc>()
+                            .add(const LoadFavoriteMembers());
+                      }
+                    },
+                    tabs: const [
+                      Tab(
+                        icon: FaIcon(FontAwesomeIcons.star, size: 16),
+                        text: 'Important Members',
                       ),
-                  unselectedLabelStyle:
-                      Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.normal,
-                          ),
-                  onTap: (index) {
-                    if (index == 0) {
-                      context
-                          .read<MembersBloc>()
-                          .add(const LoadImportantMembers());
-                    } else if (index == 1) {
-                      context.read<MembersBloc>().add(const LoadAllMembers());
-                    } else {
-                      context
-                          .read<MembersBloc>()
-                          .add(const LoadFavoriteMembers());
-                    }
-                  },
-                  tabs: const [
-                    Tab(
-                      icon: FaIcon(FontAwesomeIcons.star, size: 16),
-                      text: 'Important Members',
-                    ),
-                    Tab(
-                      icon: FaIcon(FontAwesomeIcons.users, size: 16),
-                      text: 'Members',
-                    ),
-                    Tab(
-                      icon: FaIcon(FontAwesomeIcons.heart, size: 16),
-                      text: 'Favorites',
-                    ),
-                  ],
+                      Tab(
+                        icon: FaIcon(FontAwesomeIcons.users, size: 16),
+                        text: 'Members',
+                      ),
+                      Tab(
+                        icon: FaIcon(FontAwesomeIcons.heart, size: 16),
+                        text: 'Favorites',
+                      ),
+                    ],
+                  ),
                 ),
+              // Search bar
+              AppSearchBarV2(
+                controller: _searchController,
+                hintText: 'Caută membri...',
+                margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                onChanged: (query) => _onSearchChanged(context, query),
+                onSubmitted: () {
+                  if (_searchController.text.isNotEmpty) {
+                    _onSearchChanged(context, _searchController.text);
+                  }
+                },
+                onClear: () {
+                  _onSearchChanged(context, '');
+                  setState(() {});
+                },
               ),
-              // Tab View
+              // Content
               Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: const [
-                    _MembersContentView(),
-                    _MembersContentView(),
-                    _MembersContentView(),
-                  ],
-                ),
+                child: _isSearching
+                    ? _MembersContentView(
+                        onRefresh: () => _reloadCurrentTab(context),
+                      )
+                    : TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _MembersContentView(
+                            onRefresh: () => context
+                                .read<MembersBloc>()
+                                .add(const LoadImportantMembers()),
+                          ),
+                          _MembersContentView(
+                            onRefresh: () => context
+                                .read<MembersBloc>()
+                                .add(const LoadAllMembers()),
+                          ),
+                          _MembersContentView(
+                            onRefresh: () => context
+                                .read<MembersBloc>()
+                                .add(const LoadFavoriteMembers()),
+                          ),
+                        ],
+                      ),
               ),
             ],
           ),
@@ -116,7 +174,9 @@ class _MembersPageState extends State<MembersPage>
 }
 
 class _MembersContentView extends StatelessWidget {
-  const _MembersContentView();
+  final VoidCallback? onRefresh;
+
+  const _MembersContentView({this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +211,7 @@ class _MembersContentView extends StatelessWidget {
 
           return RefreshIndicator(
             onRefresh: () async {
-              context.read<MembersBloc>().add(const LoadAllMembers());
+              onRefresh?.call();
             },
             child: ListView.separated(
               padding: const EdgeInsets.all(16.0),
@@ -206,7 +266,7 @@ class _MembersContentView extends StatelessWidget {
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   onPressed: () {
-                    context.read<MembersBloc>().add(const LoadAllMembers());
+                    onRefresh?.call();
                   },
                   icon: const FaIcon(FontAwesomeIcons.arrowsRotate, size: 16),
                   label: const Text('Retry'),

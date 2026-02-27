@@ -8,6 +8,7 @@ abstract class MembersRepository {
   Future<List<MemberModel>> getImportantMembers();
   Future<List<MemberModel>> getFavoriteMembers();
   Future<MemberModel> getMemberById(String id);
+  Future<List<MemberModel>> searchMembers(String query);
   Future<void> toggleFavorite(String memberId);
   Future<bool> isFavorite(String memberId);
 }
@@ -83,6 +84,19 @@ class MembersRepositoryImpl implements MembersRepository {
       await localDataSource.toggleFavorite(memberId);
     } catch (e) {
       throw ServerException(message: 'Failed to toggle favorite: $e');
+    }
+  }
+
+  @override
+  Future<List<MemberModel>> searchMembers(String query) async {
+    try {
+      return await remoteDataSource.searchMembers(query);
+    } on ServerException catch (e) {
+      throw ServerException(message: e.message);
+    } on AuthException catch (e) {
+      throw AuthException(message: e.message);
+    } catch (e) {
+      throw ServerException(message: 'Unexpected error occurred: $e');
     }
   }
 

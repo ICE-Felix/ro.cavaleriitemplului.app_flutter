@@ -40,7 +40,7 @@ class ProductDetailPage extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16.0),
                         child: Image.network(
-                          product.images[index].src,
+                          product.images[index],
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return _buildPlaceholder(context);
@@ -79,93 +79,46 @@ class ProductDetailPage extends StatelessWidget {
                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
-                Text(
-                  '${product.price} Lei',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.success,
+                if (product.onSale) ...[
+                  Text(
+                    '${product.price.toStringAsFixed(2)} Lei',
+                    style: TextStyle(
+                      fontSize: 14,
+                      decoration: TextDecoration.lineThrough,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Stock Status
-            Row(
-              children: [
-                Icon(
-                  product.isAvailable ? Icons.check_circle : Icons.cancel,
-                  color: product.isAvailable ? AppColors.success : AppColors.error,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  product.isAvailable
-                      ? 'În stoc'
-                      : 'Stoc epuizat',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: product.isAvailable ? AppColors.success : AppColors.error,
+                  const SizedBox(width: 8),
+                  Text(
+                    '${product.displayPrice.toStringAsFixed(2)} Lei',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.success,
+                    ),
                   ),
-                ),
+                ] else
+                  Text(
+                    '${product.displayPrice.toStringAsFixed(2)} Lei',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.success,
+                    ),
+                  ),
               ],
             ),
             const SizedBox(height: 24),
 
-            // Categories
-            if (product.categories.isNotEmpty) ...[
-              const Text(
-                'Categorii:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children:
-                    product.categories.map((category) {
-                      return Chip(
-                        label: Text(category.name),
-                        backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                      );
-                    }).toList(),
-              ),
-              const SizedBox(height: 24),
-            ],
-
-            // Brands
-            if (product.brands.isNotEmpty) ...[
-              const Text(
-                'Mărci:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children:
-                    product.brands.map((brand) {
-                      return Chip(
-                        label: Text(brand.name),
-                        backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
-                      );
-                    }).toList(),
-              ),
-              const SizedBox(height: 24),
-            ],
-
             // Description
-            if (product.description.isNotEmpty) ...[
+            if (product.description != null && product.description!.isNotEmpty) ...[
               const Text(
                 'Descriere:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
-                product.description.replaceAll(
-                  RegExp(r'<[^>]*>'),
-                  '',
-                ), // Remove HTML tags
+                product.description!,
                 style: const TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 24),
@@ -175,28 +128,25 @@ class ProductDetailPage extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed:
-                    product.isAvailable
-                        ? () {
-                          sl<CartCubit>().addProduct(
-                            product.toCartModel(),
-                            onSuccess: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Produs adăugat în coș'),
-                                ),
-                              );
-                            },
-                            onError: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Produsul nu a putut fi adăugat în coș'),
-                                ),
-                              );
-                            },
-                          );
-                        }
-                        : null,
+                onPressed: () {
+                  sl<CartCubit>().addProduct(
+                    product.toCartModel(),
+                    onSuccess: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Produs adăugat în coș'),
+                        ),
+                      );
+                    },
+                    onError: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Produsul nu a putut fi adăugat în coș'),
+                        ),
+                      );
+                    },
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -216,13 +166,19 @@ class ProductDetailPage extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
-        color: AppColors.inputFill,
+        color: AppColors.primary,
       ),
       child: Center(
-        child: Icon(
-          Icons.shopping_bag,
-          size: 64,
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+        child: Image.asset(
+          'assets/images/logo/logo.png',
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Icon(
+              Icons.shopping_bag,
+              size: 64,
+              color: Colors.white,
+            );
+          },
         ),
       ),
     );

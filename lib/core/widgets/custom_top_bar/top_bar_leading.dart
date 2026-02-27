@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import '../../navigation/routes_name.dart';
 import '../../style/app_text_styles.dart';
 
 class TopBarLeading extends StatelessWidget {
@@ -29,6 +30,21 @@ class TopBarLeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (showLogo && showBackButton) {
+      // Show back button alongside the logo
+      return IconButton(
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.goNamed(AppRoutesNames.dashboard.name);
+          }
+        },
+        icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 20),
+        tooltip: 'Înapoi',
+      );
+    }
+
     if (showLogo) {
       final effectivePadding =
           logoPadding ??
@@ -67,9 +83,15 @@ class TopBarLeading extends StatelessWidget {
 
     if (showBackButton) {
       return IconButton(
-        onPressed: () => context.pop(),
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.goNamed(AppRoutesNames.dashboard.name);
+          }
+        },
         icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 20),
-        tooltip: 'Back',
+        tooltip: 'Înapoi',
       );
     }
 

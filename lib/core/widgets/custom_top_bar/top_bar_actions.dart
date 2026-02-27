@@ -1,7 +1,12 @@
+import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'notification_button.dart';
 import 'profile_button.dart';
 import 'cart_button.dart';
+import '../../../features/notifications/presentation/bloc/notification_bloc.dart';
+import '../../../features/notifications/presentation/bloc/notification_state.dart';
 
 class TopBarActions extends StatelessWidget {
   final bool showNotificationButton;
@@ -46,12 +51,17 @@ class TopBarActions extends StatelessWidget {
       );
     }
 
-    // Add notification button
+    // Add notification button with live unread count from BLoC
     if (showNotificationButton) {
       actions.add(
-        NotificationButton(
-          onPressed: onNotificationTap,
-          notificationCount: notificationCount,
+        BlocBuilder<NotificationBloc, NotificationState>(
+          builder: (context, state) {
+            return NotificationButton(
+              onPressed: onNotificationTap ??
+                  () => context.pushNamed(AppRoutesNames.notifications.name),
+              notificationCount: state.unreadCount,
+            );
+          },
         ),
       );
     }

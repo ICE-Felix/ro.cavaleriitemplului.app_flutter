@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:app/core/widgets/custom_top_bar.dart';
+import 'package:app/core/widgets/app_search_bar_v2.dart';
 import 'package:app/core/widgets/category_horizontal_slider.dart';
+import 'package:app/core/style/app_colors.dart';
 import 'package:app/features/events/presentation/bloc/events_bloc.dart';
 import 'package:app/features/events/presentation/widgets/events_list.dart';
 import 'package:app/features/events/presentation/widgets/events_calendar.dart';
@@ -55,23 +58,14 @@ class _EventsPageContentState extends State<_EventsPageContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomTopBar.withSearchAndCart(
+      backgroundColor: AppColors.background,
+      appBar: CustomTopBar.withCart(
         context: context,
         showLogo: true,
-        showBackButton: false,
+        logoHeight: 200,
+        logoWidth: 0,
+        centerTitle: false,
         showNotificationButton: true,
-        searchController: _searchController,
-        searchHint: 'Caută evenimente...',
-        onSearchChanged: (query) {
-          if (query.isEmpty) {
-            context.read<EventsBloc>().add(const ClearSearchEventsEvent());
-          } else {
-            context.read<EventsBloc>().add(SearchEventsEvent(query));
-          }
-        },
-        onNotificationTap: () {
-          // Handle notification tap
-        },
       ),
       body: BlocBuilder<EventsBloc, EventsState>(
         builder: (context, state) {
@@ -80,6 +74,23 @@ class _EventsPageContentState extends State<_EventsPageContent> {
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               children: [
+                // Search bar
+                AppSearchBarV2(
+                  controller: _searchController,
+                  hintText: 'Caută evenimente...',
+                  margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                  onChanged: (query) {
+                    if (query.isEmpty) {
+                      context.read<EventsBloc>().add(const ClearSearchEventsEvent());
+                    } else {
+                      context.read<EventsBloc>().add(SearchEventsEvent(query));
+                    }
+                  },
+                  onClear: () {
+                    context.read<EventsBloc>().add(const ClearSearchEventsEvent());
+                  },
+                ),
+
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   child: Column(
@@ -126,27 +137,25 @@ class _EventsPageContentState extends State<_EventsPageContent> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(
-                              context,
-                            ).primaryColor.withValues(alpha: 0.1),
-                            foregroundColor: Theme.of(context).primaryColor,
+                            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                            foregroundColor: AppColors.primary,
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          icon: Icon(
+                          icon: FaIcon(
                             state.isCalendarMinimized
-                                ? Icons.expand_more
-                                : Icons.expand_less,
-                            size: 20,
+                                ? FontAwesomeIcons.chevronDown
+                                : FontAwesomeIcons.chevronUp,
+                            size: 14,
                           ),
                           label: Text(
                             state.isCalendarMinimized
                                 ? 'Arată Calendarul'
                                 : 'Ascunde Calendarul',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
@@ -166,7 +175,6 @@ class _EventsPageContentState extends State<_EventsPageContent> {
                       items: state.eventTypes,
                       getDisplayName: (eventType) => eventType.name,
                       onSelectionChanged: (eventType) {
-                        // Load events for the selected event type and current date
                         final dateString =
                             '${state.selectedDate.year}-${state.selectedDate.month.toString().padLeft(2, '0')}-${state.selectedDate.day.toString().padLeft(2, '0')}';
                         context.read<EventsBloc>().add(
@@ -178,7 +186,6 @@ class _EventsPageContentState extends State<_EventsPageContent> {
                         );
                       },
                       getItemId: (eventType) => eventType.id,
-                      // selectedItemId: state.selectedEventTypeId,
                       itemsPerPage: 3,
                       height: 40,
                     ),
@@ -191,10 +198,10 @@ class _EventsPageContentState extends State<_EventsPageContent> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.event,
-                        color: Theme.of(context).primaryColor,
-                        size: 20,
+                      FaIcon(
+                        FontAwesomeIcons.calendarDays,
+                        color: AppColors.primary,
+                        size: 18,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -208,7 +215,7 @@ class _EventsPageContentState extends State<_EventsPageContent> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Theme.of(context).primaryColor,
+                                color: AppColors.primary,
                               ),
                             ),
                             if (state.searchQuery.isEmpty)
@@ -216,7 +223,7 @@ class _EventsPageContentState extends State<_EventsPageContent> {
                                 _getDayOfWeek(state.selectedDate),
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: AppColors.onBackground.withValues(alpha: 0.6),
                                 ),
                               ),
                           ],
@@ -227,7 +234,7 @@ class _EventsPageContentState extends State<_EventsPageContent> {
                 ),
                 const SizedBox(height: 16),
 
-                // Events List - each event in its own card
+                // Events List
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: EventsList(state: state),

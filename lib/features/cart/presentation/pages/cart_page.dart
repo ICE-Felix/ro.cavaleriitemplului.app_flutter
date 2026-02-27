@@ -33,9 +33,6 @@ class CartPageView extends StatelessWidget {
         title: context.getString(label: 'cart.title'),
         showBackButton: true,
         showNotificationButton: true,
-        onNotificationTap: () {
-          // Handle notification tap
-        },
         showProfileButton: false,
         showCartButton: false,
       ),
@@ -48,7 +45,6 @@ class CartPageView extends StatelessWidget {
           if (state.cart.isEmpty) {
             return EmptyCartWidget(
               onContinueShopping: () {
-                // Navigate back to shop
                 context.pushNamed(AppRoutesNames.shop.name);
               },
             );
@@ -56,7 +52,6 @@ class CartPageView extends StatelessWidget {
 
           return Column(
             children: [
-              // Cart Items List
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(vertical: 8),
@@ -65,9 +60,6 @@ class CartPageView extends StatelessWidget {
                     final item = state.cart.items[index];
                     return CartItemCard(
                       item: item,
-                      stockInfo: state.cartStock?.getProductStockInfo(
-                        item.id,
-                      ),
                       onRemove: () {
                         _showRemoveConfirmation(
                           context,
@@ -94,35 +86,19 @@ class CartPageView extends StatelessWidget {
                         );
                       },
                       onIncrease: () {
-                        context.read<CartCubit>().increaseQuantity(
-                          item.id,
-                        );
+                        context.read<CartCubit>().increaseQuantity(item.id);
                       },
                       onDecrease: () {
-                        context.read<CartCubit>().decreaseQuantity(
-                          item.id,
-                        );
+                        context.read<CartCubit>().decreaseQuantity(item.id);
                       },
                     );
                   },
                 ),
               ),
-
-              // Cart Summary
               CartSummary(
                 cart: state.cart,
-                isCheckoutLoading: state.isCheckoutLoading,
-                onCheckout: () async {
-                  final (allInStock, errorMessage) =
-                      await context.read<CartCubit>().checkCurrentStock();
-                  if (allInStock) {
-                    context.pushNamed(AppRoutesNames.checkout.name);
-                  } else {
-                    _showErrorDialog(
-                      context,
-                      errorMessage ?? 'Unknown cart error',
-                    );
-                  }
+                onCheckout: () {
+                  context.pushNamed(AppRoutesNames.placeOrder.name);
                 },
                 onClearCart: () {
                   _showClearCartConfirmation(
@@ -198,24 +174,6 @@ class CartPageView extends StatelessWidget {
                 foregroundColor: Theme.of(context).colorScheme.error,
               ),
               child: Text(context.getString(label: 'cart.clearAll')),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showErrorDialog(BuildContext context, String errorMessage) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text(context.getString(label: 'cart.checkoutError')),
-          content: Text(errorMessage),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(context.getString(label: 'cart.ok')),
             ),
           ],
         );

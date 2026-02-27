@@ -59,7 +59,6 @@ class _SupportPageState extends State<SupportPage> {
           title: 'Suport',
           showBackButton: true,
           showNotificationButton: true,
-          onNotificationTap: () {},
         ),
         body: BlocConsumer<SupportBloc, SupportState>(
           listener: (context, state) {

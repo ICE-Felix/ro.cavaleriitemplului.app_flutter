@@ -8,14 +8,12 @@ class CartSummary extends StatelessWidget {
   final CartModel cart;
   final VoidCallback? onCheckout;
   final VoidCallback? onClearCart;
-  final bool isCheckoutLoading;
 
   const CartSummary({
     super.key,
     required this.cart,
     this.onCheckout,
     this.onClearCart,
-    this.isCheckoutLoading = false,
   });
 
   @override
@@ -36,7 +34,6 @@ class CartSummary extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Summary Details
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -69,7 +66,6 @@ class CartSummary extends StatelessWidget {
 
             const Divider(height: 24),
 
-            // Total
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -91,10 +87,8 @@ class CartSummary extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Action Buttons
             Row(
               children: [
-                // Clear Cart Button
                 if (cart.isNotEmpty)
                   Expanded(
                     child: OutlinedButton(
@@ -112,18 +106,10 @@ class CartSummary extends StatelessWidget {
 
                 if (cart.isNotEmpty) const SizedBox(width: 16),
 
-                // Checkout Button
                 Expanded(
                   flex: cart.isNotEmpty ? 2 : 1,
                   child: ElevatedButton(
-                    onPressed: cart.isNotEmpty
-                        ? () {
-                            if (isCheckoutLoading) {
-                              return;
-                            }
-                            onCheckout?.call();
-                          }
-                        : null,
+                    onPressed: cart.isNotEmpty ? onCheckout : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(vertical: 12),

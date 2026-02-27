@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:app/core/style/app_colors.dart';
 import 'package:app/features/events/domain/model/events.dart';
 
 class EventsCalendar extends StatefulWidget {
@@ -59,11 +60,9 @@ class _EventsCalendarState extends State<EventsCalendar> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
-        ),
+        border: Border.all(color: AppColors.border),
       ),
       padding: const EdgeInsets.all(8),
       child: TableCalendar<Event>(
@@ -83,31 +82,31 @@ class _EventsCalendarState extends State<EventsCalendar> {
           titleCentered: true,
           leftChevronIcon: Icon(
             Icons.chevron_left,
-            color: Theme.of(context).primaryColor,
+            color: AppColors.primary,
           ),
           rightChevronIcon: Icon(
             Icons.chevron_right,
-            color: Theme.of(context).primaryColor,
+            color: AppColors.primary,
           ),
           titleTextStyle: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w600,
-            color: Theme.of(context).primaryColor,
+            color: AppColors.primary,
           ),
         ),
         calendarStyle: CalendarStyle(
           // Today's date
           todayDecoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             shape: BoxShape.circle,
           ),
           todayTextStyle: TextStyle(
-            color: Theme.of(context).primaryColor,
+            color: AppColors.primary,
             fontWeight: FontWeight.bold,
           ),
           // Selected date
           selectedDecoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
+            color: AppColors.primary,
             shape: BoxShape.circle,
           ),
           selectedTextStyle: const TextStyle(
@@ -116,19 +115,19 @@ class _EventsCalendarState extends State<EventsCalendar> {
           ),
           // Default dates
           defaultTextStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface,
+            color: AppColors.onBackground,
           ),
           // Weekend dates
           weekendTextStyle: TextStyle(
-            color: Theme.of(context).colorScheme.error,
+            color: AppColors.error,
           ),
           // Outside dates (dates from other months)
           outsideTextStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+            color: AppColors.onBackground.withValues(alpha: 0.3),
           ),
           // Marker (event indicator) - will be customized with markerBuilder
           markerDecoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
+            color: AppColors.primary,
             shape: BoxShape.circle,
           ),
           markersMaxCount: 3,
@@ -149,7 +148,7 @@ class _EventsCalendarState extends State<EventsCalendar> {
                     width: 6,
                     height: 6,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
+                      color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -159,7 +158,7 @@ class _EventsCalendarState extends State<EventsCalendar> {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
+                        color: AppColors.primary.withValues(alpha: 0.7),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -170,7 +169,7 @@ class _EventsCalendarState extends State<EventsCalendar> {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
+                        color: AppColors.primary.withValues(alpha: 0.5),
                         shape: BoxShape.circle,
                       ),
                     ),

@@ -1,10 +1,8 @@
 import 'dart:ui';
 
 import 'package:app/core/service_locator.dart';
-import 'package:app/features/cart/data/request/cart_stock_request.dart';
 import 'package:app/features/cart/domain/models/cart_item_model.dart';
 import 'package:app/features/cart/domain/models/cart_model.dart';
-import 'package:app/features/cart/domain/models/cart_stock_response_model.dart';
 import 'package:app/features/cart/domain/repositories/cart_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -19,17 +17,7 @@ class CartCubit extends Cubit<CartState> {
     emit(state.copyWith(isLoading: true, isError: false));
     try {
       final cart = await sl.get<CartRepository>().getCart();
-      final cartStock = await sl.get<CartRepository>().verifyStock(
-        CartStockRequest.fromCart(cart),
-      );
-      emit(
-        state.copyWith(
-          cart: cart,
-          isLoading: false,
-          isError: false,
-          cartStock: cartStock,
-        ),
-      );
+      emit(state.copyWith(cart: cart, isLoading: false, isError: false));
     } catch (e) {
       emit(
         state.copyWith(
@@ -48,12 +36,7 @@ class CartCubit extends Cubit<CartState> {
   }) async {
     try {
       final updatedCart = await sl.get<CartRepository>().addProductToCart(item);
-      final cartStock = await sl.get<CartRepository>().verifyStock(
-        CartStockRequest.fromCart(updatedCart),
-      );
-      emit(
-        state.copyWith(cart: updatedCart, isError: false, cartStock: cartStock),
-      );
+      emit(state.copyWith(cart: updatedCart, isError: false));
       onSuccess?.call();
     } catch (e) {
       emit(state.copyWith(isError: true));
@@ -70,14 +53,8 @@ class CartCubit extends Cubit<CartState> {
     VoidCallback? onError,
   }) async {
     try {
-      final updatedCart = await sl.get<CartRepository>().removeProductFromCart(
-        productId,
-      );
-      final newState = await _getStockRemovedState(
-        emitState: state.copyWith(cart: updatedCart, isError: false),
-        cart: updatedCart,
-      );
-      emit(newState);
+      final updatedCart = await sl.get<CartRepository>().removeProductFromCart(productId);
+      emit(state.copyWith(cart: updatedCart, isError: false));
       onSuccess?.call();
     } catch (e) {
       emit(state.copyWith(isError: true));
@@ -92,11 +69,7 @@ class CartCubit extends Cubit<CartState> {
     VoidCallback? onError,
   }) async {
     try {
-      final updatedCart = await sl.get<CartRepository>().updateProductQuantity(
-        productId,
-        quantity,
-      );
-
+      final updatedCart = await sl.get<CartRepository>().updateProductQuantity(productId, quantity);
       emit(state.copyWith(cart: updatedCart, isError: false));
       onSuccess?.call();
     } catch (e) {
@@ -111,9 +84,7 @@ class CartCubit extends Cubit<CartState> {
     VoidCallback? onError,
   }) async {
     try {
-      final updatedCart = await sl
-          .get<CartRepository>()
-          .increaseProductQuantity(productId);
+      final updatedCart = await sl.get<CartRepository>().increaseProductQuantity(productId);
       emit(state.copyWith(cart: updatedCart, isError: false));
       onSuccess?.call();
     } catch (e) {
@@ -128,14 +99,8 @@ class CartCubit extends Cubit<CartState> {
     VoidCallback? onError,
   }) async {
     try {
-      final updatedCart = await sl
-          .get<CartRepository>()
-          .decreaseProductQuantity(productId);
-      final newState = await _getStockRemovedState(
-        emitState: state.copyWith(cart: updatedCart, isError: false),
-        cart: updatedCart,
-      );
-      emit(newState);
+      final updatedCart = await sl.get<CartRepository>().decreaseProductQuantity(productId);
+      emit(state.copyWith(cart: updatedCart, isError: false));
       onSuccess?.call();
     } catch (e) {
       emit(state.copyWith(isError: true));
@@ -153,7 +118,6 @@ class CartCubit extends Cubit<CartState> {
       emit(
         state.copyWith(
           cart: CartModel.empty(),
-          cartStock: CartStockResponseModel.empty(),
           isLoading: false,
           isError: false,
         ),
@@ -162,30 +126,6 @@ class CartCubit extends Cubit<CartState> {
     } catch (e) {
       emit(state.copyWith(isLoading: false, isError: true));
       onError?.call();
-    }
-  }
-
-  Future<(bool, String?)> checkCurrentStock() async {
-    emit(state.copyWith(isCheckoutLoading: true));
-    final cartStock = await sl.get<CartRepository>().verifyStock(
-      CartStockRequest.fromCart(state.cart),
-    );
-    emit(state.copyWith(cartStock: cartStock, isCheckoutLoading: false));
-    return (cartStock.allAvailable, 'Not all items are in stock!');
-  }
-
-  Future<CartState> _getStockRemovedState({
-    required CartState emitState,
-    required CartModel cart,
-  }) async {
-    if (emitState.cartStock == null ||
-        emitState.cartStock!.allAvailable == false) {
-      final cartStock = await sl.get<CartRepository>().verifyStock(
-        CartStockRequest.fromCart(cart),
-      );
-      return emitState.copyWith(cartStock: cartStock);
-    } else {
-      return emitState;
     }
   }
 }

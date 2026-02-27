@@ -1,155 +1,62 @@
 import 'package:equatable/equatable.dart';
-import 'package:app/features/shop/domain/entities/product_category_entity.dart';
 import 'package:app/features/cart/domain/models/cart_item_model.dart';
 
 class ProductEntity extends Equatable {
-  final int id;
+  final String id;
   final String name;
   final String slug;
-  final String permalink;
-  final String dateCreated;
-  final String dateModified;
-  final String type;
-  final String status;
-  final bool featured;
-  final String catalogVisibility;
-  final String description;
-  final String shortDescription;
-  final String sku;
-  final String price;
-  final String regularPrice;
-  final String salePrice;
-  final bool onSale;
-  final bool purchasable;
-  final int totalSales;
-  final bool virtual;
-  final bool downloadable;
-  final bool manageStock;
-  final int? stockQuantity;
-  final String stockStatus;
-  final bool hasOptions;
-  final List<ProductImageEntity> images;
-  final List<ProductCategoryEntity> categories;
-  final List<ProductBrandEntity> brands;
-  final String priceHtml;
-  final List<int> relatedIds;
+  final String? description;
+  final double price;
+  final double? salePrice;
+  final List<String> images;
+  final String? categoryId;
+  final int sortOrder;
 
-  bool get isAvailable => stockStatus == 'instock';
+  bool get onSale => salePrice != null && salePrice! < price;
+  double get displayPrice => onSale ? salePrice! : price;
+  String? get firstImage => images.isNotEmpty ? images.first : null;
 
   const ProductEntity({
     required this.id,
     required this.name,
     required this.slug,
-    required this.permalink,
-    required this.dateCreated,
-    required this.dateModified,
-    required this.type,
-    required this.status,
-    required this.featured,
-    required this.catalogVisibility,
-    required this.description,
-    required this.shortDescription,
-    required this.sku,
+    this.description,
     required this.price,
-    required this.regularPrice,
-    required this.salePrice,
-    required this.onSale,
-    required this.purchasable,
-    required this.totalSales,
-    required this.virtual,
-    required this.downloadable,
-    required this.manageStock,
-    this.stockQuantity,
-    required this.stockStatus,
-    required this.hasOptions,
-    required this.images,
-    required this.categories,
-    required this.brands,
-    required this.priceHtml,
-    required this.relatedIds,
+    this.salePrice,
+    this.images = const [],
+    this.categoryId,
+    this.sortOrder = 0,
   });
 
-  /// Convert ProductEntity to CartItemModel
+  factory ProductEntity.fromJson(Map<String, dynamic> json) {
+    return ProductEntity(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      slug: json['slug'] as String,
+      description: json['description'] as String?,
+      price: (json['price'] as num).toDouble(),
+      salePrice: json['sale_price'] != null ? (json['sale_price'] as num).toDouble() : null,
+      images: json['images'] != null ? List<String>.from(json['images'] as List) : [],
+      categoryId: json['category_id'] as String?,
+      sortOrder: json['sort_order'] as int? ?? 0,
+    );
+  }
+
   CartItemModel toCartModel({int quantity = 1}) {
     return CartItemModel(
-      id: id,
+      id: id.hashCode,
       name: name,
-      imageUrl: images.isNotEmpty ? images.first.src : null,
-      price: price,
-      regularPrice: regularPrice,
-      salePrice: salePrice,
+      imageUrl: firstImage,
+      price: displayPrice.toStringAsFixed(2),
+      regularPrice: price.toStringAsFixed(2),
+      salePrice: salePrice?.toStringAsFixed(2) ?? '',
       onSale: onSale,
-      sku: sku,
+      sku: id,
       quantity: quantity,
       productType: 'product',
     );
   }
 
   @override
-  List<Object?> get props => [
-    id,
-    name,
-    slug,
-    permalink,
-    dateCreated,
-    dateModified,
-    type,
-    status,
-    featured,
-    catalogVisibility,
-    description,
-    shortDescription,
-    sku,
-    price,
-    regularPrice,
-    salePrice,
-    onSale,
-    purchasable,
-    totalSales,
-    virtual,
-    downloadable,
-    manageStock,
-    stockQuantity,
-    stockStatus,
-    hasOptions,
-    images,
-    categories,
-    brands,
-    priceHtml,
-    relatedIds,
-  ];
-}
-
-class ProductImageEntity extends Equatable {
-  final int id;
-  final String dateCreated;
-  final String src;
-  final String name;
-  final String alt;
-
-  const ProductImageEntity({
-    required this.id,
-    required this.dateCreated,
-    required this.src,
-    required this.name,
-    required this.alt,
-  });
-
-  @override
-  List<Object> get props => [id, dateCreated, src, name, alt];
-}
-
-class ProductBrandEntity extends Equatable {
-  final int id;
-  final String name;
-  final String slug;
-
-  const ProductBrandEntity({
-    required this.id,
-    required this.name,
-    required this.slug,
-  });
-
-  @override
-  List<Object> get props => [id, name, slug];
+  List<Object?> get props => [id, name, slug, description, price, salePrice, images, categoryId, sortOrder];
 }

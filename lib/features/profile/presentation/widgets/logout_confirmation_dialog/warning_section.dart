@@ -23,7 +23,7 @@ class WarningSection extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Are you sure you want to sign out?',
+            'Ești sigur că vrei să te deconectezi?',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: Theme.of(context).colorScheme.error,
@@ -32,7 +32,7 @@ class WarningSection extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'You will need to sign in again to access your account.',
+            'Va trebui să te autentifici din nou pentru a accesa contul tău.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context)
                   .textTheme

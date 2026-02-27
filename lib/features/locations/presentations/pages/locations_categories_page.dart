@@ -38,9 +38,6 @@ class LocationsCategoriesPage extends StatelessWidget {
                 top: 8.0,
                 bottom: 8.0,
               ),
-              onNotificationTap: () {
-                // Handle notification tap
-              },
               onLogoTap: () {},
             ),
             body: Container(

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/services/app_settings_service.dart';
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/localization/app_localization.dart';
 import '../bloc/authentication_bloc.dart';
@@ -241,19 +242,21 @@ class _LoginPageState extends State<LoginPage> {
                       text: context.getString(label: 'signIn'),
                       isLoading: state is AuthLoading,
                     ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(context.getString(label: 'dontHaveAccount')),
-                        TextButton(
-                          onPressed: () {
-                            context.pushNamed(AppRoutesNames.register.name);
-                          },
-                          child: Text(context.getString(label: 'signUp')),
-                        ),
-                      ],
-                    ),
+                    if (AppSettingsService.instance.get('registration_enabled', 'false').toLowerCase() == 'true') ...[
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(context.getString(label: 'dontHaveAccount')),
+                          TextButton(
+                            onPressed: () {
+                              context.pushNamed(AppRoutesNames.register.name);
+                            },
+                            child: Text(context.getString(label: 'signUp')),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

@@ -1,7 +1,6 @@
 import 'package:app/core/service_locator.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/notification_bloc.dart';
 import '../../../../core/services/firebase_messaging_service.dart';
 
 class NotificationSettingsPage extends StatelessWidget {
@@ -28,19 +27,25 @@ class NotificationSettingsPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                context.read<NotificationBloc>().add(
-                  const SubscribeToTopic('news'),
-                );
+              onPressed: () async {
+                await FirebaseMessaging.instance.subscribeToTopic('news');
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Subscribed to news')),
+                  );
+                }
               },
               child: const Text('Subscribe to News'),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                context.read<NotificationBloc>().add(
-                  const UnsubscribeFromTopic('news'),
-                );
+              onPressed: () async {
+                await FirebaseMessaging.instance.unsubscribeFromTopic('news');
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Unsubscribed from news')),
+                  );
+                }
               },
               child: const Text('Unsubscribe from News'),
             ),

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:app/core/network/supabase_client.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 
 import '../../domain/entities/revista_entity.dart';
@@ -37,15 +40,26 @@ class RevistaRepositorySupabase implements RevistaRepository {
   }
 
   @override
-  Future<String> getAuthenticatedPdfUrl(String fileId) async {
-    // For now, return the URL directly - PDF download logic can be added later
-    return fileId;
+  Future<String> getAuthenticatedPdfUrl(String storagePath) async {
+    // Create a signed URL valid for 1 hour (requires authenticated user)
+    final signedUrl = await _client.storage
+        .from('revistas')
+        .createSignedUrl(storagePath, 3600);
+    return signedUrl;
   }
 
   @override
-  Future<String> downloadPdfFile(String fileId, String fileName) async {
-    // Placeholder - will be implemented when PDFs are uploaded to Supabase Storage
-    return fileId;
+  Future<String> downloadPdfFile(String storagePath, String fileName) async {
+    // Download the file bytes from storage (authenticated)
+    final bytes = await _client.storage
+        .from('revistas')
+        .download(storagePath);
+
+    // Save to local app directory
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/$fileName');
+    await file.writeAsBytes(bytes);
+    return file.path;
   }
 
   @override

@@ -23,7 +23,7 @@ class DialogHeader extends StatelessWidget {
         const SizedBox(width: 16),
         Expanded(
           child: Text(
-            'Logout',
+            'Deconectare',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
               fontSize: 20,

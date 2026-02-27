@@ -37,9 +37,6 @@ class LocationsDetailsPageView extends StatelessWidget {
       appBar: CustomTopBar.withCart(
         context: context,
         showBackButton: true,
-        onNotificationTap: () {
-          // Handle notification tap
-        },
         onLogoTap: () {},
       ),
       body: BlocBuilder<LocationDetailsCubit, LocationDetailsState>(

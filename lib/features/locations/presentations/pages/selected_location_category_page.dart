@@ -71,9 +71,6 @@ class _SelectedLocationPageViewState extends State<SelectedLocationPageView>
         showLogo: false,
         showBackButton: true,
         showNotificationButton: true,
-        onNotificationTap: () {
-          // Handle notification tap
-        },
         onLogoTap: () {},
       ),
       body: Container(

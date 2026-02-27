@@ -75,7 +75,6 @@ class _RevistasPageState extends State<RevistasPage> {
           logoWidth: 0,
           centerTitle: false,
           showNotificationButton: true,
-          onNotificationTap: () {},
         ),
         body: Column(
           children: [

@@ -1,30 +1,28 @@
 part of 'categories_cubit.dart';
 
-abstract class CategoriesState extends Equatable {
-  const CategoriesState();
-
-  @override
-  List<Object> get props => [];
-}
-
-class CategoriesInitial extends CategoriesState {}
-
-class CategoriesLoading extends CategoriesState {}
-
-class CategoriesLoaded extends CategoriesState {
+class CategoriesState extends Equatable {
   final List<ProductCategoryEntity> categories;
+  final bool isLoading;
+  final String? error;
 
-  const CategoriesLoaded({required this.categories});
+  const CategoriesState({
+    this.categories = const [],
+    this.isLoading = false,
+    this.error,
+  });
+
+  CategoriesState copyWith({
+    List<ProductCategoryEntity>? categories,
+    bool? isLoading,
+    String? error,
+  }) {
+    return CategoriesState(
+      categories: categories ?? this.categories,
+      isLoading: isLoading ?? this.isLoading,
+      error: error,
+    );
+  }
 
   @override
-  List<Object> get props => [categories];
-}
-
-class CategoriesError extends CategoriesState {
-  final String message;
-
-  const CategoriesError({required this.message});
-
-  @override
-  List<Object> get props => [message];
+  List<Object?> get props => [categories, isLoading, error];
 }

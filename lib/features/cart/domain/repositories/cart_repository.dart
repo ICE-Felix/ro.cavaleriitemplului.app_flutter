@@ -1,9 +1,6 @@
-import 'package:app/features/cart/data/datasource/cart_stock_datasource.dart';
-import 'package:app/features/cart/data/request/cart_stock_request.dart';
 import 'package:app/features/cart/data/services/cart_service.dart';
 import 'package:app/features/cart/domain/models/cart_item_model.dart';
 import 'package:app/features/cart/domain/models/cart_model.dart';
-import 'package:app/features/cart/domain/models/cart_stock_response_model.dart';
 
 /// Abstract repository defining cart operations
 abstract class CartRepository {
@@ -16,15 +13,13 @@ abstract class CartRepository {
   Future<CartModel> increaseProductQuantity(int productId);
   Future<CartModel> decreaseProductQuantity(int productId);
   Future<bool> hasCart();
-  Future<CartStockResponseModel> verifyStock(CartStockRequest request);
 }
 
 /// Implementation of CartRepository
 class CartRepositoryImpl implements CartRepository {
   final CartService _cartService;
-  final CartStockDatasource _cartStockDatasource;
 
-  CartRepositoryImpl(this._cartService, this._cartStockDatasource);
+  CartRepositoryImpl(this._cartService);
 
   @override
   Future<CartModel> getCart() async {
@@ -90,10 +85,5 @@ class CartRepositoryImpl implements CartRepository {
   @override
   Future<bool> hasCart() async {
     return await _cartService.hasCart();
-  }
-
-  @override
-  Future<CartStockResponseModel> verifyStock(CartStockRequest request) async {
-    return await _cartStockDatasource.verifyStock(request);
   }
 }

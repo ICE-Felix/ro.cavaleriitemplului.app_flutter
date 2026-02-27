@@ -18,24 +18,47 @@ class MemberCard extends StatelessWidget {
     this.onFavoriteTap,
   });
 
-  Future<void> _makePhoneCall(String phoneNumber) async {
+  Future<void> _makePhoneCall(BuildContext context, String phoneNumber) async {
     final Uri launchUri = Uri(
       scheme: 'tel',
       path: phoneNumber,
     );
     if (await canLaunchUrl(launchUri)) {
       await launchUrl(launchUri);
+    } else if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nu se poate efectua apelul.')),
+      );
     }
   }
 
-  Future<void> _sendEmail(String email) async {
+  Future<void> _sendEmail(BuildContext context, String email) async {
     final Uri launchUri = Uri(
       scheme: 'mailto',
       path: email,
     );
     if (await canLaunchUrl(launchUri)) {
       await launchUrl(launchUri);
+    } else if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nu se poate trimite emailul.')),
+      );
     }
+  }
+
+  Widget _buildLetterAvatar(BuildContext context) {
+    final initials = member.name.trim().split(' ').map((w) => w.isNotEmpty ? w[0] : '').take(2).join().toUpperCase();
+    return Container(
+      color: AppColors.primary.withValues(alpha: 0.1),
+      alignment: Alignment.center,
+      child: Text(
+        initials.isNotEmpty ? initials : '?',
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: AppColors.primary,
+              fontWeight: FontWeight.bold,
+            ),
+      ),
+    );
   }
 
   @override
@@ -64,35 +87,20 @@ class MemberCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Avatar
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      image: member.imageUrl != null
-                          ? DecorationImage(
-                              image: NetworkImage(member.imageUrl!),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: member.imageUrl != null && member.imageUrl!.isNotEmpty
+                          ? Image.network(
+                              member.imageUrl!,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  _buildLetterAvatar(context),
                             )
-                          : null,
+                          : _buildLetterAvatar(context),
                     ),
-                    child: member.imageUrl == null
-                        ? Center(
-                            child: Text(
-                              member.name.isNotEmpty
-                                  ? member.name[0].toUpperCase()
-                                  : '?',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium
-                                  ?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                          )
-                        : null,
                   ),
                   const SizedBox(width: 12),
                   // Member Info
@@ -204,7 +212,7 @@ class MemberCard extends StatelessWidget {
                         child: _ContactButton(
                           icon: FontAwesomeIcons.phone,
                           label: 'Call',
-                          onTap: () => _makePhoneCall(member.phoneNumber!),
+                          onTap: () => _makePhoneCall(context, member.phoneNumber!),
                         ),
                       ),
                       if (member.email != null) const SizedBox(width: 8),
@@ -214,7 +222,7 @@ class MemberCard extends StatelessWidget {
                         child: _ContactButton(
                           icon: FontAwesomeIcons.envelope,
                           label: 'Email',
-                          onTap: () => _sendEmail(member.email!),
+                          onTap: () => _sendEmail(context, member.email!),
                         ),
                       ),
                   ],

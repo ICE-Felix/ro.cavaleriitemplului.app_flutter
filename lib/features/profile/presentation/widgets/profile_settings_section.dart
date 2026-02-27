@@ -1,7 +1,8 @@
-import 'package:app/features/profile/presentation/widgets/language_selection_dialog/language_selection_dialog.dart';
 import 'package:app/core/localization/localization_inherited_widget.dart';
+import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:app/features/profile/presentation/widgets/profile_menu_item.dart';
 
 class ProfileSettingsSection extends StatelessWidget {
@@ -10,50 +11,22 @@ class ProfileSettingsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _ProfileSection(
-      title: context.getString(label: 'profile.settings'),
+      title: 'Setări',
       items: [
         ProfileMenuItem(
-          icon: FontAwesomeIcons.language,
-          title: context.getString(label: 'profile.language'),
-          subtitle: context.getString(label: 'profile.changeLanguage'),
-          onTap: () => _showLanguageDialog(context),
-        ),
-        ProfileMenuItem(
           icon: FontAwesomeIcons.bell,
-          title: context.getString(label: 'profile.notifications'),
-          subtitle: context.getString(label: 'profile.manageNotifications'),
-          onTap: () => _showComingSoonMessage(
-            context,
-            context.getString(label: 'profile.notifications'),
-          ),
-        ),
-        ProfileMenuItem(
-          icon: FontAwesomeIcons.locationDot,
-          title: context.getString(label: 'profile.location'),
-          subtitle: context.getString(label: 'profile.locationSettings'),
-          onTap: () => _showComingSoonMessage(
-            context,
-            context.getString(label: 'profile.location'),
-          ),
+          title: 'Notificări',
+          subtitle: 'Gestionează notificările',
+          onTap: () => context.pushNamed(AppRoutesNames.notifications.name),
         ),
       ],
-    );
-  }
-
-  void _showLanguageDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return const LanguageSelectionDialog();
-      },
     );
   }
 
   void _showComingSoonMessage(BuildContext context, String feature) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$feature - ${context.getString(label: 'comingSoon')}'),
+        content: Text('$feature - În curând'),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),

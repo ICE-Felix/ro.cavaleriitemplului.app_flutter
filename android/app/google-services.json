@@ -1,40 +1,21 @@
 {
   "project_info": {
-    "project_number": "767838230428",
-    "project_id": "mommy-hai-ef20b",
-    "storage_bucket": "mommy-hai-ef20b.firebasestorage.app"
+    "project_number": "651775203951",
+    "project_id": "ro-cavaleriitemplului-app",
+    "storage_bucket": "ro-cavaleriitemplului-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:767838230428:android:151e983b65025ae2ad1a59",
+        "mobilesdk_app_id": "1:651775203951:android:8099d62c2cdeefaf6b4b9a",
         "android_client_info": {
-          "package_name": "com.mommyhai.app"
+          "package_name": "ro.cavaleriitemplului.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB7cf0pS7L9F_UKIXf-aafREWLrTHlYfP4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:767838230428:android:9b9113db7be7750cad1a59",
-        "android_client_info": {
-          "package_name": "com.mommyhai.app.mobile"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB7cf0pS7L9F_UKIXf-aafREWLrTHlYfP4"
+          "current_key": "AIzaSyBVhp_Q4LJQXJuaQRSgynL8mvtYvYHFCWU"
         }
       ],
       "services": {

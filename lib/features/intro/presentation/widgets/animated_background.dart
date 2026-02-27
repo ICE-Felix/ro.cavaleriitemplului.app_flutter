@@ -40,14 +40,13 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
     // Logo opacity animation: 0 to 1, then 1 to 0
     _logoOpacityAnimation = TweenSequence<double>([
       TweenSequenceItem(
-        tween: Tween<double>(begin: 0.0, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeIn)),
+        tween: Tween<double>(
+          begin: 0.0,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.easeIn)),
         weight: 50,
       ),
-      TweenSequenceItem(
-        tween: ConstantTween<double>(1.0),
-        weight: 50,
-      ),
+      TweenSequenceItem(tween: ConstantTween<double>(1.0), weight: 50),
     ]).animate(_logoController);
 
     // Splash image opacity animation: 0 to 1
@@ -127,55 +126,66 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
               if (showSplash)
                 Opacity(
                   opacity: _splashOpacityAnimation.value,
-                  child: Stack(
-                    children: [
-                      // Full screen splash image
-                      Positioned.fill(
-                        child: Image.asset(
-                          'assets/images/logo/splash.jpeg',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      // Loading indicator and text at bottom
-                      Positioned(
-                        bottom: 60,
-                        left: 0,
-                        right: 0,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 4,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Color(0xFF8B0000), // Dark red from app colors
-                                ),
-                                backgroundColor: Color(0xFFE2DED3),
+                  child: SafeArea(
+                    child: Stack(
+                      children: [
+                        // Full screen splash image
+                        Positioned.fill(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                'assets/images/logo/splash.jpeg',
+                                fit: BoxFit.contain,
                               ),
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              'Se încarcă...',
-                              style: TextStyle(
-                                color: const Color(0xFF8B0000), // Dark red
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.5,
-                                shadows: [
-                                  Shadow(
-                                    offset: const Offset(0, 1),
-                                    blurRadius: 2,
-                                    color: Colors.white.withValues(alpha: 0.8),
+                            ],
+                          ),
+                        ),
+                        // Loading indicator and text at bottom
+                        Positioned(
+                          bottom: 60,
+                          left: 0,
+                          right: 0,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 4,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color(
+                                      0xFF8B0000,
+                                    ), // Dark red from app colors
                                   ),
-                                ],
+                                  backgroundColor: Color(0xFFE2DED3),
+                                ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 20),
+                              Text(
+                                'Se încarcă...',
+                                style: TextStyle(
+                                  color: const Color(0xFF8B0000), // Dark red
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                  shadows: [
+                                    Shadow(
+                                      offset: const Offset(0, 1),
+                                      blurRadius: 2,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.8,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
             ],

@@ -11,6 +11,7 @@ class MembersBloc extends Bloc<MembersEvent, MembersState> {
     on<LoadImportantMembers>(_onLoadImportantMembers);
     on<LoadFavoriteMembers>(_onLoadFavoriteMembers);
     on<LoadMemberById>(_onLoadMemberById);
+    on<SearchMembers>(_onSearchMembers);
     on<ToggleFavorite>(_onToggleFavorite);
   }
 
@@ -69,6 +70,20 @@ class MembersBloc extends Bloc<MembersEvent, MembersState> {
     try {
       final member = await repository.getMemberById(event.id);
       emit(MemberDetailsLoaded(member));
+    } catch (e) {
+      emit(MembersError(e.toString()));
+    }
+  }
+
+  Future<void> _onSearchMembers(
+    SearchMembers event,
+    Emitter<MembersState> emit,
+  ) async {
+    emit(const MembersLoading());
+    try {
+      final members = await repository.searchMembers(event.query);
+      final favoriteIds = await _getFavoriteIds();
+      emit(MembersLoaded(members, favoriteIds: favoriteIds));
     } catch (e) {
       emit(MembersError(e.toString()));
     }

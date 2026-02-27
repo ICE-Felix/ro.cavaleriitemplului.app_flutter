@@ -28,6 +28,15 @@ class LoadMemberById extends MembersEvent {
   List<Object?> get props => [id];
 }
 
+class SearchMembers extends MembersEvent {
+  final String query;
+
+  const SearchMembers(this.query);
+
+  @override
+  List<Object?> get props => [query];
+}
+
 class ToggleFavorite extends MembersEvent {
   final String memberId;
 

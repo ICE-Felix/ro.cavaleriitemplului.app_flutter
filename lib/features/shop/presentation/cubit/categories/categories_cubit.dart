@@ -1,59 +1,21 @@
 import 'package:app/core/service_locator.dart';
 import 'package:app/features/shop/domain/entities/product_category_entity.dart';
 import 'package:app/features/shop/domain/repositories/shop_repository.dart';
-import 'package:app/features/shop/domain/usecases/get_parent_categories_usecase.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:app/core/usecases/usecase.dart';
-import 'package:app/core/error/exceptions.dart';
-import 'package:flutter/foundation.dart';
 
 part 'categories_state.dart';
 
 class CategoriesCubit extends Cubit<CategoriesState> {
-  CategoriesCubit() : super(CategoriesInitial());
+  CategoriesCubit() : super(const CategoriesState());
 
   Future<void> loadCategories() async {
-    if (kDebugMode) {
-      print('🎯 CategoriesCubit: Starting to load categories...');
-    }
-
-    emit(CategoriesLoading());
-
-    if (kDebugMode) {
-      print('🎯 CategoriesCubit: Emitted CategoriesLoading state');
-    }
-
+    emit(state.copyWith(isLoading: true, error: null));
     try {
-      final categories = await GetParentCategoriesUseCase(
-        sl<ShopRepository>(),
-      ).call(NoParams());
-
-      if (kDebugMode) {
-        print('🎯 CategoriesCubit: Received ${categories.length} categories from use case');
-        for (var cat in categories) {
-          print('   - ${cat.name} (id: ${cat.id})');
-        }
-      }
-
-      if (isClosed) return;
-      emit(CategoriesLoaded(categories: categories));
-    } on ServerException catch (e) {
-      if (isClosed) return;
-      emit(CategoriesError(message: e.message));
-    } on AuthException catch (e) {
-      if (isClosed) return;
-      emit(CategoriesError(message: e.message));
+      final categories = await sl<ShopRepository>().getParentCategories();
+      emit(state.copyWith(categories: categories, isLoading: false));
     } catch (e) {
-      if (isClosed) return;
-      emit(CategoriesError(message: 'An unexpected error occurred: $e'));
+      emit(state.copyWith(isLoading: false, error: e.toString()));
     }
-  }
-
-  void retry() {
-    if (kDebugMode) {
-      print('🔄 CategoriesCubit: Retrying...');
-    }
-    loadCategories();
   }
 }

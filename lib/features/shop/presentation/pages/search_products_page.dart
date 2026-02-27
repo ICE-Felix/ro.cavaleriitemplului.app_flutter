@@ -1,11 +1,8 @@
-import 'package:app/core/localization/app_localization.dart';
 import 'package:app/core/navigation/routes_name.dart';
+import 'package:app/core/widgets/app_search_bar_v2.dart';
 import 'package:app/core/widgets/custom_top_bar.dart';
 import 'package:app/features/shop/presentation/cubit/search_products/search_products_cubit.dart';
 import 'package:app/features/shop/presentation/widgets/product_card.dart';
-import 'package:app/features/shop/presentation/widgets/products_search_bar.dart';
-import 'package:app/features/shop/presentation/widgets/search_products/search_products_empty_query.dart';
-import 'package:app/features/shop/presentation/widgets/search_products/search_products_empty_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -40,61 +37,50 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
       ),
       body: BlocProvider(
         create: (context) => SearchProductsCubit(),
-        child: BlocBuilder<SearchProductsCubit, SearchProductsState>(
-          builder: (context, state) {
+        child: Builder(
+          builder: (context) {
             return Column(
               children: [
-                // Search bar at the top
-                ProductsSearchBar(
+                AppSearchBarV2(
                   controller: _searchController,
+                  hintText: 'Caută produse...',
                   autofocus: true,
-                  onChanged:
-                      (query) => context
-                          .read<SearchProductsCubit>()
-                          .searchProducts(query),
-                  onClear:
-                      () => context.read<SearchProductsCubit>().clearSearch(),
-                  onSubmitted:
-                      () => context.read<SearchProductsCubit>().searchProducts(
-                        _searchController.text,
-                      ),
                   margin: const EdgeInsets.all(16.0),
+                  onChanged: (query) {
+                    context.read<SearchProductsCubit>().searchProducts(query);
+                  },
                 ),
-
-                // Search results area
                 Expanded(
                   child: BlocBuilder<SearchProductsCubit, SearchProductsState>(
-                    buildWhen:
-                        (previous, current) =>
-                            previous.products != current.products ||
-                            previous.isLoading != current.isLoading ||
-                            previous.isError != current.isError ||
-                            previous.searchQuery != current.searchQuery,
                     builder: (context, state) {
-                      if (state.searchQuery.isEmpty) {
-                        return SearchProductsEmptyQuery();
-                      }
-                      if (state.products.isEmpty) {
-                        return SearchProductsEmptyResult();
-                      }
                       if (state.isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      if (state.error != null) {
                         return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const CircularProgressIndicator(),
-                              const SizedBox(height: 16),
-                              Text(context.getString(label: 'shop.searching')),
-                            ],
+                          child: Text(
+                            state.error!,
+                            style: const TextStyle(color: Colors.red),
                           ),
                         );
                       }
-                      // ToDO -> add error state
+
+                      if (state.products.isEmpty) {
+                        return Center(
+                          child: Text(
+                            _searchController.text.isEmpty
+                                ? 'Caută produse în magazin'
+                                : 'Nu s-au găsit produse',
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        );
+                      }
+
                       return ListView.separated(
                         padding: const EdgeInsets.all(16.0),
                         itemCount: state.products.length,
-                        separatorBuilder:
-                            (context, index) => const SizedBox(height: 8),
+                        separatorBuilder: (context, index) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           final product = state.products[index];
                           return ProductCard(

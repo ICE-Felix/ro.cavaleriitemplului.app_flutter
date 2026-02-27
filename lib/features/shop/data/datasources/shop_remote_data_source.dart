@@ -1,264 +1,78 @@
-import 'package:app/core/network/woocommerce_api_client.dart';
-import 'package:app/features/shop/data/models/product_model.dart';
-import 'package:app/features/shop/data/models/product_tag_model.dart';
-import 'package:app/features/shop/data/models/shop_category_model.dart';
-import 'package:app/core/error/exceptions.dart';
-import 'package:app/features/shop/domain/entities/product_tag_entity.dart';
-import 'package:flutter/foundation.dart';
+import 'package:app/core/network/supabase_client.dart';
+import 'package:app/features/shop/domain/entities/product_category_entity.dart';
+import 'package:app/features/shop/domain/entities/product_entity.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 
 abstract class ShopRemoteDataSource {
-  Future<List<ShopCategoryModel>> getCategories();
-  Future<List<ShopCategoryModel>> getParentCategories();
-  Future<List<ShopCategoryModel>> getSubCategories(int parentId);
-  Future<List<ProductTagEntity>> getProductTags({String? categoryId});
-  Future<List<ProductModel>> getProductsByCategory(int categoryId);
-  Future<ProductModel> getProductById(int productId);
-  Future<List<ProductModel>> filterProducts({
-    String? query,
-    List<int>? categories,
-    List<int>? tags,
-  });
+  Future<List<ProductCategoryEntity>> getParentCategories();
+  Future<List<ProductCategoryEntity>> getSubCategories(String parentId);
+  Future<List<ProductEntity>> getProductsByCategory(String categoryId);
+  Future<ProductEntity> getProductById(String productId);
+  Future<List<ProductEntity>> searchProducts(String query);
 }
 
 class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
-  final WooCommerceApiClient wooCommerce;
+  final SupabaseClient _supabaseClient;
 
-  ShopRemoteDataSourceImpl({required this.wooCommerce});
+  ShopRemoteDataSourceImpl() : _supabaseClient = SupabaseClient();
+
+  supabase_flutter.SupabaseClient get _client => _supabaseClient.client;
 
   @override
-  Future<List<ShopCategoryModel>> getCategories() async {
-    try {
-      final response = await wooCommerce.get('/products/categories');
-
-      if (response is! List) {
-        throw ServerException(
-          message: 'Invalid response format',
-        );
-      }
-
-      final List<dynamic> categoriesData = response;
-      return categoriesData
-          .map(
-            (category) =>
-                ShopCategoryModel.fromJson(category as Map<String, dynamic>),
-          )
-          .toList();
-    } catch (e) {
-      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
-      throw ServerException(message: e.toString());
-    }
+  Future<List<ProductCategoryEntity>> getParentCategories() async {
+    final response = await _client
+        .from('shop_categories')
+        .select()
+        .isFilter('parent_id', null)
+        .order('sort_order');
+    return (response as List)
+        .map((json) => ProductCategoryEntity.fromJson(json))
+        .toList();
   }
 
   @override
-  Future<List<ShopCategoryModel>> getParentCategories() async {
-    try {
-      if (kDebugMode) {
-        print('🛒 ShopRemoteDataSource: Fetching parent categories...');
-      }
-
-      final response = await wooCommerce.get(
-        '/products/categories',
-        queryParameters: {'parent': 0},
-      );
-
-      if (kDebugMode) {
-        print('🛒 ShopRemoteDataSource: Response type: ${response.runtimeType}');
-        print('🛒 ShopRemoteDataSource: Is List? ${response is List}');
-      }
-
-      if (response is! List) {
-        if (kDebugMode) {
-          print('❌ ShopRemoteDataSource: Invalid response format');
-        }
-        throw ServerException(
-          message: 'Invalid response format',
-        );
-      }
-
-      if (kDebugMode) {
-        print('🛒 ShopRemoteDataSource: Received ${response.length} categories');
-      }
-
-      final List<dynamic> categoriesData = response;
-      final categories = categoriesData
-          .map(
-            (category) {
-              try {
-                return ShopCategoryModel.fromJson(category as Map<String, dynamic>);
-              } catch (e) {
-                if (kDebugMode) {
-                  print('❌ ShopRemoteDataSource: Error parsing category: $e');
-                  print('❌ Category data: $category');
-                }
-                rethrow;
-              }
-            },
-          )
-          .toList();
-
-      if (kDebugMode) {
-        print('✅ ShopRemoteDataSource: Successfully parsed ${categories.length} categories');
-      }
-
-      return categories;
-    } catch (e) {
-      if (kDebugMode) {
-        print('❌ ShopRemoteDataSource: Error in getParentCategories: $e');
-      }
-      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
-      throw ServerException(message: e.toString());
-    }
+  Future<List<ProductCategoryEntity>> getSubCategories(String parentId) async {
+    final response = await _client
+        .from('shop_categories')
+        .select()
+        .eq('parent_id', parentId)
+        .order('sort_order');
+    return (response as List)
+        .map((json) => ProductCategoryEntity.fromJson(json))
+        .toList();
   }
 
   @override
-  Future<List<ShopCategoryModel>> getSubCategories(int parentId) async {
-    try {
-      final response = await wooCommerce.get(
-        '/products/categories',
-        queryParameters: {'parent': parentId},
-      );
-
-      if (response is! List) {
-        throw ServerException(
-          message: 'Invalid response format',
-        );
-      }
-
-      final List<dynamic> categoriesData = response;
-      return categoriesData
-          .map(
-            (category) =>
-                ShopCategoryModel.fromJson(category as Map<String, dynamic>),
-          )
-          .toList();
-    } catch (e) {
-      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
-      throw ServerException(message: e.toString());
-    }
+  Future<List<ProductEntity>> getProductsByCategory(String categoryId) async {
+    final response = await _client
+        .from('shop_products')
+        .select()
+        .eq('category_id', categoryId)
+        .order('sort_order');
+    return (response as List)
+        .map((json) => ProductEntity.fromJson(json))
+        .toList();
   }
 
   @override
-  Future<List<ProductModel>> getProductsByCategory(int categoryId) async {
-    try {
-      final response = await wooCommerce.get(
-        '/products',
-        queryParameters: {
-          'category': categoryId.toString(),
-          'per_page': 100,
-        },
-      );
-
-      if (response is! List) {
-        throw ServerException(
-          message: 'Invalid response format',
-        );
-      }
-
-      final List<dynamic> productsData = response;
-      return productsData
-          .map(
-            (product) => ProductModel.fromJson(product as Map<String, dynamic>),
-          )
-          .toList();
-    } catch (e) {
-      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
-      throw ServerException(message: e.toString());
-    }
+  Future<ProductEntity> getProductById(String productId) async {
+    final response = await _client
+        .from('shop_products')
+        .select()
+        .eq('id', productId)
+        .single();
+    return ProductEntity.fromJson(response);
   }
 
   @override
-  Future<ProductModel> getProductById(int productId) async {
-    try {
-      final response = await wooCommerce.get('/products/$productId');
-
-      if (response is! Map<String, dynamic>) {
-        throw ServerException(
-          message: 'Invalid response format',
-        );
-      }
-
-      return ProductModel.fromJson(response);
-    } catch (e) {
-      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
-      throw ServerException(message: e.toString());
-    }
-  }
-
-  @override
-  Future<List<ProductModel>> filterProducts({
-    String? query,
-    List<int>? categories,
-    List<int>? tags,
-  }) async {
-    try {
-      final queryParams = <String, dynamic>{
-        'per_page': 100,
-      };
-
-      if (query != null && query.isNotEmpty) {
-        queryParams['search'] = query;
-      }
-
-      if (categories != null && categories.isNotEmpty) {
-        queryParams['category'] = categories.join(',');
-      }
-
-      if (tags != null && tags.isNotEmpty) {
-        queryParams['tag'] = tags.join(',');
-      }
-
-      final response = await wooCommerce.get(
-        '/products',
-        queryParameters: queryParams,
-      );
-
-      if (response is! List) {
-        throw ServerException(
-          message: 'Invalid response format',
-        );
-      }
-
-      final List<dynamic> productsData = response;
-      return productsData
-          .map(
-            (product) => ProductModel.fromJson(product as Map<String, dynamic>),
-          )
-          .toList();
-    } catch (e) {
-      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
-      throw ServerException(message: e.toString());
-    }
-  }
-
-  @override
-  Future<List<ProductTagEntity>> getProductTags({String? categoryId}) async {
-    try {
-      final queryParams = <String, dynamic>{
-        'per_page': 100,
-      };
-
-      if (categoryId != null) {
-        queryParams['category'] = categoryId;
-      }
-
-      final response = await wooCommerce.get(
-        '/products/tags',
-        queryParameters: queryParams,
-      );
-
-      if (response is! List) {
-        throw ServerException(
-          message: 'Invalid response format',
-        );
-      }
-
-      final List<dynamic> tagsData = response;
-      return tagsData
-          .map((tag) => ProductTagModel.fromJson(tag as Map<String, dynamic>))
-          .toList();
-    } catch (e) {
-      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
-      throw ServerException(message: e.toString());
-    }
+  Future<List<ProductEntity>> searchProducts(String query) async {
+    final response = await _client
+        .from('shop_products')
+        .select()
+        .ilike('name', '%$query%')
+        .order('sort_order');
+    return (response as List)
+        .map((json) => ProductEntity.fromJson(json))
+        .toList();
   }
 }

@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:app/core/widgets/custom_top_bar.dart';
 import 'package:app/features/shop/presentation/cubit/categories/categories_cubit.dart';
 import 'package:app/features/shop/presentation/widgets/category_card.dart';
-import 'package:app/features/shop/presentation/widgets/button_search_bar.dart';
+import 'package:app/core/widgets/app_search_bar_v2.dart';
 import 'package:go_router/go_router.dart';
 
 class CategoriesPage extends StatelessWidget {
@@ -44,7 +44,6 @@ class _CategoriesPageView extends StatelessWidget {
             logoWidth: 0,
             centerTitle: false,
             showNotificationButton: true,
-            onNotificationTap: () {},
           ),
           body: _buildBody(context, state),
         );
@@ -53,90 +52,134 @@ class _CategoriesPageView extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context, CategoriesState state) {
-    print('🎨 UI: Building body with state: ${state.runtimeType}');
-
-    if (state is CategoriesLoading) {
-      print('🎨 UI: Showing loading indicator');
+    if (state.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (state is CategoriesError) {
-      print('🎨 UI: Showing error: ${state.message}');
+    if (state.error != null) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              state.message,
-              style: const TextStyle(color: Colors.red),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                context.read<CategoriesCubit>().retry();
-              },
-              child: const Text('Retry'),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.store_outlined,
+                size: 64,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Nu am putut încărca magazinul',
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Verifică conexiunea la internet și încearcă din nou.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () {
+                  context.read<CategoriesCubit>().loadCategories();
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('Reîncearcă'),
+              ),
+            ],
+          ),
         ),
       );
     }
 
-    if (state is CategoriesLoaded) {
-      final categories = state.categories;
-      print('🎨 UI: Showing ${categories.length} categories');
-      for (var cat in categories) {
-        print('   🎨 UI: - ${cat.name} (image: ${cat.image ?? "null"})');
-      }
+    final categories = state.categories;
 
-      return ListView(
-        children: [
-          // Search bar
-          ButtonSearchBar(
-            onTap: () {
-              context.pushNamed(AppRoutesNames.searchProducts.name);
-            },
-            margin: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+    if (categories.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.shopping_bag_outlined,
+                size: 64,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Magazinul este gol momentan',
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Revino mai târziu pentru produse noi.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          // Categories content
-          GridView.builder(
-            padding: const EdgeInsets.all(16.0),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            primary: false,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 0.8,
-              crossAxisSpacing: 4,
-              mainAxisSpacing: 4,
-            ),
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              final category = categories[index];
-              return CategoryCard(
-                category: category,
-                onTap: () {
-                  context.pushNamed(
-                    AppRoutesNames.products.name,
-                    extra: category,
-                  );
-                },
-              );
-            },
-          ),
-
-          const SizedBox(height: 16),
-          // Banner
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            child: BannerWidget(type: BannerType.secondary),
-          ),
-        ],
+        ),
       );
     }
 
-    return const SizedBox.shrink();
+    return ListView(
+      children: [
+        // Search bar
+        GestureDetector(
+          onTap: () {
+            context.pushNamed(AppRoutesNames.searchProducts.name);
+          },
+          child: AbsorbPointer(
+            child: AppSearchBarV2(
+              controller: TextEditingController(),
+              hintText: 'Caută produse...',
+              margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Categories content
+        GridView.builder(
+          padding: const EdgeInsets.all(16.0),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          primary: false,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 0.8,
+            crossAxisSpacing: 4,
+            mainAxisSpacing: 4,
+          ),
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
+            final category = categories[index];
+            return CategoryCard(
+              category: category,
+              onTap: () {
+                context.pushNamed(
+                  AppRoutesNames.products.name,
+                  extra: category,
+                );
+              },
+            );
+          },
+        ),
+
+        const SizedBox(height: 16),
+        // Banner
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          child: BannerWidget(type: BannerType.secondary),
+        ),
+      ],
+    );
   }
 }

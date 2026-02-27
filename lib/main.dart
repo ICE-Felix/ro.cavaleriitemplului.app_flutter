@@ -18,6 +18,7 @@ import 'features/revista/presentation/bloc/revista_bloc.dart';
 import 'firebase_options.dart';
 import '../core/services/firebase_messaging_service.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
+import 'features/notifications/presentation/bloc/notification_event.dart';
 
 // Background message handler - must be a top-level function
 @pragma('vm:entry-point')
@@ -68,7 +69,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<IntroBloc>()),
         BlocProvider(create: (context) => sl<NewsBloc>()),
         BlocProvider(create: (context) => sl<RevistaBloc>()),
-        BlocProvider(create: (context) => sl<NotificationBloc>()),
+        BlocProvider(
+          create: (context) =>
+              sl<NotificationBloc>()..add(const RefreshUnreadCount()),
+        ),
         BlocProvider(create: (context) => sl<LocationCubit>(), lazy: false),
         BlocProvider(
           create:

@@ -30,11 +30,11 @@ class CategoryCard extends StatelessWidget {
                   color: AppColors.inputFill,
                 ),
                 child:
-                    category.image != null
+                    category.imageUrl != null
                         ? ClipRRect(
                           borderRadius: BorderRadius.circular(12.0),
                           child: Image.network(
-                            category.image!,
+                            category.imageUrl!,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return _buildPlaceholder();

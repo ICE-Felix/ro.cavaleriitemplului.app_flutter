@@ -15,7 +15,6 @@ enum AppRoutesNames {
   productDetails(name: 'product_details', path: 'product_details'),
   searchProducts(name: 'search_products', path: 'search_products'),
   cart(name: 'cart', path: '/cart'),
-  checkout(name: 'checkout', path: 'checkout'),
   locations(name: 'locations', path: '/locations'),
   searchLocations(name: 'search_locations', path: 'search_locations'),
   selectedLocationCategory(
@@ -44,7 +43,14 @@ enum AppRoutesNames {
   //Support
   support(name: 'support', path: '/support'),
 
-  paymentWebView(name: 'payment_webview', path: 'payment_webview');
+  //Notifications
+  notifications(name: 'notifications', path: '/notifications'),
+
+  // Orders
+  orderHistory(name: 'order_history', path: '/order-history'),
+  placeOrder(name: 'place_order', path: 'place-order'),
+  orderSuccess(name: 'order_success', path: 'order-success'),
+  orderDetail(name: 'order_detail', path: 'order-detail');
 
   final String name;
   final String path;

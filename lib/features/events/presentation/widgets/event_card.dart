@@ -1,6 +1,8 @@
 import 'package:app/core/navigation/routes_name.dart';
+import 'package:app/core/style/app_colors.dart';
 import 'package:app/features/events/domain/model/events.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class EventCard extends StatelessWidget {
@@ -20,13 +22,13 @@ class EventCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 4,
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
               offset: const Offset(0, 2),
             ),
           ],
@@ -49,10 +51,10 @@ class EventCard extends StatelessWidget {
                   // Title
                   Text(
                     event.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: AppColors.primary,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -90,29 +92,32 @@ class _EventImage extends StatelessWidget {
       height: 200,
       width: double.infinity,
       decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         child: Image.network(
           imageId,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
             return Container(
-              color: Colors.grey[200],
-              child: Icon(
-                Icons.image_not_supported,
-                size: 48,
-                color: Colors.grey[400],
+              color: AppColors.primary.withValues(alpha: 0.1),
+              child: Center(
+                child: FaIcon(
+                  FontAwesomeIcons.calendarDays,
+                  size: 48,
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                ),
               ),
             );
           },
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
             return Container(
-              color: Colors.grey[200],
+              color: AppColors.primary.withValues(alpha: 0.05),
               child: Center(
                 child: CircularProgressIndicator(
+                  color: AppColors.primary,
                   value:
                       loadingProgress.expectedTotalBytes != null
                           ? loadingProgress.cumulativeBytesLoaded /
@@ -135,10 +140,16 @@ class _PlaceholderImage extends StatelessWidget {
       height: 200,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-        color: Colors.grey[200],
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        color: AppColors.primary.withValues(alpha: 0.1),
       ),
-      child: Icon(Icons.event, size: 48, color: Colors.grey[400]),
+      child: Center(
+        child: FaIcon(
+          FontAwesomeIcons.calendarDays,
+          size: 48,
+          color: AppColors.primary.withValues(alpha: 0.3),
+        ),
+      ),
     );
   }
 }
@@ -152,12 +163,15 @@ class _EventLocation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
-        const SizedBox(width: 4),
+        FaIcon(FontAwesomeIcons.locationDot,
+            size: 14, color: AppColors.onBackground.withValues(alpha: 0.6)),
+        const SizedBox(width: 6),
         Expanded(
           child: Text(
             event.venueName.isNotEmpty ? event.venueName : event.address,
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            style: TextStyle(
+                fontSize: 14,
+                color: AppColors.onBackground.withValues(alpha: 0.7)),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -176,11 +190,14 @@ class _EventTime extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
-        const SizedBox(width: 4),
+        FaIcon(FontAwesomeIcons.clock,
+            size: 14, color: AppColors.onBackground.withValues(alpha: 0.6)),
+        const SizedBox(width: 6),
         Text(
           _formatEventTime(event.start, event.end),
-          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          style: TextStyle(
+              fontSize: 14,
+              color: AppColors.onBackground.withValues(alpha: 0.7)),
         ),
       ],
     );
@@ -211,17 +228,17 @@ class _EventTypeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         eventTypeName,
         style: TextStyle(
           fontSize: 12,
-          color: Theme.of(context).primaryColor,
-          fontWeight: FontWeight.w500,
+          color: AppColors.primary,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

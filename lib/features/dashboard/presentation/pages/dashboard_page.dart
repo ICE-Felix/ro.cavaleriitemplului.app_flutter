@@ -62,7 +62,6 @@ class _DashboardView extends StatelessWidget {
             logoWidth: 0,
             centerTitle: false,
             showNotificationButton: true,
-            onNotificationTap: () {},
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),

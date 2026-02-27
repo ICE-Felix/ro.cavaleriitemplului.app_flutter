@@ -1,129 +1,179 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
-// Events
-abstract class NotificationEvent extends Equatable {
-  const NotificationEvent();
+import '../../domain/entities/notification_entity.dart';
+import '../../domain/repositories/notification_repository.dart';
+import 'notification_event.dart';
+import 'notification_state.dart';
 
-  @override
-  List<Object> get props => [];
-}
-
-class NotificationReceived extends NotificationEvent {
-  final RemoteMessage message;
-
-  const NotificationReceived(this.message);
-
-  @override
-  List<Object> get props => [message];
-}
-
-class NotificationTapped extends NotificationEvent {
-  final RemoteMessage message;
-
-  const NotificationTapped(this.message);
-
-  @override
-  List<Object> get props => [message];
-}
-
-class SubscribeToTopic extends NotificationEvent {
-  final String topic;
-
-  const SubscribeToTopic(this.topic);
-
-  @override
-  List<Object> get props => [topic];
-}
-
-class UnsubscribeFromTopic extends NotificationEvent {
-  final String topic;
-
-  const UnsubscribeFromTopic(this.topic);
-
-  @override
-  List<Object> get props => [topic];
-}
-
-// States
-abstract class NotificationState extends Equatable {
-  const NotificationState();
-
-  @override
-  List<Object> get props => [];
-}
-
-class NotificationInitial extends NotificationState {}
-
-class NotificationLoading extends NotificationState {}
-
-class NotificationReceiveSuccess extends NotificationState {
-  final RemoteMessage message;
-
-  const NotificationReceiveSuccess(this.message);
-
-  @override
-  List<Object> get props => [message];
-}
-
-class NotificationError extends NotificationState {
-  final String message;
-
-  const NotificationError(this.message);
-
-  @override
-  List<Object> get props => [message];
-}
-
-// BLoC
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
-  NotificationBloc() : super(NotificationInitial()) {
-    on<NotificationReceived>(_onNotificationReceived);
-    on<NotificationTapped>(_onNotificationTapped);
-    on<SubscribeToTopic>(_onSubscribeToTopic);
-    on<UnsubscribeFromTopic>(_onUnsubscribeFromTopic);
+  final NotificationRepository repository;
+  static const int _pageSize = 20;
+
+  NotificationBloc({required this.repository})
+      : super(const NotificationInitial()) {
+    on<LoadNotifications>(_onLoadNotifications);
+    on<LoadMoreNotifications>(_onLoadMore);
+    on<RefreshUnreadCount>(_onRefreshUnreadCount);
+    on<MarkAsRead>(_onMarkAsRead);
+    on<MarkAllAsRead>(_onMarkAllAsRead);
+    on<FcmNotificationReceived>(_onFcmReceived);
   }
 
-  void _onNotificationReceived(
-    NotificationReceived event,
-    Emitter<NotificationState> emit,
-  ) {
-    emit(NotificationReceiveSuccess(event.message));
-  }
-
-  void _onNotificationTapped(
-    NotificationTapped event,
-    Emitter<NotificationState> emit,
-  ) {
-    // Handle navigation or other actions when notification is tapped
-    // You can emit different states based on the message data
-    emit(NotificationReceiveSuccess(event.message));
-  }
-
-  Future<void> _onSubscribeToTopic(
-    SubscribeToTopic event,
+  Future<void> _onLoadNotifications(
+    LoadNotifications event,
     Emitter<NotificationState> emit,
   ) async {
     try {
-      emit(NotificationLoading());
-      await FirebaseMessaging.instance.subscribeToTopic(event.topic);
-      emit(NotificationInitial());
+      emit(NotificationLoading(unreadCount: state.unreadCount));
+      final notifications = await repository.getNotifications(page: 1, limit: _pageSize);
+      final unreadCount = await repository.getUnreadCount();
+      emit(NotificationLoaded(
+        notifications: notifications,
+        unreadCount: unreadCount,
+        hasMore: notifications.length >= _pageSize,
+        currentPage: 1,
+      ));
     } catch (e) {
-      emit(NotificationError('Failed to subscribe to topic: ${e.toString()}'));
+      emit(NotificationError(e.toString(), unreadCount: state.unreadCount));
     }
   }
 
-  Future<void> _onUnsubscribeFromTopic(
-    UnsubscribeFromTopic event,
+  Future<void> _onLoadMore(
+    LoadMoreNotifications event,
+    Emitter<NotificationState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is! NotificationLoaded || !currentState.hasMore) return;
+
+    try {
+      final nextPage = currentState.currentPage + 1;
+      final moreNotifications =
+          await repository.getNotifications(page: nextPage, limit: _pageSize);
+      emit(NotificationLoaded(
+        notifications: [...currentState.notifications, ...moreNotifications],
+        unreadCount: currentState.unreadCount,
+        hasMore: moreNotifications.length >= _pageSize,
+        currentPage: nextPage,
+      ));
+    } catch (e) {
+      emit(NotificationError(e.toString(), unreadCount: state.unreadCount));
+    }
+  }
+
+  Future<void> _onRefreshUnreadCount(
+    RefreshUnreadCount event,
     Emitter<NotificationState> emit,
   ) async {
     try {
-      emit(NotificationLoading());
-      await FirebaseMessaging.instance.unsubscribeFromTopic(event.topic);
-      emit(NotificationInitial());
-    } catch (e) {
-      emit(NotificationError('Failed to unsubscribe from topic: ${e.toString()}'));
+      final unreadCount = await repository.getUnreadCount();
+      final currentState = state;
+      if (currentState is NotificationLoaded) {
+        emit(NotificationLoaded(
+          notifications: currentState.notifications,
+          unreadCount: unreadCount,
+          hasMore: currentState.hasMore,
+          currentPage: currentState.currentPage,
+        ));
+      } else {
+        emit(NotificationInitial(unreadCount: unreadCount));
+      }
+    } catch (_) {
+      // Silently fail for badge refresh
     }
   }
-} 
+
+  Future<void> _onMarkAsRead(
+    MarkAsRead event,
+    Emitter<NotificationState> emit,
+  ) async {
+    try {
+      await repository.markAsRead(event.notificationId);
+      final currentState = state;
+      if (currentState is NotificationLoaded) {
+        final updated = currentState.notifications.map((n) {
+          if (n.id == event.notificationId && !n.isRead) {
+            return NotificationEntity(
+              id: n.id,
+              title: n.title,
+              body: n.body,
+              targetType: n.targetType,
+              targetUserId: n.targetUserId,
+              data: n.data,
+              createdAt: n.createdAt,
+              isRead: true,
+            );
+          }
+          return n;
+        }).toList();
+        final newUnread = (currentState.unreadCount - 1).clamp(0, 999);
+        emit(NotificationLoaded(
+          notifications: updated,
+          unreadCount: newUnread,
+          hasMore: currentState.hasMore,
+          currentPage: currentState.currentPage,
+        ));
+      }
+    } catch (e) {
+      emit(NotificationError(e.toString(), unreadCount: state.unreadCount));
+    }
+  }
+
+  Future<void> _onMarkAllAsRead(
+    MarkAllAsRead event,
+    Emitter<NotificationState> emit,
+  ) async {
+    try {
+      await repository.markAllAsRead();
+      final currentState = state;
+      if (currentState is NotificationLoaded) {
+        final updated = currentState.notifications
+            .map((n) => NotificationEntity(
+                  id: n.id,
+                  title: n.title,
+                  body: n.body,
+                  targetType: n.targetType,
+                  targetUserId: n.targetUserId,
+                  data: n.data,
+                  createdAt: n.createdAt,
+                  isRead: true,
+                ))
+            .toList();
+        emit(NotificationLoaded(
+          notifications: updated,
+          unreadCount: 0,
+          hasMore: currentState.hasMore,
+          currentPage: currentState.currentPage,
+        ));
+      } else {
+        emit(const NotificationInitial(unreadCount: 0));
+      }
+    } catch (e) {
+      emit(NotificationError(e.toString(), unreadCount: state.unreadCount));
+    }
+  }
+
+  Future<void> _onFcmReceived(
+    FcmNotificationReceived event,
+    Emitter<NotificationState> emit,
+  ) async {
+    // Refresh the unread count and reload notifications if already loaded
+    try {
+      final unreadCount = await repository.getUnreadCount();
+      final currentState = state;
+      if (currentState is NotificationLoaded) {
+        final notifications =
+            await repository.getNotifications(page: 1, limit: _pageSize);
+        emit(NotificationLoaded(
+          notifications: notifications,
+          unreadCount: unreadCount,
+          hasMore: notifications.length >= _pageSize,
+          currentPage: 1,
+        ));
+      } else {
+        emit(NotificationInitial(unreadCount: unreadCount));
+      }
+    } catch (_) {
+      // Silently fail
+    }
+  }
+}

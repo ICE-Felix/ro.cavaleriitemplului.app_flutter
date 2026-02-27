@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/localization/app_localization.dart';
 import '../../../../core/service_locator.dart';
 import '../../../../core/style/app_colors.dart';
+import '../../domain/repositories/revista_repository.dart';
 import '../bloc/revista_details_bloc.dart';
 
 class RevistaDetailsPage extends StatefulWidget {
@@ -23,10 +24,49 @@ class RevistaDetailsPage extends StatefulWidget {
 }
 
 class _RevistaDetailsPageState extends State<RevistaDetailsPage> {
-  int _currentPage = 0;
-  int _totalPages = 0;
-  bool _isReady = false;
-  PDFViewController? _pdfViewController;
+  bool _isDownloading = false;
+  String? _downloadError;
+
+  Future<void> _downloadAndOpenPdf(String storagePath, String title) async {
+    if (storagePath.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Documentul nu este disponibil.')),
+        );
+      }
+      return;
+    }
+
+    setState(() {
+      _isDownloading = true;
+      _downloadError = null;
+    });
+
+    try {
+      final repository = sl<RevistaRepository>();
+      final sanitizedName = title.replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(' ', '_');
+      final localPath = await repository.downloadPdfFile(storagePath, '$sanitizedName.pdf');
+
+      if (mounted) {
+        setState(() => _isDownloading = false);
+        // Share/open the downloaded file
+        await Share.shareXFiles(
+          [XFile(localPath)],
+          text: title,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+          _downloadError = e.toString();
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Eroare la descărcare: ${e.toString()}')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,347 +76,270 @@ class _RevistaDetailsPageState extends State<RevistaDetailsPage> {
       create: (context) => sl<RevistaDetailsBloc>()
         ..add(LoadRevistaDetailsRequested(id: widget.revistaId)),
       child: Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        title: Text(context.getString(label: 'revista')),
-        leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 20),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: BlocConsumer<RevistaDetailsBloc, RevistaDetailsState>(
-        listener: (context, state) {
-          if (state is RevistaDetailsLoaded && state.pdfLocalPath == null) {
-            // Auto-load PDF when revista details are loaded
-            context.read<RevistaDetailsBloc>().add(
-                  LoadPdfUrlRequested(fileId: state.revista.pdfUrl),
-                );
-          }
-        },
-        builder: (context, state) {
-          if (state is RevistaDetailsLoading) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(color: AppColors.primary),
-                  const SizedBox(height: 16),
-                  Text(
-                    context.getString(label: 'loadingRevista'),
-                    style: theme.textTheme.bodyLarge,
+        backgroundColor: Colors.grey[50],
+        body: BlocBuilder<RevistaDetailsBloc, RevistaDetailsState>(
+          builder: (context, state) {
+            if (state is RevistaDetailsLoading) {
+              return CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    leading: IconButton(
+                      icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 20),
+                      onPressed: () => context.pop(),
+                    ),
+                  ),
+                  const SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator()),
                   ),
                 ],
-              ),
-            );
-          }
+              );
+            }
 
-          if (state is RevistaDetailsError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const FaIcon(
-                    FontAwesomeIcons.triangleExclamation,
-                    size: 48,
-                    color: Colors.red,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    context.getString(label: 'error'),
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: Colors.red,
+            if (state is RevistaDetailsError) {
+              return CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    leading: IconButton(
+                      icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 20),
+                      onPressed: () => context.pop(),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Text(
-                      state.message,
-                      style: theme.textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      context.read<RevistaDetailsBloc>().add(
-                            LoadRevistaDetailsRequested(id: widget.revistaId),
-                          );
-                    },
-                    icon: const FaIcon(FontAwesomeIcons.arrowsRotate, size: 16),
-                    label: Text(context.getString(label: 'retry')),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (state is RevistaDetailsLoaded) {
-            final revista = state.revista;
-            final dateFormat = DateFormat('MMMM yyyy');
-
-            return Column(
-              children: [
-                // Header with revista info
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Issue number
-                      if (revista.issueNumber.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            context
-                                .getString(label: 'issueNumber')
-                                .replaceAll('{number}', revista.issueNumber),
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      if (revista.issueNumber.isNotEmpty)
-                        const SizedBox(height: 8),
-
-                      // Title
-                      Text(
-                        revista.title,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-
-                      // Date
-                      Row(
+                  SliverFillRemaining(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          FaIcon(
-                            FontAwesomeIcons.calendar,
-                            size: 14,
-                            color: Colors.grey[600],
+                          const FaIcon(
+                            FontAwesomeIcons.triangleExclamation,
+                            size: 48,
+                            color: Colors.red,
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            dateFormat.format(revista.publishedAt),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
+                          const SizedBox(height: 16),
+                          Text(state.message,
+                              style: theme.textTheme.bodyMedium,
+                              textAlign: TextAlign.center),
+                          const SizedBox(height: 24),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              context.read<RevistaDetailsBloc>().add(
+                                    LoadRevistaDetailsRequested(
+                                        id: widget.revistaId),
+                                  );
+                            },
+                            icon: const FaIcon(FontAwesomeIcons.arrowsRotate,
+                                size: 16),
+                            label: Text(context.getString(label: 'retry')),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-
-                // PDF Viewer or loading state
-                Expanded(
-                  child: _buildPdfView(state, theme),
-                ),
-
-                // Page indicator
-                if (_isReady && _totalPages > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, -2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: _currentPage > 0
-                              ? () {
-                                  _pdfViewController?.setPage(_currentPage - 1);
-                                }
-                              : null,
-                          icon: const FaIcon(
-                            FontAwesomeIcons.chevronLeft,
-                            size: 16,
-                          ),
-                          color: AppColors.primary,
-                        ),
-                        const SizedBox(width: 16),
-                        Text(
-                          '${context.getString(label: 'page')} ${_currentPage + 1} ${context.getString(label: 'of')} $_totalPages',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        IconButton(
-                          onPressed: _currentPage < _totalPages - 1
-                              ? () {
-                                  _pdfViewController?.setPage(_currentPage + 1);
-                                }
-                              : null,
-                          icon: const FaIcon(
-                            FontAwesomeIcons.chevronRight,
-                            size: 16,
-                          ),
-                          color: AppColors.primary,
-                        ),
-                      ],
                     ),
                   ),
-              ],
-            );
-          }
+                ],
+              );
+            }
 
-          return const SizedBox.shrink();
-        },
-      ),
-    ),
-    );
-  }
+            if (state is RevistaDetailsLoaded) {
+              final revista = state.revista;
+              final dateFormat = DateFormat('MMMM yyyy');
+              final hasPdf = revista.pdfUrl.isNotEmpty;
 
-  Widget _buildPdfView(RevistaDetailsLoaded state, ThemeData theme) {
-    if (state.isLoadingPdf) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(color: AppColors.primary),
-            const SizedBox(height: 16),
-            Text(
-              context.getString(label: 'loadingPdf'),
-              style: theme.textTheme.bodyLarge,
-            ),
-          ],
+              return CustomScrollView(
+                slivers: [
+                  // Hero image app bar
+                  SliverAppBar(
+                    expandedHeight: 300,
+                    pinned: true,
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    leading: IconButton(
+                      icon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const FaIcon(FontAwesomeIcons.arrowLeft,
+                            size: 16, color: Colors.white),
+                      ),
+                      onPressed: () => context.pop(),
+                    ),
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: revista.imageUrl.isNotEmpty
+                          ? Image.network(
+                              revista.imageUrl,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, progress) {
+                                if (progress == null) return child;
+                                return Container(
+                                  color: AppColors.primary,
+                                  child: const Center(
+                                    child: CircularProgressIndicator(
+                                        color: Colors.white),
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stack) =>
+                                  Container(
+                                color: AppColors.primary,
+                                child: const Center(
+                                  child: FaIcon(FontAwesomeIcons.bookOpen,
+                                      size: 64, color: Colors.white54),
+                                ),
+                              ),
+                            )
+                          : Container(
+                              color: AppColors.primary,
+                              child: const Center(
+                                child: FaIcon(FontAwesomeIcons.bookOpen,
+                                    size: 64, color: Colors.white54),
+                              ),
+                            ),
+                    ),
+                  ),
+
+                  // Content
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Issue number badge
+                          if (revista.issueNumber.isNotEmpty) ...[
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color:
+                                    AppColors.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'Nr. ${revista.issueNumber}',
+                                style:
+                                    theme.textTheme.labelMedium?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+
+                          // Title
+                          Text(
+                            revista.title,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Date and page count
+                          Row(
+                            children: [
+                              FaIcon(FontAwesomeIcons.calendar,
+                                  size: 14, color: Colors.grey[600]),
+                              const SizedBox(width: 6),
+                              Text(
+                                dateFormat.format(revista.publishedAt),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              if (revista.pageCount > 0) ...[
+                                const SizedBox(width: 20),
+                                FaIcon(FontAwesomeIcons.fileLines,
+                                    size: 14, color: Colors.grey[600]),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '${revista.pageCount} pagini',
+                                  style:
+                                      theme.textTheme.bodyMedium?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+
+                          // Download button
+                          if (hasPdf) ...[
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: _isDownloading
+                                    ? null
+                                    : () => _downloadAndOpenPdf(
+                                        revista.pdfUrl, revista.title),
+                                icon: _isDownloading
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const FaIcon(
+                                        FontAwesomeIcons.fileArrowDown,
+                                        size: 18),
+                                label: Text(
+                                  _isDownloading
+                                      ? 'Se descarcă...'
+                                      : 'Descarcă documentul',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+
+                          const SizedBox(height: 20),
+                          Divider(color: Colors.grey[300]),
+                          const SizedBox(height: 20),
+
+                          // Description
+                          if (revista.description.isNotEmpty)
+                            Text(
+                              revista.description,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                height: 1.6,
+                                color: AppColors.onBackground,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return const SizedBox.shrink();
+          },
         ),
-      );
-    }
-
-    if (state.pdfError != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const FaIcon(
-                FontAwesomeIcons.filePdf,
-                size: 48,
-                color: Colors.red,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                context.getString(label: 'pdfLoadError'),
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: Colors.red,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                state.pdfError!,
-                style: theme.textTheme.bodySmall,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: () {
-                  context.read<RevistaDetailsBloc>().add(
-                        LoadPdfUrlRequested(fileId: state.revista.pdfUrl),
-                      );
-                },
-                icon: const FaIcon(FontAwesomeIcons.arrowsRotate, size: 16),
-                label: Text(context.getString(label: 'retry')),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (state.pdfLocalPath != null) {
-      return PDFView(
-        filePath: state.pdfLocalPath!,
-        enableSwipe: true,
-        swipeHorizontal: false,
-        autoSpacing: true,
-        pageFling: true,
-        pageSnap: true,
-        defaultPage: _currentPage,
-        fitPolicy: FitPolicy.BOTH,
-        preventLinkNavigation: false,
-        onRender: (pages) {
-          setState(() {
-            _totalPages = pages ?? 0;
-            _isReady = true;
-          });
-        },
-        onError: (error) {
-          print('PDF Error: $error');
-        },
-        onPageError: (page, error) {
-          print('Page $page Error: $error');
-        },
-        onViewCreated: (PDFViewController pdfViewController) {
-          _pdfViewController = pdfViewController;
-        },
-        onPageChanged: (int? page, int? total) {
-          setState(() {
-            _currentPage = page ?? 0;
-          });
-        },
-      );
-    }
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const FaIcon(
-            FontAwesomeIcons.filePdf,
-            size: 48,
-            color: Colors.grey,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            context.getString(label: 'noPdfAvailable'),
-            style: theme.textTheme.bodyLarge,
-          ),
-        ],
       ),
     );
   }

@@ -1,8 +1,6 @@
 import 'package:app/core/navigation/routes_name.dart';
-import 'package:app/features/shop/domain/entities/product_entity.dart';
 import 'package:app/features/shop/presentation/cubit/products/products_cubit.dart';
 import 'package:app/features/shop/presentation/widgets/product_card.dart';
-import 'package:app/features/shop/presentation/widgets/products_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:app/core/widgets/custom_top_bar.dart';
@@ -17,7 +15,7 @@ class ProductsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ProductsCubit(parentCategoryId: category.id)..initialize(),
+      create: (context) => ProductsCubit(categoryId: category.id)..loadProducts(),
       child: _ProductsPageView(category: category),
     );
   }
@@ -36,98 +34,53 @@ class _ProductsPageView extends StatelessWidget {
         title: category.name,
         showBackButton: true,
         showNotificationButton: true,
-        onNotificationTap: () {
-          // Handle notification tap
-        },
       ),
       body: BlocBuilder<ProductsCubit, ProductsState>(
         builder: (context, state) {
-          print('🎨 ProductsPage: Building with state - isLoading: ${state.isLoading}, isError: ${state.isError}, products: ${state.products.length}');
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ProductsSearchBar(
-                onChanged: (query) {
-                  print('🎨 ProductsPage: Search query changed to: $query');
-                  context.read<ProductsCubit>().changeSearchQuery(query);
-                },
-              ),
-              Expanded(
-                child: _buildBody(context, state),
-              ),
-            ],
-          );
+          return _buildBody(context, state);
         },
       ),
     );
   }
 
   Widget _buildBody(BuildContext context, ProductsState state) {
-    // Show loading
     if (state.isLoading) {
-      print('🎨 ProductsPage: Showing loading indicator');
       return const Center(child: CircularProgressIndicator());
     }
 
-    // Show error
-    if (state.isError) {
-      print('🎨 ProductsPage: Showing error: ${state.message}');
+    if (state.error != null) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              state.message,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.red,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                print('🎨 ProductsPage: Retry button pressed');
-                context.read<ProductsCubit>().getProducts();
-              },
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    // Show empty state
-    if (state.products.isEmpty) {
-      print('🎨 ProductsPage: Showing empty state');
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.shopping_bag_outlined,
+              Icon(
+                Icons.wifi_off_outlined,
                 size: 64,
-                color: Colors.grey,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
               ),
               const SizedBox(height: 16),
               Text(
-                state.searchQuery.isEmpty
-                    ? 'Nu sunt produse disponibile'
-                    : 'Nu s-au găsit produse pentru "${state.searchQuery}"',
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
+                'Nu am putut încărca produsele',
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Verifică conexiunea la internet și încearcă din nou.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () {
+                  context.read<ProductsCubit>().loadProducts();
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('Reîncearcă'),
               ),
             ],
           ),
@@ -135,8 +88,23 @@ class _ProductsPageView extends StatelessWidget {
       );
     }
 
-    // Show products
-    print('🎨 ProductsPage: Showing ${state.products.length} products');
+    if (state.products.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.shopping_bag_outlined, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text(
+              'Nu sunt produse disponibile',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
     return ListView.separated(
       padding: const EdgeInsets.all(16.0),
       separatorBuilder: (context, index) => const SizedBox(height: 8),

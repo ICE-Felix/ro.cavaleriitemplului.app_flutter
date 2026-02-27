@@ -94,7 +94,6 @@ class _HistoryPageState extends State<HistoryPage> {
         logoWidth: 0,
         centerTitle: false,
         showNotificationButton: true,
-        onNotificationTap: () {},
       ),
       body: SingleChildScrollView(
         child: Column(

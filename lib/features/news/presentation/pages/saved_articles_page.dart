@@ -7,6 +7,7 @@ import '../../../../core/service_locator.dart';
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/style/app_text_styles.dart';
 import '../../../../core/localization/app_localization.dart';
+import '../../../../core/widgets/custom_top_bar/custom_top_bar.dart';
 import '../../domain/entities/bookmark_entity.dart';
 import '../../domain/repositories/bookmark_repository.dart';
 
@@ -55,10 +56,15 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        title: Text(context.getString(label: 'savedArticles')),
-        backgroundColor: colorScheme.surface,
+      backgroundColor: AppColors.background,
+      appBar: CustomTopBar.withCart(
+        context: context,
+        showLogo: true,
+        showBackButton: true,
+        logoHeight: 200,
+        logoWidth: 0,
+        centerTitle: false,
+        showNotificationButton: true,
       ),
       body: RefreshIndicator(
         onRefresh: _refreshSavedArticles,

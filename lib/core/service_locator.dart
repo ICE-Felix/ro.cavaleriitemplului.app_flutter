@@ -1,11 +1,9 @@
 import 'package:app/core/banners/data/datasources/banners_remote_data_source.dart';
 import 'package:app/core/banners/domain/repositories/banners_repository.dart';
 import 'package:app/core/banners/domain/repositories/banners_repository_impl.dart';
-import 'package:app/features/cart/data/datasource/cart_stock_datasource.dart';
-import 'package:app/features/checkout/data/order_datasource.dart';
-import 'package:app/features/checkout/data/order_datasource_supabase.dart';
-import 'package:app/features/checkout/domain/repository/order_repository.dart';
-import 'package:app/features/checkout/domain/service/checkout_service.dart';
+import 'package:app/features/orders/data/datasources/order_remote_data_source.dart';
+import 'package:app/features/orders/data/repositories/order_repository_impl.dart';
+import 'package:app/features/orders/domain/repositories/order_repository.dart';
 import 'package:app/features/events/data/events_datasource.dart';
 import 'package:app/features/events/data/events_datasource_supabase.dart';
 import 'package:app/features/events/data/mock/mock_events_datasource.dart';
@@ -22,7 +20,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'database/database_helper.dart';
 import 'network/dio_client.dart';
-import 'network/woocommerce_api_client.dart';
 import 'network/network_info.dart';
 import 'network/supabase_client.dart';
 import 'localization/app_localization.dart';
@@ -72,12 +69,10 @@ import '../features/news/domain/usecases/check_bookmark_usecase.dart';
 import '../features/shop/data/datasources/shop_remote_data_source.dart';
 import '../features/shop/data/repositories/shop_repository_impl.dart';
 import '../features/shop/domain/repositories/shop_repository.dart';
-import '../features/shop/domain/usecases/get_categories_usecase.dart'
-    as shop_categories;
-import '../features/shop/domain/usecases/get_products_by_category_usecase.dart';
-import '../features/shop/domain/usecases/get_product_by_id_usecase.dart';
 import '../core/services/firebase_messaging_service.dart';
 import '../features/notifications/presentation/bloc/notification_bloc.dart';
+import '../features/notifications/domain/repositories/notification_repository.dart';
+import '../features/notifications/data/repositories/notification_repository_supabase.dart';
 import '../core/services/supabase_fcm_service.dart';
 import '../core/services/location_service.dart';
 import '../core/cubit/location_cubit.dart';
@@ -86,7 +81,6 @@ import '../core/services/app_settings_service.dart';
 import '../core/navigation/routes.dart';
 // Cart feature imports
 import '../features/cart/cart.dart';
-import '../features/checkout/checkout.dart';
 // Members feature imports
 import '../features/members/data/datasources/members_remote_data_source.dart';
 import '../features/members/data/datasources/members_local_data_source.dart';
@@ -113,15 +107,6 @@ Future<void> initServiceLocator() async {
   sl.registerLazySingleton(() => DatabaseHelper.instance);
   sl.registerLazySingleton<NetworkInfo>(
     () => NetworkInfoImpl(sl<Connectivity>()),
-  );
-
-  // WooCommerce API Client
-  sl.registerLazySingleton(
-    () => WooCommerceApiClient(
-      storeUrl: dotenv.get('WOOCOMMERCE_STORE_URL'),
-      consumerKey: dotenv.get('WOOCOMMERCE_CONSUMER_KEY'),
-      consumerSecret: dotenv.get('WOOCOMMERCE_CONSUMER_SECRET'),
-    ),
   );
 
   // Initialize Supabase
@@ -161,27 +146,20 @@ Future<void> initServiceLocator() async {
     () => BookmarkLocalDataSourceImpl(databaseHelper: sl<DatabaseHelper>()),
   );
 
-  sl.registerLazySingleton<OrderDataSource>(
-    () => OrderDataSourceSupabase(dio: sl<DioClient>()),
+  // Order data source and repository
+  sl.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSource(),
   );
-
   sl.registerLazySingleton<OrderRepository>(
-    () => OrderRepositoryImpl(orderDataSource: sl<OrderDataSource>()),
+    () => OrderRepositoryImpl(dataSource: sl<OrderRemoteDataSource>()),
   );
-  sl.registerLazySingleton<CheckoutService>(() => CheckoutServiceImpl());
 
   // Cart service
   sl.registerLazySingleton<CartService>(() => CartServiceImpl());
-  // Cart Stock Datasource - Using WooCommerce API
-  sl.registerLazySingleton<CartStockDatasource>(
-    () => CartStockDatasourceImpl(wooCommerce: sl<WooCommerceApiClient>()),
-  );
   sl.registerLazySingleton<CartRepository>(
-    () => CartRepositoryImpl(sl<CartService>(), sl<CartStockDatasource>()),
+    () => CartRepositoryImpl(sl<CartService>()),
   );
   sl.registerLazySingleton(() => CartCubit()..loadCart());
-
-  sl.registerLazySingleton(() => CheckoutCubit());
 
   //! Repositories
   sl.registerLazySingleton<AuthRepository>(
@@ -309,22 +287,13 @@ Future<void> initServiceLocator() async {
 
   // Shop data sources
   sl.registerLazySingleton<ShopRemoteDataSource>(
-    () => ShopRemoteDataSourceImpl(wooCommerce: sl<WooCommerceApiClient>()),
+    () => ShopRemoteDataSourceImpl(),
   );
 
   // Shop repositories
   sl.registerLazySingleton<ShopRepository>(
     () => ShopRepositoryImpl(remoteDataSource: sl<ShopRemoteDataSource>()),
   );
-
-  // Shop use cases
-  sl.registerLazySingleton(
-    () => shop_categories.GetCategoriesUseCase(sl<ShopRepository>()),
-  );
-  sl.registerLazySingleton(
-    () => GetProductsByCategoryUseCase(sl<ShopRepository>()),
-  );
-  sl.registerLazySingleton(() => GetProductByIdUseCase(sl<ShopRepository>()));
 
   // Localization Cubit
   sl.registerFactory(() => LocalizationCubit());
@@ -364,8 +333,15 @@ Future<void> initServiceLocator() async {
     ),
   );
 
+  // Notification repository
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositorySupabase(),
+  );
+
   // Notification BLoC
-  sl.registerFactory(() => NotificationBloc());
+  sl.registerFactory(
+    () => NotificationBloc(repository: sl<NotificationRepository>()),
+  );
 
   // Location Cubit
   sl.registerLazySingleton(() {

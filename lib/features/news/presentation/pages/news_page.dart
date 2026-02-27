@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/custom_top_bar.dart';
+import '../../../../core/widgets/app_search_bar_v2.dart';
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/localization/app_localization.dart';
 import '../../../auth/presentation/bloc/authentication_bloc.dart';
@@ -104,16 +105,13 @@ class _NewsPageState extends State<NewsPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.grey[50],
-        appBar: CustomTopBar.withSearchAndCart(
+        appBar: CustomTopBar.withCart(
           context: context,
           showLogo: true,
           logoHeight: 200,
           logoWidth: 0,
           centerTitle: false,
-          searchController: _searchController,
-          onSearchChanged: _onSearchChanged,
           showNotificationButton: true,
-          onNotificationTap: () {},
           customActions: [
             if (_hasSavedArticles)
               Padding(
@@ -131,6 +129,23 @@ class _NewsPageState extends State<NewsPage> {
         ),
         body: Column(
           children: [
+            // Search bar
+            AppSearchBarV2(
+              controller: _searchController,
+              hintText: 'Caută în articole...',
+              margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              onChanged: _onSearchChanged,
+              onSubmitted: () {
+                if (_searchController.text.isNotEmpty) {
+                  _onSearchChanged(_searchController.text);
+                }
+              },
+              onClear: () {
+                _onSearchChanged('');
+                setState(() {});
+              },
+            ),
+
             // Categories section
             BlocBuilder<NewsBloc, NewsState>(
               buildWhen:
@@ -145,10 +160,11 @@ class _NewsPageState extends State<NewsPage> {
                 }
 
                 return Container(
-                  height: 56,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  height: 64,
+                  padding: const EdgeInsets.only(top: 8, bottom: 16),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
+                    clipBehavior: Clip.none,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: categories.length + 1,
                     itemBuilder: (context, index) {

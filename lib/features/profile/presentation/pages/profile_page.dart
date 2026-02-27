@@ -14,8 +14,6 @@ class ProfilePage extends StatelessWidget {
   static const double _sectionSpacing = 32.0;
   static const double _itemSpacing = 24.0;
   static const double _bottomSpacing = 40.0;
-  static const double _logoHeight = 90.0;
-  static const double _logoWidth = 140.0;
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +23,10 @@ class ProfilePage extends StatelessWidget {
         appBar: CustomTopBar.withCart(
           context: context,
           showLogo: true,
+          logoHeight: 200,
+          logoWidth: 0,
+          centerTitle: false,
           showNotificationButton: true,
-          logoHeight: _logoHeight,
-          logoWidth: _logoWidth,
-          logoPadding: const EdgeInsets.only(
-            left: 20.0,
-            top: 10.0,
-            bottom: 10.0,
-          ),
-          onNotificationTap: _handleNotificationTap,
-          onLogoTap: _handleLogoTap,
         ),
         body: BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
@@ -80,13 +72,5 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  /// Handles notification tap
-  void _handleNotificationTap() {
-    // TODO: Implement notification handling
-  }
 
-  /// Handles logo tap
-  void _handleLogoTap() {
-    // TODO: Implement logo tap handling
-  }
 }
