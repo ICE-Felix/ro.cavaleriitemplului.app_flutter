@@ -1,181 +1,198 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/widgets/custom_top_bar/custom_top_bar.dart';
 import '../../../../core/style/app_colors.dart';
-import '../../../../core/navigation/routes_name.dart';
+import '../cubit/dashboard_cubit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class DashboardPage extends StatefulWidget {
+class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
   @override
-  State<DashboardPage> createState() => _DashboardPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => DashboardCubit()..loadDashboard(),
+      child: const _DashboardView(),
+    );
+  }
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+/// Maps icon string names from Supabase to FontAwesome IconData.
+IconData _mapIcon(String name) {
+  const icons = <String, IconData>{
+    'bookOpen': FontAwesomeIcons.bookOpen,
+    'newspaper': FontAwesomeIcons.newspaper,
+    'calendarDays': FontAwesomeIcons.calendarDays,
+    'bullhorn': FontAwesomeIcons.bullhorn,
+    'users': FontAwesomeIcons.users,
+    'book': FontAwesomeIcons.book,
+    'store': FontAwesomeIcons.store,
+    'headset': FontAwesomeIcons.headset,
+  };
+  return icons[name] ?? FontAwesomeIcons.circleQuestion;
+}
+
+/// Maps color string names from Supabase to AppColors.
+Color _mapColor(String name) {
+  const colors = <String, Color>{
+    'primary': AppColors.primary,
+    'secondary': AppColors.secondary,
+    'info': AppColors.info,
+    'warning': AppColors.warning,
+    'success': AppColors.success,
+    'error': AppColors.error,
+  };
+  return colors[name] ?? AppColors.primary;
+}
+
+class _DashboardView extends StatelessWidget {
+  const _DashboardView();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: CustomTopBar.withCart(
-        context: context,
-        showLogo: true,
-        logoHeight: 200,
-        logoWidth: 0,
-        centerTitle: false,
-        titleWidget: Text(
-          'R.L. 126 C.T.',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: AppColors.primary,
-            fontWeight: FontWeight.bold,
+    return BlocBuilder<DashboardCubit, DashboardState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: CustomTopBar.withCart(
+            context: context,
+            showLogo: true,
+            logoHeight: 200,
+            logoWidth: 0,
+            centerTitle: false,
+            showNotificationButton: true,
+            onNotificationTap: () {},
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Welcome greeting
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: Text(
+                    state.setting('greeting_line1', 'Bine ai revenit,'),
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: Text(
+                    state.userName.isNotEmpty
+                        ? state.userName
+                        : state.setting('greeting_fallback_name', 'Frate'),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: AppColors.onBackground),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Large dashboard cards (from Supabase)
+                ...state.largeCards.map((card) {
+                  String description;
+                  String? subtitle;
+                  String? subtitleInfo;
+
+                  if (card.dynamicSource == 'events') {
+                    final label = state.nextEventLabel.isNotEmpty ? state.nextEventLabel : null;
+                    description = state.nextEventTitle.isNotEmpty
+                        ? (label != null ? '$label: ${state.nextEventTitle}' : state.nextEventTitle)
+                        : (card.dynamicFallback ?? card.description ?? '');
+                    subtitle = state.nextEventDate.isNotEmpty ? state.nextEventDate : null;
+                    subtitleInfo = state.nextEventTime.isNotEmpty ? state.nextEventTime : null;
+                  } else if (card.dynamicSource == 'news') {
+                    description = state.latestNewsTitle.isNotEmpty
+                        ? state.latestNewsTitle
+                        : (card.dynamicFallback ?? card.description ?? '');
+                    subtitle = state.latestNewsTime.isNotEmpty ? state.latestNewsTime : null;
+                    subtitleInfo = null;
+                  } else {
+                    description = card.description ?? '';
+                    subtitle = null;
+                    subtitleInfo = null;
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: _DashboardCard(
+                      title: card.title,
+                      description: description,
+                      icon: _mapIcon(card.icon),
+                      iconColor: _mapColor(card.iconColor),
+                      badge: card.badge,
+                      subtitle: subtitle,
+                      subtitleInfo: subtitleInfo,
+                      ctaText: state.setting('see_details_text', 'Vezi detalii'),
+                      onTap: () {
+                        if (card.dynamicSource == 'news' && state.latestNewsId.isNotEmpty) {
+                          context.go('/news/news_details/${state.latestNewsId}');
+                        } else {
+                          context.go(card.route);
+                        }
+                      },
+                    ),
+                  );
+                }),
+
+                // Small quick-link cards (from Supabase, in rows of 2)
+                ..._buildSmallCardRows(context, state),
+
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildSmallCardRows(BuildContext context, DashboardState state) {
+    final cards = state.smallCards;
+    final rows = <Widget>[];
+
+    for (var i = 0; i < cards.length; i += 2) {
+      final first = cards[i];
+      final second = (i + 1 < cards.length) ? cards[i + 1] : null;
+
+      rows.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: _DashboardSmallCard(
+                  title: first.title,
+                  icon: _mapIcon(first.icon),
+                  iconColor: _mapColor(first.iconColor),
+                  onTap: () => context.go(first.route),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: second != null
+                    ? _DashboardSmallCard(
+                        title: second.title,
+                        icon: _mapIcon(second.icon),
+                        iconColor: _mapColor(second.iconColor),
+                        onTap: () => context.go(second.route),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
           ),
         ),
-        showNotificationButton: true,
-        onNotificationTap: () {
-          // Handle notification tap
-        },
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Welcome greeting
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Text(
-                'Bine ai revenit,',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Text(
-                'Frate Ucenic',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(color: AppColors.onBackground),
-              ),
-            ),
-            const SizedBox(height: 24),
+      );
+    }
 
-            // Dashboard Cards Grid
-            _DashboardCard(
-              title: 'Scurt istoric',
-              description: 'Descoperă istoria și valorile Ordinului',
-              icon: FontAwesomeIcons.bookOpen,
-              iconColor: AppColors.primary,
-              onTap: () {
-                // Navigate to history section
-                context.pushNamed(AppRoutesNames.history.name);
-              },
-            ),
-            const SizedBox(height: 16),
-
-            _DashboardCard(
-              title: 'Revista',
-              description: 'Ultima ediție este disponibilă pentru lectura',
-              icon: FontAwesomeIcons.newspaper,
-              iconColor: AppColors.secondary,
-              badge: 'NOU',
-              onTap: () {
-                // Navigate to magazine
-                context.pushNamed(AppRoutesNames.revistas.name);
-              },
-            ),
-            const SizedBox(height: 16),
-
-            _DashboardCard(
-              title: 'Program de activități',
-              description: 'Următoarea ședință: 15 septembrie, ora 18:00',
-              icon: FontAwesomeIcons.calendarDays,
-              iconColor: AppColors.info,
-              subtitle: '15 septembrie',
-              subtitleInfo: 'ora 18:00',
-              onTap: () {
-                // Navigate to events
-                context.pushNamed(AppRoutesNames.events.name);
-              },
-            ),
-            const SizedBox(height: 16),
-
-            _DashboardCard(
-              title: 'Noutăți',
-              description: 'Comunicat MLNR',
-              icon: FontAwesomeIcons.bullhorn,
-              iconColor: AppColors.warning,
-              subtitle: 'Postat acum 2 ore',
-              onTap: () {
-                // Navigate to news
-                context.pushNamed(AppRoutesNames.news.name);
-              },
-            ),
-            const SizedBox(height: 12),
-
-            // Additional sections
-            Row(
-              children: [
-                Expanded(
-                  child: _DashboardSmallCard(
-                    title: 'Membri',
-                    icon: FontAwesomeIcons.users,
-                    iconColor: AppColors.primary,
-                    onTap: () {
-                      // Navigate to members
-                      context.pushNamed(AppRoutesNames.members.name);
-                    },
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _DashboardSmallCard(
-                    title: 'Bibliotecă',
-                    icon: FontAwesomeIcons.book,
-                    iconColor: AppColors.secondary,
-                    onTap: () {
-                      // Navigate to library (revistas)
-                      context.pushNamed(AppRoutesNames.revistas.name);
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _DashboardSmallCard(
-                    title: 'Magazin',
-                    icon: FontAwesomeIcons.store,
-                    iconColor: AppColors.info,
-                    onTap: () {
-                      context.pushNamed(AppRoutesNames.shop.name);
-                    },
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _DashboardSmallCard(
-                    title: 'Suport',
-                    icon: FontAwesomeIcons.headset,
-                    iconColor: AppColors.success,
-                    onTap: () {
-                      context.pushNamed(AppRoutesNames.support.name);
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
+    return rows;
   }
 }
 
@@ -187,6 +204,7 @@ class _DashboardCard extends StatelessWidget {
   final String? badge;
   final String? subtitle;
   final String? subtitleInfo;
+  final String ctaText;
   final VoidCallback onTap;
 
   const _DashboardCard({
@@ -197,6 +215,7 @@ class _DashboardCard extends StatelessWidget {
     this.badge,
     this.subtitle,
     this.subtitleInfo,
+    this.ctaText = 'Vezi detalii',
     required this.onTap,
   });
 
@@ -311,7 +330,7 @@ class _DashboardCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    'Vezi detalii',
+                    ctaText,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: AppColors.secondary,
                       fontWeight: FontWeight.w600,

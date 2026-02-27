@@ -8,6 +8,7 @@ abstract class EventsDatasource {
     required int page,
     required int limit,
     required String date,
+    String? query,
   });
   Future<List<EventType>> getEventTypes();
   Future<Event> getEventById(String eventId);

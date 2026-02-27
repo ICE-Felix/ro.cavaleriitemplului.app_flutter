@@ -12,4 +12,7 @@ abstract class RevistaRepository {
 
   /// Download PDF file from Google Drive for offline viewing
   Future<String> downloadPdfFile(String fileId, String fileName);
+
+  /// Search revistas by query
+  Future<List<RevistaEntity>> searchRevistas(String query, {int limit = 20});
 }

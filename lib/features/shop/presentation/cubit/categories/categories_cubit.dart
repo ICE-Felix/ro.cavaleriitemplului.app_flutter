@@ -36,25 +36,16 @@ class CategoriesCubit extends Cubit<CategoriesState> {
         }
       }
 
+      if (isClosed) return;
       emit(CategoriesLoaded(categories: categories));
-
-      if (kDebugMode) {
-        print('✅ CategoriesCubit: Emitted CategoriesLoaded state with ${categories.length} categories');
-      }
     } on ServerException catch (e) {
-      if (kDebugMode) {
-        print('❌ CategoriesCubit: ServerException: ${e.message}');
-      }
+      if (isClosed) return;
       emit(CategoriesError(message: e.message));
     } on AuthException catch (e) {
-      if (kDebugMode) {
-        print('❌ CategoriesCubit: AuthException: ${e.message}');
-      }
+      if (isClosed) return;
       emit(CategoriesError(message: e.message));
     } catch (e) {
-      if (kDebugMode) {
-        print('❌ CategoriesCubit: Unexpected error: $e');
-      }
+      if (isClosed) return;
       emit(CategoriesError(message: 'An unexpected error occurred: $e'));
     }
   }

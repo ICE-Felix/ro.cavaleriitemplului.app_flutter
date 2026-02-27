@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/localization/app_localization.dart';
+import '../../../../core/service_locator.dart';
 import '../../../../core/style/app_colors.dart';
 import '../bloc/revista_details_bloc.dart';
 
@@ -28,19 +29,13 @@ class _RevistaDetailsPageState extends State<RevistaDetailsPage> {
   PDFViewController? _pdfViewController;
 
   @override
-  void initState() {
-    super.initState();
-    // Load revista details
-    context.read<RevistaDetailsBloc>().add(
-          LoadRevistaDetailsRequested(id: widget.revistaId),
-        );
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
+    return BlocProvider(
+      create: (context) => sl<RevistaDetailsBloc>()
+        ..add(LoadRevistaDetailsRequested(id: widget.revistaId)),
+      child: Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         backgroundColor: AppColors.primary,
@@ -266,6 +261,7 @@ class _RevistaDetailsPageState extends State<RevistaDetailsPage> {
           return const SizedBox.shrink();
         },
       ),
+    ),
     );
   }
 

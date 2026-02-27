@@ -56,7 +56,7 @@ class TopBarActions extends StatelessWidget {
       );
     }
 
-    // Add cart button
+    // Add cart button (only visible when cart has items)
     if (showCartButton) {
       actions.add(CartButton(onPressed: onCartTap));
     }

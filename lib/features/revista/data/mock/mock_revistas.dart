@@ -9,7 +9,7 @@ class MockRevistas {
       description:
           'Număr special dedicat istoriei ordinului și valorilor masonice. Conține articole despre simbolismul masonic, ritualuri și tradiții.',
       imageUrl:
-          'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1481627834876-b7833e8f5570_w400.jpg',
       pdfUrl: 'mock_pdf_url_1',
       publishedAt: DateTime(2025, 1, 15),
       pageCount: 48,
@@ -21,7 +21,7 @@ class MockRevistas {
       description:
           'Explorarea filosofiei și eticii masonice. Articole despre îmbunătățirea morală și spirituală a membrilor.',
       imageUrl:
-          'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1512820790803-83ca734da794_w400.jpg',
       pdfUrl: 'mock_pdf_url_2',
       publishedAt: DateTime(2024, 12, 20),
       pageCount: 56,
@@ -33,7 +33,7 @@ class MockRevistas {
       description:
           'Ghid complet pentru ceremoniile și ritualurile masonice tradiționale. Include interpretări și semnificații profunde.',
       imageUrl:
-          'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1544947950-fa07a98d237f_w400.jpg',
       pdfUrl: 'mock_pdf_url_3',
       publishedAt: DateTime(2024, 11, 10),
       pageCount: 64,
@@ -45,7 +45,7 @@ class MockRevistas {
       description:
           'Studiu aprofundat al simbolismului geometric în masonerie. Conexiuni între geometrie sacră și spiritualitate.',
       imageUrl:
-          'https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1519682337058-a94d519337bc_w400.jpg',
       pdfUrl: 'mock_pdf_url_4',
       publishedAt: DateTime(2024, 10, 5),
       pageCount: 72,
@@ -57,7 +57,7 @@ class MockRevistas {
       description:
           'Discuții despre valorile fundamentale ale ordinului: frăția, caritatea și ajutorul mutual între membrii lojei.',
       imageUrl:
-          'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1532012197267-da84d127e765_w400.jpg',
       pdfUrl: 'mock_pdf_url_5',
       publishedAt: DateTime(2024, 9, 15),
       pageCount: 40,
@@ -69,7 +69,7 @@ class MockRevistas {
       description:
           'Îndrumări pentru noii membri și reflecții despre progresul spiritual în cadrul ordinului.',
       imageUrl:
-          'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1524995997946-a1c2e315a42f_w400.jpg',
       pdfUrl: 'mock_pdf_url_6',
       publishedAt: DateTime(2024, 8, 20),
       pageCount: 52,
@@ -81,7 +81,7 @@ class MockRevistas {
       description:
           'Decodificarea simbolurilor masonice și importanța lor în ritualurile tradiționale. Analiză detaliată a iconografiei.',
       imageUrl:
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1507003211169-0a1dd7228f2d_w400.jpg',
       pdfUrl: 'mock_pdf_url_7',
       publishedAt: DateTime(2024, 7, 10),
       pageCount: 60,
@@ -93,7 +93,7 @@ class MockRevistas {
       description:
           'Retrospectivă completă a istoriei Cavalerilor Templului din România. De la origini până în prezent.',
       imageUrl:
-          'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1516979187457-637abb4f9353_w400.jpg',
       pdfUrl: 'mock_pdf_url_8',
       publishedAt: DateTime(2024, 6, 1),
       pageCount: 96,
@@ -105,7 +105,7 @@ class MockRevistas {
       description:
           'Studii despre tradițiile ezoterice și misterele ascunse ale masoneriei. Pentru membrii avansați.',
       imageUrl:
-          'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1456513080510-7bf3a84b82f8_w400.jpg',
       pdfUrl: 'mock_pdf_url_9',
       publishedAt: DateTime(2024, 5, 15),
       pageCount: 68,
@@ -117,7 +117,7 @@ class MockRevistas {
       description:
           'Explorarea influenței masoneriei în artă, literatură și cultură. Contribuții ale francmasonilor celebri.',
       imageUrl:
-          'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1506880018603-83d5b814b5a6_w400.jpg',
       pdfUrl: 'mock_pdf_url_10',
       publishedAt: DateTime(2024, 4, 20),
       pageCount: 44,
@@ -129,7 +129,7 @@ class MockRevistas {
       description:
           'Conexiunea între Epoca Luminilor și principiile masonice moderne. Studii filosofice aprofundate.',
       imageUrl:
-          'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1513694203232-719a280e022f_w400.jpg',
       pdfUrl: 'mock_pdf_url_11',
       publishedAt: DateTime(2024, 3, 10),
       pageCount: 58,
@@ -141,7 +141,7 @@ class MockRevistas {
       description:
           'Echilibrul între respectarea tradițiilor seculare și adaptarea la societatea contemporană.',
       imageUrl:
-          'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400',
+          'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1519389950473-47ba0277781c_w400.jpg',
       pdfUrl: 'mock_pdf_url_12',
       publishedAt: DateTime(2024, 2, 5),
       pageCount: 50,

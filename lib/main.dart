@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/service_locator.dart';
+import 'core/services/app_settings_service.dart';
 import 'core/style/app_theme.dart';
 import 'core/localization/app_localization.dart';
 import 'core/cubit/location_cubit.dart';
@@ -14,7 +15,6 @@ import 'features/auth/presentation/bloc/authentication_bloc.dart';
 import 'features/intro/presentation/bloc/intro_bloc.dart';
 import 'features/news/presentation/bloc/news_bloc.dart';
 import 'features/revista/presentation/bloc/revista_bloc.dart';
-import 'features/revista/presentation/bloc/revista_details_bloc.dart';
 import 'firebase_options.dart';
 import '../core/services/firebase_messaging_service.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
@@ -68,7 +68,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<IntroBloc>()),
         BlocProvider(create: (context) => sl<NewsBloc>()),
         BlocProvider(create: (context) => sl<RevistaBloc>()),
-        BlocProvider(create: (context) => sl<RevistaDetailsBloc>()),
         BlocProvider(create: (context) => sl<NotificationBloc>()),
         BlocProvider(create: (context) => sl<LocationCubit>(), lazy: false),
         BlocProvider(
@@ -79,7 +78,7 @@ class MyApp extends StatelessWidget {
       ],
       child: LocalizationProvider(
         child: MaterialApp.router(
-          title: 'R.L. 126 C.T.',
+          title: AppSettingsService.instance.appName,
           theme: AppTheme.lightTheme,
           themeMode: ThemeMode.light,
           routerConfig: routes,

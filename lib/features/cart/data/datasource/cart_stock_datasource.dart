@@ -2,6 +2,7 @@ import 'package:app/core/error/exceptions.dart';
 import 'package:app/core/network/woocommerce_api_client.dart';
 import 'package:app/features/cart/data/request/cart_stock_request.dart';
 import 'package:app/features/cart/domain/models/cart_stock_response_model.dart';
+import 'package:app/features/shop/data/mock/mock_products.dart';
 import 'package:flutter/foundation.dart';
 
 abstract class CartStockDatasource {
@@ -78,6 +79,71 @@ class CartStockDatasourceImpl implements CartStockDatasource {
 
           if (kDebugMode) {
             print('✅ CartStockDatasource: Product ${cartEntry.productId} - available: $available, stock: $stockStatus');
+          }
+        } on NetworkException catch (e) {
+          if (kDebugMode) {
+            print('⚠️  CartStockDatasource: Network error for product ${cartEntry.productId}, using mock data - ${e.message}');
+          }
+
+          // Fallback to mock data
+          try {
+            final mockProducts = MockProducts.getMockProducts();
+            final mockProduct = mockProducts.firstWhere(
+              (p) => p.id == cartEntry.productId,
+              orElse: () => throw Exception('Product not found in mock data'),
+            );
+
+            // Check stock from mock data
+            bool available = false;
+            String? error;
+
+            if (mockProduct.stockStatus == 'instock') {
+              if (mockProduct.manageStock && mockProduct.stockQuantity != null) {
+                available = cartEntry.quantity <= mockProduct.stockQuantity!;
+                if (!available) {
+                  error = 'Only ${mockProduct.stockQuantity} available';
+                }
+              } else {
+                available = true;
+              }
+            } else {
+              error = 'Product out of stock';
+            }
+
+            productStockInfos.add(
+              ProductStockInfo(
+                productId: cartEntry.productId,
+                productName: mockProduct.name,
+                available: available,
+                error: error,
+                requestedQuantity: cartEntry.quantity,
+                availableQuantity: mockProduct.stockQuantity,
+                stockStatus: mockProduct.stockStatus,
+                manageStock: mockProduct.manageStock,
+              ),
+            );
+
+            if (kDebugMode) {
+              print('✅ CartStockDatasource: Using mock data for product ${cartEntry.productId} - available: $available');
+            }
+          } catch (mockError) {
+            if (kDebugMode) {
+              print('❌ CartStockDatasource: Product ${cartEntry.productId} not found in mock data');
+            }
+
+            // Product not found even in mock data
+            productStockInfos.add(
+              ProductStockInfo(
+                productId: cartEntry.productId,
+                productName: 'Unknown',
+                available: false,
+                error: 'Product not found: ${cartEntry.productId}',
+                requestedQuantity: cartEntry.quantity,
+                availableQuantity: null,
+                stockStatus: 'outofstock',
+                manageStock: false,
+              ),
+            );
           }
         } catch (e) {
           if (kDebugMode) {

@@ -47,4 +47,12 @@ class RevistaRepositoryMock implements RevistaRepository {
     // Return a mock local file path
     return '/mock/path/to/$fileName.pdf';
   }
+
+  @override
+  Future<List<RevistaEntity>> searchRevistas(String query, {int limit = 20}) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final all = MockRevistas.getPaginatedRevistas(page: 1, pageSize: 100);
+    final q = query.toLowerCase();
+    return all.where((r) => r.title.toLowerCase().contains(q) || r.description.toLowerCase().contains(q)).take(limit).toList();
+  }
 }

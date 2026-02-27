@@ -8,6 +8,7 @@ import '../../../../core/widgets/custom_top_bar.dart';
 import '../../../../core/widgets/app_search_bar_v2.dart';
 import '../../../../core/style/app_colors.dart';
 import '../../../../core/localization/app_localization.dart';
+import '../../../../core/services/app_settings_service.dart';
 import '../../../auth/presentation/bloc/authentication_bloc.dart';
 import '../bloc/revista_bloc.dart';
 import '../widgets/revista_item_widget.dart';
@@ -70,49 +71,14 @@ class _RevistasPageState extends State<RevistasPage> {
         appBar: CustomTopBar.withCart(
           context: context,
           showLogo: true,
-          logoHeight: 90,
-          logoWidth: 140,
-          logoPadding: const EdgeInsets.only(
-            left: 20.0,
-            top: 10.0,
-            bottom: 10.0,
-          ),
+          logoHeight: 200,
+          logoWidth: 0,
+          centerTitle: false,
           showNotificationButton: true,
-          onNotificationTap: () {
-            // Handle notification tap
-          },
-          onLogoTap: () {
-            context.pushNamed(AppRoutesNames.dashboard.name);
-          },
-          customActions: [
-            // Language switcher button
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: LanguageSwitcherWidget(isCompact: true),
-            ),
-          ],
+          onNotificationTap: () {},
         ),
         body: Column(
           children: [
-            // Search bar
-            AppSearchBarV2(
-              controller: _searchController,
-              hintText: 'Caută în reviste...',
-              margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              onChanged: (value) {
-                // Implement revista search functionality
-                // This could filter the revistas list
-              },
-              onSubmitted: () {
-                if (_searchController.text.isNotEmpty) {
-                  // Trigger search
-                }
-              },
-              onClear: () {
-                setState(() {});
-              },
-            ),
-
             // Header section with enhanced design
             Container(
               width: double.infinity,
@@ -154,7 +120,7 @@ class _RevistasPageState extends State<RevistasPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Bibliotecă',
+                              AppSettingsService.instance.get('biblioteca_title', 'Bibliotecă'),
                               style: theme.textTheme.headlineMedium?.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -163,7 +129,7 @@ class _RevistasPageState extends State<RevistasPage> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Colecția de reviste și publicații',
+                              AppSettingsService.instance.get('biblioteca_subtitle', 'Colecția de reviste și publicații'),
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: Colors.white.withValues(alpha: 0.9),
                               ),
@@ -218,6 +184,29 @@ class _RevistasPageState extends State<RevistasPage> {
                   ),
                 ],
               ),
+            ),
+
+            // Search bar under header
+            AppSearchBarV2(
+              controller: _searchController,
+              hintText: 'Caută în reviste...',
+              margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              onChanged: (value) {
+                context.read<RevistaBloc>().add(
+                      SearchRevistasRequested(query: value),
+                    );
+              },
+              onSubmitted: () {
+                if (_searchController.text.isNotEmpty) {
+                  context.read<RevistaBloc>().add(
+                        SearchRevistasRequested(query: _searchController.text),
+                      );
+                }
+              },
+              onClear: () {
+                context.read<RevistaBloc>().add(LoadRevistasRequested(refresh: true));
+                setState(() {});
+              },
             ),
 
             // Revistas list

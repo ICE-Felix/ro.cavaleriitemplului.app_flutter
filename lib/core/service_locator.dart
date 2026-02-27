@@ -53,10 +53,12 @@ import '../features/news/domain/usecases/search_news_usecase.dart';
 import '../features/news/domain/usecases/get_categories_usecase.dart'
     as news_categories;
 import '../features/news/presentation/bloc/news_bloc.dart';
+import '../features/news/presentation/bloc/news_details_bloc.dart';
 // Revista feature imports
 import '../features/revista/data/datasources/revista_remote_data_source.dart';
 import '../features/revista/data/repositories/revista_repository_impl.dart';
 import '../features/revista/data/repositories/revista_repository_mock.dart';
+import '../features/revista/data/repositories/revista_repository_supabase.dart';
 import '../features/revista/domain/repositories/revista_repository.dart';
 import '../features/revista/presentation/bloc/revista_bloc.dart';
 import '../features/revista/presentation/bloc/revista_details_bloc.dart';
@@ -80,6 +82,7 @@ import '../core/services/supabase_fcm_service.dart';
 import '../core/services/location_service.dart';
 import '../core/cubit/location_cubit.dart';
 import '../core/services/share_page_service.dart';
+import '../core/services/app_settings_service.dart';
 import '../core/navigation/routes.dart';
 // Cart feature imports
 import '../features/cart/cart.dart';
@@ -123,6 +126,9 @@ Future<void> initServiceLocator() async {
 
   // Initialize Supabase
   await SupabaseAuthClient.initialize();
+
+  // Load app settings from Supabase (homepage_settings)
+  await AppSettingsService.instance.initialize();
 
   //! Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -213,13 +219,9 @@ Future<void> initServiceLocator() async {
     () => RevistaRemoteDataSourceImpl(),
   );
 
-  // Revista repository - Using Mock for development
+  // Revista repository - Using Supabase
   sl.registerLazySingleton<RevistaRepository>(
-    () => RevistaRepositoryMock(),
-    // Uncomment to use real Supabase implementation:
-    // () => RevistaRepositoryImpl(
-    //   remoteDataSource: sl<RevistaRemoteDataSource>(),
-    // ),
+    () => RevistaRepositorySupabase(),
   );
 
   //! Use cases
@@ -288,8 +290,9 @@ Future<void> initServiceLocator() async {
     ),
   );
 
-  // News BLoC
-  sl.registerFactory(() => NewsBloc());
+  // News BLoCs
+  sl.registerFactory(() => NewsBloc(repository: sl<NewsRepository>()));
+  sl.registerFactory(() => NewsDetailsBloc(repository: sl<NewsRepository>()));
 
   // Revista BLoCs
   sl.registerFactory(
@@ -352,19 +355,13 @@ Future<void> initServiceLocator() async {
 
   //Event data sources
   sl.registerLazySingleton<EventsDatasource>(
-    () => MockEventsDatasource(),
-    // Uncomment to use Supabase:
-    // () => EventsDatasourceSupabase(dio: sl<DioClient>()),
+    () => EventsDatasourceSupabase(),
   );
   sl.registerLazySingleton<EventsRepository>(
-    () => EventsRepositoryMock(
+    () => EventsRepositorySupabase(
+      networkInfo: sl<NetworkInfo>(),
       eventsDatasource: sl<EventsDatasource>(),
     ),
-    // Uncomment to use Supabase:
-    // () => EventsRepositorySupabase(
-    //   networkInfo: sl<NetworkInfo>(),
-    //   eventsDatasource: sl<EventsDatasource>(),
-    // ),
   );
 
   // Notification BLoC

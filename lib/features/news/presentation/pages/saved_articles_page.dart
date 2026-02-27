@@ -59,12 +59,6 @@ class _SavedArticlesPageState extends State<SavedArticlesPage> {
       appBar: AppBar(
         title: Text(context.getString(label: 'savedArticles')),
         backgroundColor: colorScheme.surface,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: LanguageSwitcherWidget(isCompact: true),
-          ),
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: _refreshSavedArticles,

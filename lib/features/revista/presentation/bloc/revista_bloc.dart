@@ -14,6 +14,7 @@ class RevistaBloc extends Bloc<RevistaEvent, RevistaState> {
   RevistaBloc({required this.repository}) : super(RevistaInitial()) {
     on<LoadRevistasRequested>(_onLoadRevistasRequested);
     on<LoadMoreRevistasRequested>(_onLoadMoreRevistasRequested);
+    on<SearchRevistasRequested>(_onSearchRevistasRequested);
   }
 
   Future<void> _onLoadRevistasRequested(
@@ -66,6 +67,30 @@ class RevistaBloc extends Bloc<RevistaEvent, RevistaState> {
       ));
     } catch (e) {
       // Keep current state on error
+      emit(RevistaError(e.toString()));
+    }
+  }
+
+  Future<void> _onSearchRevistasRequested(
+    SearchRevistasRequested event,
+    Emitter<RevistaState> emit,
+  ) async {
+    if (event.query.isEmpty) {
+      add(LoadRevistasRequested(refresh: true));
+      return;
+    }
+
+    try {
+      emit(RevistaLoading());
+
+      final results = await repository.searchRevistas(event.query);
+
+      emit(RevistaLoaded(
+        revistas: results,
+        hasMore: false,
+        currentPage: 1,
+      ));
+    } catch (e) {
       emit(RevistaError(e.toString()));
     }
   }

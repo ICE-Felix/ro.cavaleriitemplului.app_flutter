@@ -19,6 +19,8 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
     on<LoadEventsForDateEvent>(_onLoadEventsForDate);
     on<LoadMoreEventsEvent>(_onLoadMoreEvents);
     on<LoadMonthEventsEvent>(_onLoadMonthEvents);
+    on<SearchEventsEvent>(_onSearchEvents);
+    on<ClearSearchEventsEvent>(_onClearSearchEvents);
   }
 
   Future<void> _onInitEvents(
@@ -29,7 +31,9 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
 
     try {
       // First, get event types
+      print('EventsBloc: Loading event types...');
       final eventTypes = await sl<EventsRepository>().getEventTypes();
+      print('EventsBloc: Got ${eventTypes.length} event types');
 
       if (eventTypes.isNotEmpty) {
         // Get today's date in the required format
@@ -37,12 +41,14 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
         final todayString =
             '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
 
-        // Load events for today with the first event type
+        // Load events for today
+        print('EventsBloc: Loading events for $todayString');
         final result = await sl<EventsRepository>().getEventsSearch(
           eventTypeId: null,
           page: 1,
           date: todayString,
         );
+        print('EventsBloc: Got ${result.events.length} events');
 
         emit(
           state.copyWith(
@@ -73,6 +79,7 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
     } on AuthException catch (e) {
       emit(state.copyWith(status: EventsStatus.error, message: e.message));
     } catch (e) {
+      print('EventsBloc: ERROR: $e');
       emit(
         state.copyWith(
           status: EventsStatus.error,
@@ -106,6 +113,7 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
         eventTypeId: event.eventType,
         page: event.page,
         date: event.date,
+        query: (event.query ?? state.searchQuery).isEmpty ? null : (event.query ?? state.searchQuery),
       );
 
       emit(
@@ -165,15 +173,17 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
 
     final nextPage = state.currentPage + 1;
 
-    // Format current date to string for API call
-    final dateString =
-        '${state.selectedDate.year}-${state.selectedDate.month.toString().padLeft(2, '0')}-${state.selectedDate.day.toString().padLeft(2, '0')}';
+    // When searching, don't filter by date
+    final dateString = state.searchQuery.isNotEmpty
+        ? ''
+        : '${state.selectedDate.year}-${state.selectedDate.month.toString().padLeft(2, '0')}-${state.selectedDate.day.toString().padLeft(2, '0')}';
 
     try {
       final result = await sl<EventsRepository>().getEventsSearch(
         eventTypeId: state.selectedEventTypeId,
         page: nextPage,
         date: dateString,
+        query: state.searchQuery.isEmpty ? null : state.searchQuery,
       );
 
       // Append new events to existing ones
@@ -206,29 +216,63 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
     LoadMonthEventsEvent event,
     Emitter<EventsState> emit,
   ) async {
-    // Get the first and last day of the month
-    final firstDayOfMonth = DateTime(event.month.year, event.month.month, 1);
-    final lastDayOfMonth = DateTime(event.month.year, event.month.month + 1, 0);
-
-    // Format dates for API call
-    final startDate =
-        '${firstDayOfMonth.year}-${firstDayOfMonth.month.toString().padLeft(2, '0')}-${firstDayOfMonth.day.toString().padLeft(2, '0')}';
-    final endDate =
-        '${lastDayOfMonth.year}-${lastDayOfMonth.month.toString().padLeft(2, '0')}-${lastDayOfMonth.day.toString().padLeft(2, '0')}';
+    // Format as YYYY-MM to load all events for the month
+    final monthString =
+        '${event.month.year}-${event.month.month.toString().padLeft(2, '0')}';
 
     try {
-      // Load all events for the month (without pagination)
+      // Load all events for the month (large limit for calendar markers)
       final result = await sl<EventsRepository>().getEventsSearch(
-        eventTypeId: null, // Load all event types for calendar markers
+        eventTypeId: null,
         page: 1,
-        date: startDate,
+        date: monthString,
       );
 
       // Update only the allMonthEvents field
       emit(state.copyWith(allMonthEvents: result.events));
     } catch (e) {
       // Silently fail for month events to not disrupt the main flow
-      // The calendar will just show no markers if this fails
     }
+  }
+
+  Future<void> _onSearchEvents(
+    SearchEventsEvent event,
+    Emitter<EventsState> emit,
+  ) async {
+    emit(state.copyWith(searchQuery: event.query, status: EventsStatus.loading));
+
+    try {
+      final result = await sl<EventsRepository>().getEventsSearch(
+        eventTypeId: state.selectedEventTypeId,
+        page: 1,
+        date: '',
+        query: event.query,
+      );
+
+      emit(
+        state.copyWith(
+          events: result.events,
+          totalPages: result.totalPages,
+          currentPage: 1,
+          status: EventsStatus.loaded,
+          message: '',
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: EventsStatus.error,
+          message: 'An unexpected error occurred: $e',
+        ),
+      );
+    }
+  }
+
+  void _onClearSearchEvents(
+    ClearSearchEventsEvent event,
+    Emitter<EventsState> emit,
+  ) {
+    emit(state.copyWith(searchQuery: ''));
+    add(LoadEventsForDateEvent(state.selectedDate));
   }
 }

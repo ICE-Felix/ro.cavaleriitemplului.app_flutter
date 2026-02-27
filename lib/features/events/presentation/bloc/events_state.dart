@@ -14,10 +14,11 @@ class EventsState extends Equatable {
   final int currentPage;
   final String? selectedEventTypeId;
   final bool nextPageLoading;
+  final String searchQuery;
 
   const EventsState({
     required this.selectedDate,
-    this.isCalendarMinimized = false,
+    this.isCalendarMinimized = true,
     this.events = const [],
     this.allMonthEvents = const [],
     this.eventTypes = const [],
@@ -27,6 +28,7 @@ class EventsState extends Equatable {
     this.currentPage = 1,
     this.selectedEventTypeId,
     this.nextPageLoading = false,
+    this.searchQuery = '',
   });
 
   EventsState copyWith({
@@ -41,6 +43,7 @@ class EventsState extends Equatable {
     int? currentPage,
     Nullable<String>? selectedEventTypeId,
     bool? nextPageLoading,
+    String? searchQuery,
   }) {
     return EventsState(
       selectedDate: selectedDate ?? this.selectedDate,
@@ -57,6 +60,7 @@ class EventsState extends Equatable {
               ? selectedEventTypeId.value
               : this.selectedEventTypeId,
       nextPageLoading: nextPageLoading ?? this.nextPageLoading,
+      searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 
@@ -73,5 +77,6 @@ class EventsState extends Equatable {
     currentPage,
     selectedEventTypeId,
     nextPageLoading,
+    searchQuery,
   ];
 }

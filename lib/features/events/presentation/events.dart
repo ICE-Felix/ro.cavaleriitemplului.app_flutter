@@ -28,6 +28,7 @@ class _EventsPageContent extends StatefulWidget {
 
 class _EventsPageContentState extends State<_EventsPageContent> {
   late ScrollController _scrollController;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _EventsPageContentState extends State<_EventsPageContent> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -53,11 +55,20 @@ class _EventsPageContentState extends State<_EventsPageContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomTopBar.withCart(
+      appBar: CustomTopBar.withSearchAndCart(
         context: context,
         showLogo: true,
         showBackButton: false,
         showNotificationButton: true,
+        searchController: _searchController,
+        searchHint: 'Caută evenimente...',
+        onSearchChanged: (query) {
+          if (query.isEmpty) {
+            context.read<EventsBloc>().add(const ClearSearchEventsEvent());
+          } else {
+            context.read<EventsBloc>().add(SearchEventsEvent(query));
+          }
+        },
         onNotificationTap: () {
           // Handle notification tap
         },
@@ -175,58 +186,54 @@ class _EventsPageContentState extends State<_EventsPageContent> {
 
                 const SizedBox(height: 16),
 
-                // Events List
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outlineVariant,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                // Events Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
                     children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.event,
-                            color: Theme.of(context).primaryColor,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Evenimente pe ${_formatDate(state.selectedDate)}',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                                Text(
-                                  _getDayOfWeek(state.selectedDate),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      Icon(
+                        Icons.event,
+                        color: Theme.of(context).primaryColor,
+                        size: 20,
                       ),
-                      const SizedBox(height: 16),
-                      EventsList(state: state),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              state.searchQuery.isNotEmpty
+                                  ? 'Rezultate pentru "${state.searchQuery}"'
+                                  : 'Evenimente pe ${_formatDate(state.selectedDate)}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                            if (state.searchQuery.isEmpty)
+                              Text(
+                                _getDayOfWeek(state.selectedDate),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Events List - each event in its own card
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: EventsList(state: state),
+                ),
+
+                const SizedBox(height: 16),
               ],
             ),
           );

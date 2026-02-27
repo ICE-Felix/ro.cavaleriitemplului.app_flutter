@@ -17,3 +17,12 @@ class LoadRevistasRequested extends RevistaEvent {
 }
 
 class LoadMoreRevistasRequested extends RevistaEvent {}
+
+class SearchRevistasRequested extends RevistaEvent {
+  final String query;
+
+  SearchRevistasRequested({required this.query});
+
+  @override
+  List<Object?> get props => [query];
+}

@@ -1,10 +1,12 @@
 import 'package:app/features/profile/presentation/widgets/logout_confirmation_dialog/logout_confirmation_dialog.dart';
 import 'package:app/core/localization/localization_inherited_widget.dart';
+import 'package:app/core/navigation/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:app/features/profile/presentation/widgets/profile_menu_item.dart';
-import 'package:app/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:app/features/auth/presentation/bloc/authentication_bloc.dart';
 
 class ProfileAccountSection extends StatelessWidget {
   const ProfileAccountSection({super.key});
@@ -47,7 +49,7 @@ class ProfileAccountSection extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context) {
-    final profileCubit = context.read<ProfileCubit>();
+    final authBloc = context.read<AuthenticationBloc>();
 
     showDialog(
       context: context,
@@ -55,8 +57,12 @@ class ProfileAccountSection extends StatelessWidget {
       builder: (BuildContext dialogContext) {
         return LogoutConfirmationDialog(
           onLogout: () {
-            profileCubit.logout();
-            _showSuccessMessage(context, 'Logged out successfully');
+            authBloc.add(LogoutRequested());
+            // Navigate to intro/login after logout
+            while (context.canPop()) {
+              context.pop();
+            }
+            context.pushReplacementNamed(AppRoutesNames.intro.name);
           },
         );
       },

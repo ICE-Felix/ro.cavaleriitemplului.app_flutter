@@ -28,15 +28,30 @@ class LoadEventsEvent extends EventsEvent {
   final String? eventType;
   final int page;
   final String date;
+  final String? query;
 
   const LoadEventsEvent({
     required this.eventType,
     required this.page,
     required this.date,
+    this.query,
   });
 
   @override
-  List<Object?> get props => [eventType, page, date];
+  List<Object?> get props => [eventType, page, date, query];
+}
+
+class SearchEventsEvent extends EventsEvent {
+  final String query;
+
+  const SearchEventsEvent(this.query);
+
+  @override
+  List<Object?> get props => [query];
+}
+
+class ClearSearchEventsEvent extends EventsEvent {
+  const ClearSearchEventsEvent();
 }
 
 class LoadEventsForDateEvent extends EventsEvent {

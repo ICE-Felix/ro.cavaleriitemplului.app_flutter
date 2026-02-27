@@ -40,18 +40,11 @@ class _CategoriesPageView extends StatelessWidget {
           appBar: CustomTopBar.withCart(
             context: context,
             showLogo: true,
-            logoHeight: 90,
-            logoWidth: 140,
-            logoPadding: const EdgeInsets.only(
-              left: 20.0,
-              top: 10.0,
-              bottom: 10.0,
-            ),
+            logoHeight: 200,
+            logoWidth: 0,
+            centerTitle: false,
             showNotificationButton: true,
-            onNotificationTap: () {
-              // Handle notification tap
-            },
-            onLogoTap: () {},
+            onNotificationTap: () {},
           ),
           body: _buildBody(context, state),
         );
@@ -99,14 +92,13 @@ class _CategoriesPageView extends StatelessWidget {
 
       return ListView(
         children: [
-          // Search bar at the top
+          // Search bar
           ButtonSearchBar(
             onTap: () {
               context.pushNamed(AppRoutesNames.searchProducts.name);
             },
             margin: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
           ),
-          const SizedBox(height: 16),
           const SizedBox(height: 16),
           // Categories content
           GridView.builder(

@@ -10,18 +10,21 @@ class CartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 12.0),
-      child: BlocProvider.value(
-        value: sl<CartCubit>(),
-        child: BlocBuilder<CartCubit, CartState>(
-          builder: (context, state) {
-            final totalItems = state.cart.items.fold<int>(
-              0,
-              (sum, item) => sum + item.quantity,
-            );
+    return BlocProvider.value(
+      value: sl<CartCubit>(),
+      child: BlocBuilder<CartCubit, CartState>(
+        builder: (context, state) {
+          final totalItems = state.cart.items.fold<int>(
+            0,
+            (sum, item) => sum + item.quantity,
+          );
 
-            return IconButton(
+          // Hide the button entirely when cart is empty
+          if (totalItems == 0) return const SizedBox.shrink();
+
+          return Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: IconButton(
               onPressed: onPressed,
               icon: Stack(
                 children: [
@@ -29,35 +32,34 @@ class CartButton extends StatelessWidget {
                     Icons.shopping_cart,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
-                  if (totalItems > 0)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        width: 16,
-                        height: 16,
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            totalItems.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      width: 16,
+                      height: 16,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          totalItems.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
+                  ),
                 ],
               ),
               tooltip: 'Cart',
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

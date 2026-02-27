@@ -43,7 +43,8 @@ class IntroView extends StatelessWidget {
                 // User is authenticated, navigate to dashboard
                 context.replaceNamed(AppRoutesNames.dashboard.name);
               } else if (state is AuthUnauthenticated) {
-                context.replaceNamed(AppRoutesNames.dashboard.name);
+                // User is not authenticated, navigate to login
+                context.pushNamed(AppRoutesNames.login.name);
               }
             },
           ),

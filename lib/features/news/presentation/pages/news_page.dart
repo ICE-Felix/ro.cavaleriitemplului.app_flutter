@@ -1,4 +1,5 @@
 import 'package:app/core/navigation/routes_name.dart';
+import 'package:app/core/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,6 +13,7 @@ import '../bloc/news_bloc.dart';
 import '../widgets/news_item_widget.dart';
 import '../../data/models/category_model.dart';
 import '../../domain/entities/news_entity.dart';
+import '../../domain/repositories/bookmark_repository.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -24,15 +26,28 @@ class _NewsPageState extends State<NewsPage> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   String? _selectedCategory;
+  bool _hasSavedArticles = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    _checkSavedArticles();
 
     // Load initial data
     context.read<NewsBloc>().add(LoadNewsRequested());
     context.read<NewsBloc>().add(LoadCategoriesRequested());
+  }
+
+  Future<void> _checkSavedArticles() async {
+    try {
+      final bookmarks = await sl<BookmarkRepository>().getAllBookmarks();
+      if (mounted) {
+        setState(() {
+          _hasSavedArticles = bookmarks.isNotEmpty;
+        });
+      }
+    } catch (_) {}
   }
 
   @override
@@ -92,38 +107,26 @@ class _NewsPageState extends State<NewsPage> {
         appBar: CustomTopBar.withSearchAndCart(
           context: context,
           showLogo: true,
-          logoHeight: 90,
-          logoWidth: 140,
-          logoPadding: const EdgeInsets.only(
-            left: 20.0,
-            top: 10.0,
-            bottom: 10.0,
-          ),
+          logoHeight: 200,
+          logoWidth: 0,
+          centerTitle: false,
           searchController: _searchController,
           onSearchChanged: _onSearchChanged,
-          onNotificationTap: () {
-            // Handle notification tap
-          },
-          onLogoTap: () {
-            // Handle logo tap
-          },
+          showNotificationButton: true,
+          onNotificationTap: () {},
           customActions: [
-            // Language switcher button
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: LanguageSwitcherWidget(isCompact: true),
-            ),
-            // Saved articles button
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: IconButton(
-                onPressed: () {
-                  context.pushNamed(AppRoutesNames.savedArticles.name);
-                },
-                icon: const FaIcon(FontAwesomeIcons.solidBookmark, size: 20),
-                tooltip: context.getString(label: 'savedArticles'),
+            if (_hasSavedArticles)
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: IconButton(
+                  onPressed: () async {
+                    await context.pushNamed(AppRoutesNames.savedArticles.name);
+                    _checkSavedArticles();
+                  },
+                  icon: const FaIcon(FontAwesomeIcons.solidBookmark, size: 20),
+                  tooltip: context.getString(label: 'savedArticles'),
+                ),
               ),
-            ),
           ],
         ),
         body: Column(
@@ -263,11 +266,19 @@ class _NewsPageState extends State<NewsPage> {
 
                             return NewsItemWidget(
                               news: newsToShow[index],
-                              onTap: () {
-                                context.pushNamed(
+                              onTap: () async {
+                                await context.pushNamed(
                                   AppRoutesNames.newsDetails.name,
                                   pathParameters: {'id': newsToShow[index].id},
                                 );
+                                if (context.mounted) {
+                                  _checkSavedArticles();
+                                  context.read<NewsBloc>().add(
+                                    LoadNewsRequested(
+                                      category: _selectedCategory,
+                                    ),
+                                  );
+                                }
                               },
                             );
                           },

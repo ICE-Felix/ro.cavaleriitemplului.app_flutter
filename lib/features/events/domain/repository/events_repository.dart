@@ -9,6 +9,7 @@ abstract class EventsRepository {
     required String? eventTypeId,
     required int page,
     required String date,
+    String? query,
   });
   Future<List<EventType>> getEventTypes();
   Future<Event> getEventById(String eventId);

@@ -30,3 +30,12 @@ class SearchNewsRequested extends NewsEvent {
 class LoadCategoriesRequested extends NewsEvent {}
 
 class LoadMoreNewsRequested extends NewsEvent {}
+
+class IncrementNewsReadCount extends NewsEvent {
+  final String newsId;
+
+  IncrementNewsReadCount({required this.newsId});
+
+  @override
+  List<Object?> get props => [newsId];
+}

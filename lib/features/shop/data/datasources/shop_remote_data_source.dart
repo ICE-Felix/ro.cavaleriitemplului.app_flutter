@@ -44,7 +44,7 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
           )
           .toList();
     } catch (e) {
-      if (e is AuthException || e is ServerException) rethrow;
+      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
       throw ServerException(message: e.toString());
     }
   }
@@ -105,7 +105,7 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
       if (kDebugMode) {
         print('❌ ShopRemoteDataSource: Error in getParentCategories: $e');
       }
-      if (e is AuthException || e is ServerException) rethrow;
+      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
       throw ServerException(message: e.toString());
     }
   }
@@ -132,7 +132,7 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
           )
           .toList();
     } catch (e) {
-      if (e is AuthException || e is ServerException) rethrow;
+      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
       throw ServerException(message: e.toString());
     }
   }
@@ -161,7 +161,7 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
           )
           .toList();
     } catch (e) {
-      if (e is AuthException || e is ServerException) rethrow;
+      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
       throw ServerException(message: e.toString());
     }
   }
@@ -179,7 +179,7 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
 
       return ProductModel.fromJson(response);
     } catch (e) {
-      if (e is AuthException || e is ServerException) rethrow;
+      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
       throw ServerException(message: e.toString());
     }
   }
@@ -225,7 +225,7 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
           )
           .toList();
     } catch (e) {
-      if (e is AuthException || e is ServerException) rethrow;
+      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
       throw ServerException(message: e.toString());
     }
   }
@@ -257,7 +257,7 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
           .map((tag) => ProductTagModel.fromJson(tag as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      if (e is AuthException || e is ServerException) rethrow;
+      if (e is AuthException || e is ServerException || e is NetworkException) rethrow;
       throw ServerException(message: e.toString());
     }
   }

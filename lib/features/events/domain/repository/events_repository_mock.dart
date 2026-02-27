@@ -15,6 +15,7 @@ class EventsRepositoryMock extends EventsRepository {
     required String? eventTypeId,
     required int page,
     required String date,
+    String? query,
   }) async {
     // No network check - directly use datasource for mock data
     final response = await eventsDatasource.getEventsSearch(
@@ -22,6 +23,7 @@ class EventsRepositoryMock extends EventsRepository {
       page: page,
       date: date,
       limit: limit,
+      query: query,
     );
     return (
       events: response.data,

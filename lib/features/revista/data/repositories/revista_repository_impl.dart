@@ -26,4 +26,9 @@ class RevistaRepositoryImpl implements RevistaRepository {
   Future<String> downloadPdfFile(String fileId, String fileName) async {
     return await remoteDataSource.downloadPdfFile(fileId, fileName);
   }
+
+  @override
+  Future<List<RevistaEntity>> searchRevistas(String query, {int limit = 20}) async {
+    return await remoteDataSource.getRevistas(page: 1, limit: limit);
+  }
 }

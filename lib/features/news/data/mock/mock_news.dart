@@ -57,7 +57,7 @@ Fratern,
 Venerabilul Maestru
         ''',
         summary: 'Convocarea Adunării Generale Anuale pentru data de 15 decembrie 2025, cu ordinea de zi completă și detalii organizatorice.',
-        imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1540575467063-178a50c2df87_w800.jpg',
         author: 'Secretarul Lojei',
         publishedAt: DateTime.now().subtract(const Duration(days: 2)),
         category: 'Anunțuri',
@@ -78,7 +78,7 @@ Perioada interbelică a reprezentat vârful dezvoltării masoneriei românești,
 După 1989, francmasoneria românească a renăscut, reluându-și activitatea în spirit democratic și modern, păstrând însă tradițiile și valorile fundamentale ale ordinului.
         ''',
         summary: 'O trecere în revistă a istoriei francmasoneriei pe teritoriul românesc, de la primele loje din secolul XVIII până în zilele noastre.',
-        imageUrl: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1461360370896-922624d12aa1_w800.jpg',
         author: 'Fr. Historian',
         publishedAt: DateTime.now().subtract(const Duration(days: 5)),
         category: 'Istorie',
@@ -99,7 +99,7 @@ Fiecare treaptă a scării reprezintă o virtute sau o realizare pe care masonul
 Scara lui Iacob ne învață că drumul către perfecțiune este unul gradual, care necesită efort constant, perseverență și dedicare. Fiecare treaptă urcată ne aduce mai aproape de lumină și înțelegere.
         ''',
         summary: 'Explorarea profundă a semnificației și simbolismului Scării lui Iacob în tradițiile masonice.',
-        imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1519389950473-47ba0277781c_w800.jpg',
         author: 'Fr. Symbolicus',
         publishedAt: DateTime.now().subtract(const Duration(days: 7)),
         category: 'Simbolistică',
@@ -126,7 +126,7 @@ Fondurile strânse vor fi utilizate pentru:
 Mulțumim tuturor celor care au contribuit la succesul acestui eveniment și care au demonstrat că spiritul masonic de frăție și caritate este viu și puternic în comunitatea noastră.
         ''',
         summary: 'Raportul evenimentului caritabil organizat de lojă, care a strâns 25.000 lei pentru susținerea copiilor defavorizați.',
-        imageUrl: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1559027615-cd4628902d4a_w800.jpg',
         author: 'Comisia de Caritate',
         publishedAt: DateTime.now().subtract(const Duration(days: 10)),
         category: 'Evenimente',
@@ -152,7 +152,7 @@ Valorile comune ale celor două mișcări includ:
 Francmasoneria a oferit un spațiu protejat unde ideile iluministe puteau fi discutate liber, departe de cenzura și restricțiile impuse de autoritățile politice și religioase ale vremii. Astfel, lojile masonice au jucat un rol crucial în răspândirea ideilor care au stat la baza revoluțiilor democratice și a progresului social din secolele următoare.
         ''',
         summary: 'Analiza relației profunde dintre francmasonerie și mișcarea iluministă din secolul al XVIII-lea.',
-        imageUrl: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1481627834876-b7833e8f5570_w800.jpg',
         author: 'Fr. Philosophus',
         publishedAt: DateTime.now().subtract(const Duration(days: 14)),
         category: 'Filosofie',
@@ -185,7 +185,7 @@ Cu frăție,
 Venerabilul Maestru
         ''',
         summary: 'Anunțul ritualului de inițiere pentru doi noi candidați, programat pentru data de 5 decembrie 2025.',
-        imageUrl: 'https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1478146896981-b80fe463b330_w800.jpg',
         author: 'Venerabilul Maestru',
         publishedAt: DateTime.now().subtract(const Duration(days: 18)),
         category: 'Anunțuri',
@@ -212,7 +212,7 @@ Cele trei trepte ale intrării simbolizează calea de trei grade prin care trece
 Studiul simbolismului Templului lui Solomon rămâne una dintre cele mai profunde și mai complexe teme ale studiilor masonice, oferind永續 perspective noi și înțelesuri mai profunde celor care îl cercetează cu seriozitate și dedicare.
         ''',
         summary: 'Explorarea semnificației profunde a Templului lui Solomon în simbolistica și practica masonică.',
-        imageUrl: 'https://images.unsplash.com/photo-1549055118-7dfbe87f4463?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1549055118-7dfbe87f4463_w800.jpg',
         author: 'Fr. Historicus',
         publishedAt: DateTime.now().subtract(const Duration(days: 21)),
         category: 'Simbolistică',
@@ -246,7 +246,7 @@ Conferința este deschisă atât membrilor ordinului, cât și profanilor intere
 Pentru înscrieri și informații suplimentare, contactați Secretarul Lojei.
         ''',
         summary: 'Anunțul conferinței "Masoneria în Secolul XXI" care va avea loc pe 20 decembrie, cu invitați speciali și teme relevante.',
-        imageUrl: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1505373877841-8d25f7d46678_w800.jpg',
         author: 'Comisia Culturală',
         publishedAt: DateTime.now().subtract(const Duration(days: 25)),
         category: 'Evenimente',
@@ -274,7 +274,7 @@ Practică zilnică a toleranței implică:
 În templu, masoni de diferite confesiuni religioase, orientări politice și origini sociale lucrează împreună în armonie, demonstrând că toleranța nu este doar un ideal abstract, ci o realitate trăită.
         ''',
         summary: 'Reflecție asupra importanței toleranței ca virtute fundamentală în practica și filosofia masonică.',
-        imageUrl: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1469571486292-0ba58a3f068b_w800.jpg',
         author: 'Fr. Moralis',
         publishedAt: DateTime.now().subtract(const Duration(days: 28)),
         category: 'Filosofie',
@@ -317,7 +317,7 @@ Toate sesiunile vor avea loc în prima duminică a lunii, ora 10:00, în sala de
 Materiale de studiu și bibliografia completă vor fi puse la dispoziție pe platforma educațională online a lojei.
         ''',
         summary: 'Prezentarea programului educațional complet pentru anul 2026, cu patru direcții de studiu pentru membrii lojei.',
-        imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1503676260728-1c00da094a0b_w800.jpg',
         author: 'Comisia de Educație',
         publishedAt: DateTime.now().subtract(const Duration(days: 32)),
         category: 'Educație',
@@ -344,7 +344,7 @@ Dalta reprezintă discernământul, capacitatea de a face distincții fine și d
 În practica zilnică, masonul folosește "ciocanul" voinței pentru a-și depăși limitările și "dalta" discernământului pentru a-și rafina caractarul și comportamentul.
         ''',
         summary: 'Explorarea simbolismului profund al ciocanului și daltei ca instrumente fundamentale ale lucrării masonice.',
-        imageUrl: 'https://images.unsplash.com/photo-1590856029826-c7a73a4447f6?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1590856029826-c7a73a4447f6_w800.jpg',
         author: 'Fr. Symbolicus',
         publishedAt: DateTime.now().subtract(const Duration(days: 35)),
         category: 'Simbolistică',
@@ -388,7 +388,7 @@ Dezvoltare organizațională:
 Raportul complet, cu detalii financiare și statistici, va fi prezentat la Adunarea Generală.
         ''',
         summary: 'Raportul detaliat al activităților lojei pe parcursul anului 2025, incluzând ritualuri, educație și caritate.',
-        imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800',
+        imageUrl: 'https://zmjwvmabmdagkhsxgjhx.supabase.co/storage/v1/object/public/app-images/photo-1454165804606-c3d57bc86b40_w800.jpg',
         author: 'Secretarul Lojei',
         publishedAt: DateTime.now().subtract(const Duration(days: 40)),
         category: 'Anunțuri',

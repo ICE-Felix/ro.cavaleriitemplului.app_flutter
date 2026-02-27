@@ -1,10 +1,87 @@
+import 'package:app/core/network/supabase_client.dart';
+import 'package:app/core/services/app_settings_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import '../../../../core/widgets/custom_top_bar/custom_top_bar.dart';
 import '../../../../core/style/app_colors.dart';
 
-class HistoryPage extends StatelessWidget {
+class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
+
+  @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
+
+class _HistoryPageState extends State<HistoryPage> {
+  List<Map<String, dynamic>> _sections = [];
+  List<Map<String, dynamic>> _timeline = [];
+  List<Map<String, dynamic>> _principles = [];
+  bool _isLoading = true;
+
+  supabase_flutter.SupabaseClient get _client => SupabaseClient().client;
+  final _settings = AppSettingsService.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final data = await _client
+          .from('history_sections')
+          .select()
+          .order('sort_order', ascending: true);
+
+      if (!mounted) return;
+
+      final list = data as List;
+      setState(() {
+        _sections = list
+            .where((e) => e['section_type'] == 'section')
+            .cast<Map<String, dynamic>>()
+            .toList();
+        _timeline = list
+            .where((e) => e['section_type'] == 'timeline')
+            .cast<Map<String, dynamic>>()
+            .toList();
+        _principles = list
+            .where((e) => e['section_type'] == 'principle')
+            .cast<Map<String, dynamic>>()
+            .toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+    }
+  }
+
+  static const _iconMap = <String, IconData>{
+    'scroll': FontAwesomeIcons.scroll,
+    'shield': FontAwesomeIcons.shield,
+    'handshake': FontAwesomeIcons.handshake,
+    'cross': FontAwesomeIcons.cross,
+    'heart': FontAwesomeIcons.heart,
+    'users': FontAwesomeIcons.users,
+    'crown': FontAwesomeIcons.crown,
+    'star': FontAwesomeIcons.star,
+    'book': FontAwesomeIcons.book,
+    'bookOpen': FontAwesomeIcons.bookOpen,
+  };
+
+  static const _colorMap = <String, Color>{
+    'primary': AppColors.primary,
+    'secondary': AppColors.secondary,
+    'info': AppColors.info,
+    'warning': AppColors.warning,
+    'success': AppColors.success,
+  };
+
+  IconData _getIcon(String name) => _iconMap[name] ?? FontAwesomeIcons.circle;
+  Color _getColor(String name) => _colorMap[name] ?? AppColors.primary;
 
   @override
   Widget build(BuildContext context) {
@@ -13,19 +90,17 @@ class HistoryPage extends StatelessWidget {
       appBar: CustomTopBar.withCart(
         context: context,
         showLogo: true,
-        logoHeight: 90,
-        logoWidth: 140,
-        logoPadding: const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
+        logoHeight: 200,
+        logoWidth: 0,
+        centerTitle: false,
         showNotificationButton: true,
-        onNotificationTap: () {
-          // Handle notification tap
-        },
+        onNotificationTap: () {},
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hero section with image placeholder
+            // Hero section
             Container(
               width: double.infinity,
               height: 250,
@@ -49,7 +124,7 @@ class HistoryPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Scurt Istoric',
+                    _settings.get('history_hero_title', 'Scurt Istoric'),
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -59,7 +134,8 @@ class HistoryPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32.0),
                     child: Text(
-                      'Descoperă istoria și valorile Ordinului',
+                      _settings.get('history_hero_subtitle',
+                          'Descoperă istoria și valorile Ordinului'),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: Colors.white.withValues(alpha: 0.9),
                           ),
@@ -70,54 +146,41 @@ class HistoryPage extends StatelessWidget {
               ),
             ),
 
-            // Content sections
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Introduction
-                  _buildSectionCard(
-                    context,
-                    icon: FontAwesomeIcons.scroll,
-                    iconColor: AppColors.primary,
-                    title: 'Originile',
-                    content:
-                        'Ordinul Cavalerilor Templului reprezintă o tradiție milenară de devotament, onoare și serviciu. Fondat în perioada medievală, Ordinul a fost recunoscut pentru devotamentul său față de valorile creștine și pentru protecția pelerinilor.',
-                  ),
-                  const SizedBox(height: 20),
+            // Content
+            if (_isLoading)
+              const Padding(
+                padding: EdgeInsets.all(40),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Section cards
+                    for (int i = 0; i < _sections.length; i++) ...[
+                      _buildSectionCard(
+                        context,
+                        icon: _getIcon(_sections[i]['icon'] ?? ''),
+                        iconColor: _getColor(_sections[i]['icon_color'] ?? ''),
+                        title: _sections[i]['title'] ?? '',
+                        content: _sections[i]['content'] ?? '',
+                      ),
+                      const SizedBox(height: 20),
+                    ],
 
-                  // Values
-                  _buildSectionCard(
-                    context,
-                    icon: FontAwesomeIcons.shield,
-                    iconColor: AppColors.secondary,
-                    title: 'Valorile Noastre',
-                    content:
-                        'Onoarea, loialitatea, curajul și credința au fost întotdeauna stâlpii pe care s-a construit Ordinul. Aceste valori ne ghidează și astăzi în misiunea noastră de a servi comunitatea și de a păstra tradițiile.',
-                  ),
-                  const SizedBox(height: 20),
+                    // Timeline
+                    if (_timeline.isNotEmpty) ...[
+                      _buildTimelineSection(context),
+                      const SizedBox(height: 20),
+                    ],
 
-                  // Mission
-                  _buildSectionCard(
-                    context,
-                    icon: FontAwesomeIcons.handshake,
-                    iconColor: AppColors.info,
-                    title: 'Misiunea Modernă',
-                    content:
-                        'În epoca modernă, Ordinul continuă să promoveze valorile tradiționale adaptate la contextul contemporan. Ne dedicăm activităților caritabile, educației și păstrării patrimoniului cultural și spiritual.',
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Timeline section
-                  _buildTimelineSection(context),
-                  const SizedBox(height: 20),
-
-                  // Key principles
-                  _buildPrinciplesSection(context),
-                ],
+                    // Principles
+                    if (_principles.isNotEmpty) _buildPrinciplesSection(context),
+                  ],
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -136,10 +199,7 @@ class HistoryPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.border,
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -160,13 +220,7 @@ class HistoryPage extends StatelessWidget {
                   color: iconColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Center(
-                  child: FaIcon(
-                    icon,
-                    size: 24,
-                    color: iconColor,
-                  ),
-                ),
+                child: Center(child: FaIcon(icon, size: 24, color: iconColor)),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -199,10 +253,7 @@ class HistoryPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.border,
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -216,14 +267,12 @@ class HistoryPage extends StatelessWidget {
         children: [
           Row(
             children: [
-              FaIcon(
-                FontAwesomeIcons.clockRotateLeft,
-                size: 24,
-                color: AppColors.warning,
-              ),
+              FaIcon(FontAwesomeIcons.clockRotateLeft,
+                  size: 24, color: AppColors.warning),
               const SizedBox(width: 12),
               Text(
-                'Cronologie Importantă',
+                _settings.get(
+                    'history_timeline_title', 'Cronologie Importantă'),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
@@ -232,27 +281,13 @@ class HistoryPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          _buildTimelineItem(
-            context,
-            year: '1118',
-            event: 'Fondarea Ordinului în Ierusalim',
-          ),
-          _buildTimelineItem(
-            context,
-            year: '1129',
-            event: 'Recunoașterea oficială de către Biserica Catolică',
-          ),
-          _buildTimelineItem(
-            context,
-            year: 'Sec. XII-XIII',
-            event: 'Perioada de glorie și expansiune',
-          ),
-          _buildTimelineItem(
-            context,
-            year: 'Modern',
-            event: 'Reînvierea tradițiilor și valorilor',
-            isLast: true,
-          ),
+          for (int i = 0; i < _timeline.length; i++)
+            _buildTimelineItem(
+              context,
+              year: _timeline[i]['year'] ?? '',
+              event: _timeline[i]['title'] ?? '',
+              isLast: i == _timeline.length - 1,
+            ),
         ],
       ),
     );
@@ -280,11 +315,7 @@ class HistoryPage extends StatelessWidget {
                 ),
               ),
               if (!isLast)
-                Container(
-                  width: 2,
-                  height: 40,
-                  color: AppColors.border,
-                ),
+                Container(width: 2, height: 40, color: AppColors.border),
             ],
           ),
           const SizedBox(width: 16),
@@ -320,10 +351,7 @@ class HistoryPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.border,
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -337,14 +365,12 @@ class HistoryPage extends StatelessWidget {
         children: [
           Row(
             children: [
-              FaIcon(
-                FontAwesomeIcons.star,
-                size: 24,
-                color: AppColors.success,
-              ),
+              FaIcon(FontAwesomeIcons.star,
+                  size: 24, color: AppColors.success),
               const SizedBox(width: 12),
               Text(
-                'Principii Fundamentale',
+                _settings.get(
+                    'history_principles_title', 'Principii Fundamentale'),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
@@ -353,31 +379,14 @@ class HistoryPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          _buildPrincipleItem(
-            context,
-            icon: FontAwesomeIcons.cross,
-            title: 'Credința',
-            description: 'Devotament față de valorile spirituale',
-          ),
-          _buildPrincipleItem(
-            context,
-            icon: FontAwesomeIcons.heart,
-            title: 'Caritatea',
-            description: 'Serviciu pentru comunitate și cei în nevoie',
-          ),
-          _buildPrincipleItem(
-            context,
-            icon: FontAwesomeIcons.users,
-            title: 'Frăția',
-            description: 'Unitate și sprijin reciproc între membri',
-          ),
-          _buildPrincipleItem(
-            context,
-            icon: FontAwesomeIcons.crown,
-            title: 'Onoarea',
-            description: 'Integritate și conduită nobilă',
-            isLast: true,
-          ),
+          for (int i = 0; i < _principles.length; i++)
+            _buildPrincipleItem(
+              context,
+              icon: _getIcon(_principles[i]['icon'] ?? ''),
+              title: _principles[i]['title'] ?? '',
+              description: _principles[i]['content'] ?? '',
+              isLast: i == _principles.length - 1,
+            ),
         ],
       ),
     );
@@ -403,11 +412,7 @@ class HistoryPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
-              child: FaIcon(
-                icon,
-                size: 18,
-                color: AppColors.primary,
-              ),
+              child: FaIcon(icon, size: 18, color: AppColors.primary),
             ),
           ),
           const SizedBox(width: 16),

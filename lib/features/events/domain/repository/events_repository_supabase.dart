@@ -17,6 +17,7 @@ class EventsRepositorySupabase extends EventsRepository {
     required String? eventTypeId,
     required int page,
     required String date,
+    String? query,
   }) async {
     if (await networkInfo.isConnected) {
       final response = await eventsDatasource.getEventsSearch(
@@ -24,6 +25,7 @@ class EventsRepositorySupabase extends EventsRepository {
         page: page,
         date: date,
         limit: limit,
+        query: query,
       );
       return (
         events: response.data,

@@ -59,7 +59,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
     return BlocProvider(
       create:
-          (context) => NewsDetailsBloc()..add(GetNewsDetails(id: widget.id)),
+          (context) => sl<NewsDetailsBloc>()..add(GetNewsDetails(id: widget.id)),
       child: Scaffold(
         backgroundColor: colorScheme.surface,
         body: BlocBuilder<NewsDetailsBloc, NewsDetailsState>(
@@ -322,24 +322,30 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                                               (tag) => Container(
                                                 padding:
                                                     const EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 6,
+                                                      horizontal: 14,
+                                                      vertical: 8,
                                                     ),
                                                 decoration: BoxDecoration(
-                                                  color:
-                                                      colorScheme
-                                                          .surfaceContainerHighest,
+                                                  color: colorScheme
+                                                      .primaryContainer
+                                                      .withValues(alpha: 0.5),
                                                   borderRadius:
-                                                      BorderRadius.circular(12),
+                                                      BorderRadius.circular(20),
+                                                  border: Border.all(
+                                                    color: colorScheme
+                                                        .primary
+                                                        .withValues(alpha: 0.2),
+                                                  ),
                                                 ),
                                                 child: Text(
-                                                  tag,
+                                                  '#$tag',
                                                   style: AppTextStyles
-                                                      .labelSmall
+                                                      .labelMedium
                                                       .copyWith(
-                                                        color:
-                                                            colorScheme
-                                                                .onSurfaceVariant,
+                                                        color: colorScheme
+                                                            .onPrimaryContainer,
+                                                        fontWeight:
+                                                            FontWeight.w500,
                                                       ),
                                                 ),
                                               ),
@@ -516,7 +522,6 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   }
 
   void _shareArticle(NewsEntity news) {
-    // Implement share functionality
     HapticFeedback.lightImpact();
 
     final shareText = '''
@@ -529,7 +534,14 @@ Intră pe R.L. 126 C.T. ca să citești acest articol!
 #RL126CT #CavaleriTemplului
 ''';
 
-    Share.share(shareText, subject: news.title);
+    final box = context.findRenderObject() as RenderBox?;
+    Share.share(
+      shareText,
+      subject: news.title,
+      sharePositionOrigin: box != null
+          ? box.localToGlobal(Offset.zero) & box.size
+          : Rect.zero,
+    );
   }
 
   Future<void> _bookmarkArticle(NewsEntity news) async {

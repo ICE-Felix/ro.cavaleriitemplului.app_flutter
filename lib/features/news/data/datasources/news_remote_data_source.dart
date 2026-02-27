@@ -3,10 +3,9 @@ import '../../../../core/network/supabase_client.dart';
 import '../models/news_model.dart';
 import '../models/category_model.dart';
 import '../models/news_response_model.dart';
+import '../models/pagination_model.dart';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 
 abstract class NewsRemoteDataSource {
   Future<NewsResponseModel> getNews({int page = 1, int limit = 5});
@@ -26,64 +25,46 @@ abstract class NewsRemoteDataSource {
 
 class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
   final SupabaseClient _supabaseClient;
-  final SupabaseAuthClient _authClient;
 
-  NewsRemoteDataSourceImpl()
-    : _supabaseClient = SupabaseClient(),
-      _authClient = SupabaseAuthClient();
+  NewsRemoteDataSourceImpl() : _supabaseClient = SupabaseClient();
+
+  supabase_flutter.SupabaseClient get _client => _supabaseClient.client;
 
   @override
   Future<NewsResponseModel> getNews({int page = 1, int limit = 5}) async {
     try {
-      // Check if user is authenticated
-      if (!_authClient.isAuthenticated) {
-        throw AuthException(message: 'User not authenticated');
-      }
+      final offset = (page - 1) * limit;
 
-      // Get the current session token
-      final session = _authClient.currentSession;
-      if (session?.accessToken == null) {
-        throw AuthException(message: 'No valid session token');
-      }
+      final countResponse = await _client
+          .from('news')
+          .select('id')
+          .count(supabase_flutter.CountOption.exact);
+      final total = countResponse.count;
 
-      // Build query parameters
-      final queryParams = {'page': page.toString(), 'limit': limit.toString()};
+      final data = await _client
+          .from('news')
+          .select()
+          .order('created_at', ascending: false)
+          .range(offset, offset + limit - 1);
 
-      // Make API call to fetch news
-      final uri = Uri.parse(
-        '${dotenv.get('SUPABASE_URL')}/functions/v1/news',
-      ).replace(queryParameters: queryParams);
+      final newsList =
+          (data as List).map((json) => NewsModel.fromJson(json)).toList();
 
-      final response = await http.get(
-        uri,
-        headers: {
-          'apikey': dotenv.get('ANON_KEY'),
-          'Authorization': 'Bearer ${session!.accessToken}',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'x-client-type': 'api',
-        },
+      final totalPages = total > 0 ? (total / limit).ceil() : 1;
+
+      return NewsResponseModel(
+        news: newsList,
+        pagination: PaginationModel(
+          total: total,
+          limit: limit,
+          offset: offset,
+          page: page,
+          totalPages: totalPages,
+          hasNext: page < totalPages,
+          hasPrevious: page > 1,
+        ),
       );
-
-      if (response.statusCode != 200) {
-        throw ServerException(
-          message: 'Failed to fetch news: ${response.statusCode}',
-        );
-      }
-
-      final Map<String, dynamic> responseData = json.decode(response.body);
-
-      if (responseData['success'] != true) {
-        throw ServerException(
-          message:
-              'API returned error: ${responseData['error'] ?? 'Unknown error'}',
-        );
-      }
-
-      // Parse the complete response with pagination
-      return NewsResponseModel.fromJson(responseData);
     } catch (e) {
-      if (e is AuthException || e is ServerException) rethrow;
       throw ServerException(message: e.toString());
     }
   }
@@ -95,59 +76,40 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
     int limit = 5,
   }) async {
     try {
-      // Check if user is authenticated
-      if (!_authClient.isAuthenticated) {
-        throw AuthException(message: 'User not authenticated');
-      }
+      final offset = (page - 1) * limit;
 
-      // Get the current session token
-      final session = _authClient.currentSession;
-      if (session?.accessToken == null) {
-        throw AuthException(message: 'No valid session token');
-      }
+      final countResponse = await _client
+          .from('news')
+          .select('id')
+          .eq('category_id', category)
+          .count(supabase_flutter.CountOption.exact);
+      final total = countResponse.count;
 
-      // Build query parameters with category filter
-      final queryParams = {
-        'page': page.toString(),
-        'limit': limit.toString(),
-        'category_id': category,
-      };
+      final data = await _client
+          .from('news')
+          .select()
+          .eq('category_id', category)
+          .order('created_at', ascending: false)
+          .range(offset, offset + limit - 1);
 
-      // Make API call to fetch news with category filter
-      final uri = Uri.parse(
-        '${dotenv.get('SUPABASE_URL')}/functions/v1/news',
-      ).replace(queryParameters: queryParams);
+      final newsList =
+          (data as List).map((json) => NewsModel.fromJson(json)).toList();
 
-      final response = await http.get(
-        uri,
-        headers: {
-          'apikey': dotenv.get('ANON_KEY'),
-          'Authorization': 'Bearer ${session!.accessToken}',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'x-client-type': 'api',
-        },
+      final totalPages = total > 0 ? (total / limit).ceil() : 1;
+
+      return NewsResponseModel(
+        news: newsList,
+        pagination: PaginationModel(
+          total: total,
+          limit: limit,
+          offset: offset,
+          page: page,
+          totalPages: totalPages,
+          hasNext: page < totalPages,
+          hasPrevious: page > 1,
+        ),
       );
-
-      if (response.statusCode != 200) {
-        throw ServerException(
-          message: 'Failed to fetch news by category: ${response.statusCode}',
-        );
-      }
-
-      final Map<String, dynamic> responseData = json.decode(response.body);
-
-      if (responseData['success'] != true) {
-        throw ServerException(
-          message:
-              'API returned error: ${responseData['error'] ?? 'Unknown error'}',
-        );
-      }
-
-      // Parse the complete response with pagination
-      return NewsResponseModel.fromJson(responseData);
     } catch (e) {
-      if (e is AuthException || e is ServerException) rethrow;
       throw ServerException(message: e.toString());
     }
   }
@@ -159,59 +121,40 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
     int limit = 5,
   }) async {
     try {
-      // Check if user is authenticated
-      if (!_authClient.isAuthenticated) {
-        throw AuthException(message: 'User not authenticated');
-      }
+      final offset = (page - 1) * limit;
 
-      // Get the current session token
-      final session = _authClient.currentSession;
-      if (session?.accessToken == null) {
-        throw AuthException(message: 'No valid session token');
-      }
+      final countResponse = await _client
+          .from('news')
+          .select('id')
+          .or('title.ilike.%$query%,body.ilike.%$query%')
+          .count(supabase_flutter.CountOption.exact);
+      final total = countResponse.count;
 
-      // Build query parameters with search filter
-      final queryParams = {
-        'page': page.toString(),
-        'limit': limit.toString(),
-        'search': query,
-      };
+      final data = await _client
+          .from('news')
+          .select()
+          .or('title.ilike.%$query%,body.ilike.%$query%')
+          .order('created_at', ascending: false)
+          .range(offset, offset + limit - 1);
 
-      // Make API call to search news
-      final uri = Uri.parse(
-        '${dotenv.get('SUPABASE_URL')}/functions/v1/news',
-      ).replace(queryParameters: queryParams);
+      final newsList =
+          (data as List).map((json) => NewsModel.fromJson(json)).toList();
 
-      final response = await http.get(
-        uri,
-        headers: {
-          'apikey': dotenv.get('ANON_KEY'),
-          'Authorization': 'Bearer ${session!.accessToken}',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'x-client-type': 'api',
-        },
+      final totalPages = total > 0 ? (total / limit).ceil() : 1;
+
+      return NewsResponseModel(
+        news: newsList,
+        pagination: PaginationModel(
+          total: total,
+          limit: limit,
+          offset: offset,
+          page: page,
+          totalPages: totalPages,
+          hasNext: page < totalPages,
+          hasPrevious: page > 1,
+        ),
       );
-
-      if (response.statusCode != 200) {
-        throw ServerException(
-          message: 'Failed to search news: ${response.statusCode}',
-        );
-      }
-
-      final Map<String, dynamic> responseData = json.decode(response.body);
-
-      if (responseData['success'] != true) {
-        throw ServerException(
-          message:
-              'API returned error: ${responseData['error'] ?? 'Unknown error'}',
-        );
-      }
-
-      // Parse the complete response with pagination
-      return NewsResponseModel.fromJson(responseData);
     } catch (e) {
-      if (e is AuthException || e is ServerException) rethrow;
       throw ServerException(message: e.toString());
     }
   }
@@ -219,54 +162,14 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
   @override
   Future<NewsModel> getNewsById(String id) async {
     try {
-      // Check if user is authenticated
-      if (!_authClient.isAuthenticated) {
-        throw AuthException(message: 'User not authenticated');
-      }
+      // Increment read count
+      await _client.rpc('increment_read_count', params: {'news_id': id});
 
-      // Get the current session token
-      final session = _authClient.currentSession;
-      if (session?.accessToken == null) {
-        throw AuthException(message: 'No valid session token');
-      }
+      final data =
+          await _client.from('news').select().eq('id', id).single();
 
-      // Make API call to fetch specific news by ID
-      final response = await http.get(
-        Uri.parse('${dotenv.get('SUPABASE_URL')}/functions/v1/news/$id'),
-        headers: {
-          'apikey': dotenv.get('ANON_KEY'),
-          'Authorization': 'Bearer ${session!.accessToken}',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'x-client-type': 'api',
-        },
-      );
-
-      if (response.statusCode != 200) {
-        if (response.statusCode == 404) {
-          throw ServerException(message: 'News not found');
-        }
-        throw ServerException(
-          message: 'Failed to fetch news: ${response.statusCode}',
-        );
-      }
-
-      final Map<String, dynamic> responseData = json.decode(response.body);
-
-      if (responseData['success'] != true) {
-        throw ServerException(
-          message:
-              'API returned error: ${responseData['error'] ?? 'Unknown error'}',
-        );
-      }
-
-      // Convert to NewsModel object
-      final newsData = responseData['data'];
-      final news = NewsModel.fromJson(newsData);
-
-      return news;
+      return NewsModel.fromJson(data);
     } catch (e) {
-      if (e is AuthException || e is ServerException) rethrow;
       throw ServerException(message: e.toString());
     }
   }
@@ -274,59 +177,17 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
   @override
   Future<List<CategoryModel>> getCategories() async {
     try {
-      // Check if user is authenticated
-      if (!_authClient.isAuthenticated) {
-        throw AuthException(message: 'User not authenticated');
-      }
+      final data = await _client
+          .from('news_categories')
+          .select()
+          .isFilter('deleted_at', null)
+          .order('name');
 
-      // Get the current session token
-      final session = _authClient.currentSession;
-      if (session?.accessToken == null) {
-        throw AuthException(message: 'No valid session token');
-      }
-
-      // Make direct HTTP call to match the curl command exactly
-      final response = await http.get(
-        Uri.parse('${dotenv.get('SUPABASE_URL')}/functions/v1/news_categories'),
-        headers: {
-          'apikey': dotenv.get('ANON_KEY'),
-          'Authorization': 'Bearer ${session!.accessToken}',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'x-client-type': 'api',
-        },
-      );
-
-      if (response.statusCode != 200) {
-        throw ServerException(
-          message: 'API call failed with status: ${response.statusCode}',
-        );
-      }
-
-      final Map<String, dynamic> responseData = json.decode(response.body);
-
-      if (responseData['success'] != true) {
-        throw ServerException(
-          message:
-              'API returned error: ${responseData['error'] ?? 'Unknown error'}',
-        );
-      }
-
-      final List<dynamic> categoriesData = responseData['data'] ?? [];
-
-      // Convert to CategoryModel objects and filter out deleted categories
-      final categories =
-          categoriesData
-              .map((categoryJson) => CategoryModel.fromJson(categoryJson))
-              .where(
-                (category) => category.deletedAt == null,
-              ) // Filter out deleted categories
-              .toList();
-
-      return categories;
+      return (data as List)
+          .map((json) => CategoryModel.fromJson(json))
+          .toList();
     } catch (e) {
-      // Return empty list if API fails
-      print('Failed to fetch categories from API: $e');
+      print('Failed to fetch categories: $e');
       return [];
     }
   }
