@@ -34,9 +34,9 @@ class _SupportPageState extends State<SupportPage> {
     super.dispose();
   }
 
-  void _submitForm() {
+  void _submitForm(BuildContext blocContext) {
     if (_formKey.currentState!.validate()) {
-      context.read<SupportBloc>().add(
+      blocContext.read<SupportBloc>().add(
         SubmitSupportRequest(
           name: _nameController.text,
           email: _emailController.text,
@@ -121,7 +121,7 @@ class _SupportPageState extends State<SupportPage> {
               );
             }
           },
-          builder: (context, state) {
+          builder: (blocContext, state) {
             final isSubmitting = state is SupportSubmitting;
 
             return SingleChildScrollView(
@@ -435,7 +435,7 @@ class _SupportPageState extends State<SupportPage> {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: isSubmitting ? null : _submitForm,
+                        onPressed: isSubmitting ? null : () => _submitForm(blocContext),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,

@@ -17,22 +17,14 @@ class SupportRemoteDataSourceImpl implements SupportRemoteDataSource {
   @override
   Future<void> submitSupportRequest(SupportRequestModel request) async {
     try {
-      final response = await _client.functions.invoke(
-        'send-support-email',
-        body: {
-          'name': request.name,
-          'email': request.email,
-          'subject': request.subject,
-          'message': request.message,
-          'category': request.category.name,
-        },
-      );
-
-      if (response.status != 200) {
-        throw ServerException(message: 'Eroare la trimiterea mesajului');
-      }
+      await _client.from('support_requests').insert({
+        'name': request.name,
+        'email': request.email,
+        'subject': request.subject,
+        'message': request.message,
+        'category': request.category.name,
+      });
     } catch (e) {
-      if (e is ServerException) rethrow;
       throw ServerException(message: 'Eroare la trimiterea mesajului: $e');
     }
   }
