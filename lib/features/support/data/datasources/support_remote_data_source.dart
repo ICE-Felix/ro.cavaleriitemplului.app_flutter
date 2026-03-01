@@ -1,3 +1,6 @@
+import 'package:app/core/error/exceptions.dart';
+import 'package:app/core/network/supabase_client.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 import '../models/support_request_model.dart';
 
 abstract class SupportRemoteDataSource {
@@ -5,15 +8,32 @@ abstract class SupportRemoteDataSource {
 }
 
 class SupportRemoteDataSourceImpl implements SupportRemoteDataSource {
+  final SupabaseClient _supabaseClient;
+
+  SupportRemoteDataSourceImpl() : _supabaseClient = SupabaseClient();
+
+  supabase_flutter.SupabaseClient get _client => _supabaseClient.client;
+
   @override
   Future<void> submitSupportRequest(SupportRequestModel request) async {
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final response = await _client.functions.invoke(
+        'send-support-email',
+        body: {
+          'name': request.name,
+          'email': request.email,
+          'subject': request.subject,
+          'message': request.message,
+          'category': request.category.name,
+        },
+      );
 
-    // In production, this would send the request to a backend API
-    // For now, we'll just log it or store it locally
-    print('Support request submitted: ${request.toJson()}');
-
-    // Success - in real app, would handle API response
+      if (response.status != 200) {
+        throw ServerException(message: 'Eroare la trimiterea mesajului');
+      }
+    } catch (e) {
+      if (e is ServerException) rethrow;
+      throw ServerException(message: 'Eroare la trimiterea mesajului: $e');
+    }
   }
 }

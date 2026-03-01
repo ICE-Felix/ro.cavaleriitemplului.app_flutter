@@ -85,7 +85,7 @@ serve(async (req) => {
       Authorization: `Bearer ${RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      from: "Cavalerii Templului <noreply@rl126ct.dev.icefelix.com>",
+      from: "Cavalerii Templului <rl126ct@530am.io>",
       to: [toEmail],
       cc: ccEmails,
       subject: `Comanda noua de la ${order.user_name}`,

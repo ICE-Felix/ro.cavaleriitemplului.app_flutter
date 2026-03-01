@@ -297,6 +297,7 @@ class _SupportPageState extends State<SupportPage> {
                     const SizedBox(height: 8),
                     DropdownButtonFormField<SupportCategory>(
                       value: _selectedCategory,
+                      isExpanded: true,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: AppColors.surface,
@@ -319,21 +320,12 @@ class _SupportPageState extends State<SupportPage> {
                           Icons.category,
                           color: AppColors.primary,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 16,
-                        ),
                       ),
                       items:
                           SupportCategory.values.map((category) {
                             return DropdownMenuItem(
                               value: category,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 4.0,
-                                ),
-                                child: Text(category.displayName),
-                              ),
+                              child: Text(category.displayName),
                             );
                           }).toList(),
                       onChanged:

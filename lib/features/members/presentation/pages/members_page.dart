@@ -109,15 +109,15 @@ class _MembersPageState extends State<MembersPage>
                     tabs: const [
                       Tab(
                         icon: FaIcon(FontAwesomeIcons.star, size: 16),
-                        text: 'Important Members',
+                        text: 'Demnitari',
                       ),
                       Tab(
                         icon: FaIcon(FontAwesomeIcons.users, size: 16),
-                        text: 'Members',
+                        text: 'Membri',
                       ),
                       Tab(
                         icon: FaIcon(FontAwesomeIcons.heart, size: 16),
-                        text: 'Favorites',
+                        text: 'Favoriți',
                       ),
                     ],
                   ),
@@ -199,7 +199,7 @@ class _MembersContentView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No members found',
+                    'Nu s-au găsit membri',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           color: AppColors.onBackground.withValues(alpha: 0.6),
                         ),
@@ -247,7 +247,7 @@ class _MembersContentView extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Error loading members',
+                  'Eroare la încărcarea membrilor',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: AppColors.error,
                       ),
@@ -269,7 +269,7 @@ class _MembersContentView extends StatelessWidget {
                     onRefresh?.call();
                   },
                   icon: const FaIcon(FontAwesomeIcons.arrowsRotate, size: 16),
-                  label: const Text('Retry'),
+                  label: const Text('Reîncearcă'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
