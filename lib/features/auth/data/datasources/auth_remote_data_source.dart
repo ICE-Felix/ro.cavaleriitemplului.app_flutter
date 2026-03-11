@@ -23,6 +23,9 @@ abstract class AuthRemoteDataSource {
   /// Reset password for the given email
   Future<void> resetPassword({required String email});
 
+  /// Delete the current user account
+  Future<void> deleteAccount();
+
   /// Check if user is currently authenticated
   bool get isAuthenticated;
 
@@ -108,6 +111,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       await supabaseClient.resetPassword(email: email);
     } catch (e) {
       throw AuthException(message: 'Password reset failed: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    try {
+      await supabaseClient.deleteAccount();
+    } catch (e) {
+      throw AuthException(message: 'Delete account failed: ${e.toString()}');
     }
   }
 

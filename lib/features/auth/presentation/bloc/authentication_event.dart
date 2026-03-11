@@ -37,6 +37,8 @@ class RegisterRequested extends AuthenticationEvent {
 
 class GetProfileRequested extends AuthenticationEvent {}
 
+class DeleteAccountRequested extends AuthenticationEvent {}
+
 class ForgotPasswordRequested extends AuthenticationEvent {
   final String email;
 

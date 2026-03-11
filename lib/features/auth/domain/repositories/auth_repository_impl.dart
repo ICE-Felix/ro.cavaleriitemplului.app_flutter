@@ -79,6 +79,20 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> deleteAccount() async {
+    if (await networkInfo.isConnected) {
+      try {
+        await remoteDataSource.deleteAccount();
+        await localDataSource.clearCachedUser();
+      } catch (e) {
+        throw ServerException(message: e.toString());
+      }
+    } else {
+      throw NetworkException(message: 'No internet connection');
+    }
+  }
+
+  @override
   Future<UserModel?> getCurrentUser() async {
     if (await networkInfo.isConnected) {
       try {

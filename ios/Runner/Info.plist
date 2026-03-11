@@ -54,10 +54,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to location to show your current location on the map.</string>
+	<string>R.L. 126 C.T. uses your location to show nearby lodge locations on the map and calculate distances to events. For example, the app displays your position relative to meeting venues so you can get directions.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open to show your current location on the
-			map.</string>
+	<string>R.L. 126 C.T. uses your location while the app is open to show nearby lodge locations on the map and calculate distances to events. For example, the app displays your position relative to meeting venues so you can get directions.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

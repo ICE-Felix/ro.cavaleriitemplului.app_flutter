@@ -29,6 +29,13 @@ class ProfileAccountSection extends StatelessWidget {
           isDestructive: true,
           onTap: () => _showLogoutDialog(context),
         ),
+        ProfileMenuItem(
+          icon: FontAwesomeIcons.trash,
+          title: context.getString(label: 'profile.deleteAccount'),
+          subtitle: context.getString(label: 'profile.deleteAccountSubtitle'),
+          isDestructive: true,
+          onTap: () => _showDeleteAccountDialog(context),
+        ),
       ],
     );
   }
@@ -42,6 +49,62 @@ class ProfileAccountSection extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.0),
         ),
       ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    final authBloc = context.read<AuthenticationBloc>();
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24.0),
+          ),
+          title: Row(
+            children: [
+              Icon(FontAwesomeIcons.triangleExclamation,
+                  color: Colors.red, size: 24),
+              const SizedBox(width: 12),
+              Text(context.getString(label: 'profile.deleteAccountTitle')),
+            ],
+          ),
+          content: Text(
+            context.getString(label: 'profile.deleteAccountWarning'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                context.getString(label: 'profile.deleteAccountCancel'),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                authBloc.add(DeleteAccountRequested());
+                // Navigate to intro after deletion
+                while (context.canPop()) {
+                  context.pop();
+                }
+                context.pushReplacementNamed(AppRoutesNames.intro.name);
+              },
+              child: Text(
+                context.getString(label: 'profile.deleteAccountConfirm'),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

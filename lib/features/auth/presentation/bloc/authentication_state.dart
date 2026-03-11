@@ -30,6 +30,8 @@ class AuthError extends AuthenticationState {
   List<Object?> get props => [message];
 }
 
+class AuthAccountDeleted extends AuthenticationState {}
+
 class AuthPasswordResetSent extends AuthenticationState {
   final String message;
 

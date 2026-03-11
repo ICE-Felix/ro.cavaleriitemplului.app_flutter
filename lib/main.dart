@@ -24,7 +24,9 @@ import 'features/notifications/presentation/bloc/notification_event.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Initialize Firebase if not already initialized
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  }
 
   debugPrint('Handling background message: ${message.messageId}');
   debugPrint('Title: ${message.notification?.title}');
@@ -36,24 +38,26 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    // Already initialized by google-services.json on Android
+    Firebase.app();
+  }
 
   // Register background message handler
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // Load environment variables
   await dotenv.load(fileName: ".env");
+
   // Initialize dependency injection
   await initServiceLocator();
 
-  try {
-    debugPrint('🔥 Starting Firebase Messaging Service initialization...');
-    await sl<FirebaseMessagingService>().initialize();
-    debugPrint('✅ Firebase Messaging Service initialization completed');
-  } catch (e, stackTrace) {
-    debugPrint('❌ Error initializing Firebase Messaging Service: $e');
-    debugPrint('Stack trace: $stackTrace');
-  }
+  // Initialize Firebase Messaging in background - don't block app startup
+  sl<FirebaseMessagingService>().initialize().catchError((e) {
+    print('Firebase Messaging init failed: $e');
+  });
 
   runApp(const MyApp());
 }

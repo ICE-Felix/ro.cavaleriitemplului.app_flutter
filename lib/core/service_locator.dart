@@ -220,6 +220,9 @@ Future<void> initServiceLocator() async {
   sl.registerLazySingleton(
     () => LogoutUseCase(repository: sl<AuthRepository>()),
   );
+  sl.registerLazySingleton(
+    () => DeleteAccountUseCase(repository: sl<AuthRepository>()),
+  );
 
   // Intro use cases
   sl.registerLazySingleton(
@@ -257,6 +260,7 @@ Future<void> initServiceLocator() async {
       forgotPasswordUseCase: sl<ForgotPasswordUseCase>(),
       checkAuthStatusUseCase: sl<CheckAuthStatusUseCase>(),
       logoutUseCase: sl<LogoutUseCase>(),
+      deleteAccountUseCase: sl<DeleteAccountUseCase>(),
       localizationCubit: sl<LocalizationCubit>(),
       authenticationService: sl<AuthenticationService>(),
     ),

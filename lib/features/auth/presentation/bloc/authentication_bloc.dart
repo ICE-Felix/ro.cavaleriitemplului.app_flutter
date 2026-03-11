@@ -26,6 +26,7 @@ class AuthenticationBloc
   final ForgotPasswordUseCase forgotPasswordUseCase;
   final CheckAuthStatusUseCase checkAuthStatusUseCase;
   final LogoutUseCase logoutUseCase;
+  final DeleteAccountUseCase deleteAccountUseCase;
   final LocalizationCubit localizationCubit;
   final AuthenticationService _authenticationService;
   late final StreamSubscription<UserModel?> _authStateSubscription;
@@ -36,6 +37,7 @@ class AuthenticationBloc
     required this.forgotPasswordUseCase,
     required this.checkAuthStatusUseCase,
     required this.logoutUseCase,
+    required this.deleteAccountUseCase,
     required this.localizationCubit,
     required AuthenticationService authenticationService,
   }) : _authenticationService = authenticationService,
@@ -45,6 +47,7 @@ class AuthenticationBloc
     on<LogoutRequested>(_onLogoutRequested);
     on<RegisterRequested>(_onRegisterRequested);
     on<ForgotPasswordRequested>(_onForgotPasswordRequested);
+    on<DeleteAccountRequested>(_onDeleteAccountRequested);
 
     // Listen to real-time auth state changes
     _authStateSubscription = _authenticationService.authStateChanges.listen(
@@ -168,6 +171,32 @@ class AuthenticationBloc
       }
       // Even if logout fails, we should consider the user logged out locally
       emit(AuthUnauthenticated());
+    }
+  }
+
+  Future<void> _onDeleteAccountRequested(
+    DeleteAccountRequested event,
+    Emitter<AuthenticationState> emit,
+  ) async {
+    try {
+      if (kDebugMode) {
+        print('🗑️ AuthBloc: Delete account requested');
+      }
+
+      emit(AuthLoading());
+
+      await deleteAccountUseCase(NoParams());
+
+      if (kDebugMode) {
+        print('✅ AuthBloc: Account deleted successfully');
+      }
+
+      emit(AuthAccountDeleted());
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ AuthBloc: Delete account failed: $e');
+      }
+      emit(AuthError(localizationCubit.getString(label: 'profile.deleteAccountError')));
     }
   }
 

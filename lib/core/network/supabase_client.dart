@@ -110,6 +110,15 @@ class SupabaseAuthClient {
     }
   }
 
+  // Delete user account via database function
+  Future<void> deleteAccount() async {
+    try {
+      await Supabase.instance.client.rpc('delete_user_account');
+    } catch (e) {
+      throw AuthException(message: 'Failed to delete account: ${e.toString()}');
+    }
+  }
+
   // Listen to auth state changes
   Stream<AuthState> get onAuthStateChange =>
       Supabase.instance.client.auth.onAuthStateChange;

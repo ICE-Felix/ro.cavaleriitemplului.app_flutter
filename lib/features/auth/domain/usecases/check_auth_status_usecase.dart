@@ -13,6 +13,17 @@ class CheckAuthStatusUseCase implements UseCase<UserModel?, NoParams> {
   }
 }
 
+class DeleteAccountUseCase implements UseCase<void, NoParams> {
+  final AuthRepository repository;
+
+  DeleteAccountUseCase({required this.repository});
+
+  @override
+  Future<void> call(NoParams params) async {
+    return await repository.deleteAccount();
+  }
+}
+
 class LogoutUseCase implements UseCase<void, NoParams> {
   final AuthRepository repository;
 
